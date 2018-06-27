@@ -28,3 +28,19 @@ def dummy(config,**args):
     execute(put_configs,config)
     job(dict(script='dummy', wall_time='0:15:0', memory='2G'),args)
 
+@task
+def lammps_dummy(config,**args):
+    """Submit a LAMMPS job to the remote queue.
+    The job results will be stored with a name pattern as defined in the environment,
+    e.g. cylinder-abcd1234-legion-256
+    config : config directory to use to define geometry, e.g. config=lamps_lj_liquid
+    Keyword arguments:
+            cores : number of compute cores to request
+            images : number of images to take
+            steering : steering session i.d.
+            wall_time : wall-time job limit
+            memory : memory per node
+    """
+    with_config(config)
+    execute(put_configs,config)
+    job(dict(script='lammps', wall_time = '0:15:0', lammps_input = "in.CG.lammps"),args)
