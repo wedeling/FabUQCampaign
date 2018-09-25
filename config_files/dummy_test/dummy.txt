@@ -1,2 +1,1 @@
-This dummy textfile has been printed with great success.
-
+This first dummy test has been concluded with great success.
