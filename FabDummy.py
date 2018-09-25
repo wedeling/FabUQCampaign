@@ -29,6 +29,18 @@ def dummy(config,**args):
     job(dict(script='dummy', wall_time='0:15:0', memory='2G'),args)
 
 @task
+def dummy_ensemble(config="dummy_test",**args):
+    """
+    Submits an ensemble of dummy jobs.
+    One job is run for each file in <config_file_directory>/dummy_test/SWEEP.
+    """
+    
+    path_to_config = find_config_file_path(config)
+    sweep_dir = path_to_config + "/SWEEP"
+    
+    run_ensemble(config, sweep_dir, **args)
+    
+@task
 def lammps_dummy(config,**args):
     """Submit a LAMMPS job to the remote queue.
     The job results will be stored with a name pattern as defined in the environment,
