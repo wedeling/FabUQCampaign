@@ -26,7 +26,7 @@ def ade(config,**args):
     update_environment(args)
     with_config(config)
     execute(put_configs,config)
-    job(dict(script='dummy', wall_time='0:15:0', memory='2G'),args)
+    job(dict(script='ade', wall_time='0:15:0', memory='2G'),args)
 
 @task
 def ade_ensemble(config="dummy_test",**args):
