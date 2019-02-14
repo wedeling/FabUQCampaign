@@ -8,7 +8,7 @@
 from base.fab import *
 
 # Add local script, blackbox and template path.
-add_local_paths("FabADE")
+add_local_paths("FabSC")
 
 @task
 def ade(config,**args):
