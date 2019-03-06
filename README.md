@@ -6,7 +6,7 @@ Simply type `fab localhost install_plugin:FabSC` anywhere inside your FabSim3 in
 
 ## Explanation of files
 + FabSC.py: contains the *sc* subroutine in which the properties per job are specified, e.g. number of cores, memory, wall-time limit etc
-+ temples/sc: contains the command-line execution command for a single EasyVVUQ SC sample.
++ templates/sc: contains the command-line execution command for a single EasyVVUQ SC sample.
 
 ## Detailed Examples
 
