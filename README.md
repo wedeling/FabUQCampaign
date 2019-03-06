@@ -1,11 +1,11 @@
 # FabSC
+This plugin runs the samples from an EasyVVUQ campaign using FabSim3 via the campaign2emsemble subroutine.
 
 ## Installation
-Simply type `fab localhost install_plugin:FabDummy` anywhere inside your FabSim3 install directory.
-
-## Testing
+Simply type `fab localhost install_plugin:FabSC` anywhere inside your FabSim3 install directory.
 
 ## Explanation of files
++ FabSC.py:
 
 ## Detailed Examples
 
