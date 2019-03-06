@@ -29,7 +29,7 @@ def ade(config,**args):
     job(dict(script='ade', wall_time='0:15:0', memory='2G'),args)
 
 @task
-def ade_ensemble(config="dummy_test",**args):
+def sc_ensemble(config="dummy_test",**args):
     """
     Submits an ensemble of dummy jobs.
     One job is run for each file in <config_file_directory>/dummy_test/SWEEP.
