@@ -11,7 +11,7 @@ from base.fab import *
 add_local_paths("FabSC")
 
 @task
-def ade(config,**args):
+def sc(config,**args):
     """Submit a Dummy job to the remote queue.
     The job results will be stored with a name pattern as defined in the environment,
     e.g. cylinder-abcd1234-legion-256
@@ -37,7 +37,7 @@ def sc_ensemble(config="dummy_test",**args):
     
     path_to_config = find_config_file_path(config)
     sweep_dir = path_to_config + "/SWEEP"
-    env.script = 'ade'
+    env.script = 'sc'
 
     run_ensemble(config, sweep_dir, **args)
     
