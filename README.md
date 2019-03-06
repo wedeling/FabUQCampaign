@@ -5,11 +5,14 @@ This plugin runs the samples from an EasyVVUQ campaign using FabSim3 via the cam
 Simply type `fab localhost install_plugin:FabSC` anywhere inside your FabSim3 install directory.
 
 ## Explanation of files
-+ FabSC.py:
++ FabSC.py: contains the *sc* subroutine in which the properties per job are specified, e.g. number of cores, memory, wall-time limit etc
++ temples/sc: contains the command-line execution command for a single EasyVVUQ SC sample.
 
 ## Detailed Examples
 
 ### Executing a single job on localhost
+In the examples folder there is a script which runs an EasyVVUQ SC campaign using FabSim3 for a simple advection-diffusion ODE on the localhost. The governing equations are:
+
 
 ### Executing a single job on a remote host
 
