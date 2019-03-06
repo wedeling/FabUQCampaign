@@ -5,17 +5,23 @@ This plugin runs the samples from an EasyVVUQ campaign using FabSim3 via the cam
 Simply type `fab localhost install_plugin:FabSC` anywhere inside your FabSim3 install directory.
 
 ## Explanation of files
-+ FabSC.py: contains the *sc* subroutine in which the properties per job are specified, e.g. number of cores, memory, wall-time limit etc
++ FabSC.py: contains the *sc* subroutine in which the job properties are specified, e.g. number of cores, memory, wall-time limit etc
 + templates/sc: contains the command-line execution command for a single EasyVVUQ SC sample.
 
 ## Detailed Examples
 
 ### Executing a single job on localhost
-In the examples folder there is a script which runs an EasyVVUQ SC campaign using FabSim3 for a simple advection-diffusion ODE on the localhost. The governing equations are:
+In the examples folder there is a script which runs an EasyVVUQ SC campaign using FabSim3 for a simple advection-diffusion equation (ade) on the localhost. The governing equations are:
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cfrac%7Bdu%7D%7Bdx%7D%20&plus;%20%5Cfrac%7B1%7D%7BPe%7D%5Cfrac%7Bd%5E2u%7D%7Bdx%7D%20%3D%20f),
 
 where the Peclet Numer (Pe) and forcing term (f) are the uncertain SC parameters.
+
+The file *run_SC_Fab_campaign.py* contains the main script. It executes the following sequence of steps:
+ 1. Create an EasyVVUQ campaign object, with *ade_input.json* as argument, which sets the parameters of the UQ campaign.
+ 2. Per uncertain parameter, select the input distribution and polynomial order.
+ 3. Select the SC_Sampler and create a tensor grid from the 1D rules selected in step 2.
+ 4. Create the ensemble run directories which will be used in Fabsim's *campaign2ensemble* subroutine.
 
 ### Executing a single job on a remote host
 
