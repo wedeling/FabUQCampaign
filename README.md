@@ -10,7 +10,7 @@ Simply type `fab localhost install_plugin:FabSC` anywhere inside your FabSim3 in
 
 ## Detailed Examples
 
-### Executing a single job on localhost
+### Executing a ensemble job on localhost
 In the examples folder there is a script which runs an EasyVVUQ SC campaign using FabSim3 for a simple advection-diffusion equation (ade) on the localhost. The governing equations are:
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cfrac%7Bdu%7D%7Bdx%7D%20&plus;%20%5Cfrac%7B1%7D%7BPe%7D%5Cfrac%7Bd%5E2u%7D%7Bdx%7D%20%3D%20f),
