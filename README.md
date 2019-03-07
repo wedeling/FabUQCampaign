@@ -1,5 +1,5 @@
 # FabSC
-This plugin runs the samples from an ![EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) Stochastic Collocation (SC) campaign using FabSim3 via the *campaign2emsemble* subroutine.
+This plugin runs the samples from an ![EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) campaign using ![FabSim3](https://github.com/djgroen/FabSim3) via the `campaign2ensemble` subroutine.
 
 ## Installation
 Simply type `fab localhost install_plugin:FabSC` anywhere inside your FabSim3 install directory.
@@ -12,7 +12,7 @@ Simply type `fab localhost install_plugin:FabSC` anywhere inside your FabSim3 in
 ## Detailed Examples
 
 ### Executing an ensemble job on localhost
-In the examples folder there is a script which runs an EasyVVUQ SC campaign using FabSim3 for a simple advection-diffusion equation (ade) finite-element solver on the localhost. The governing equations are:
+In the examples folder there is a script which runs an EasyVVUQ Stochastic Collocation (SC) campaign using FabSim3 for a simple advection-diffusion equation (ade) finite-element solver on the localhost. The governing equations are:
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cfrac%7Bdu%7D%7Bdx%7D%20&plus;%20%5Cfrac%7B1%7D%7BPe%7D%5Cfrac%7Bd%5E2u%7D%7Bdx%7D%20%3D%20f),
 
