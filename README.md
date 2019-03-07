@@ -1,5 +1,5 @@
 # FabSC
-This plugin runs the samples from an ![EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) Stochastic Collocation (SC) campaign using FabSim3 via the *campaign2emsemble* subroutine.
+This plugin runs the samples from an ![EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) Stochastic Collocation (SC) campaign using FabSim3 via the `campaign2emsemble` subroutine.
 
 ## Installation
 Simply type `fab localhost install_plugin:FabSC` anywhere inside your FabSim3 install directory.
