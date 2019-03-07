@@ -50,3 +50,8 @@ Afterwards, post-processing tasks in EasyVVUQ can be undertaken, by creating a `
 + To generate a random output sample from the SC surrogate, use `sc_analysis.surrogate(xi)`, where `xi` is a random Monte Carlo input sample.
 
 + To compute the Sobol indices from the SC samples, use: `sc_analysis.get_Sobol_indices(typ)`, where `typ` can be `'first_order'` or `'all'`.
+
+### Executing an ensemble job on a remote host
+
+To run the example script on a remote host, every instance of `localhost` must replaced by the `machine_name` of the remote host. Ensure the host is defined in `machines.yml`, and the user login information in `deploy/machines_user.yml`.
+
