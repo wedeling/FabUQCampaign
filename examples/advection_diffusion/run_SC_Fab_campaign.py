@@ -19,6 +19,9 @@ my_campaign = uq.Campaign(state_filename=input_json)
 
 # 2. Set which parameters we wish to include in the analysis and the
 #    distribution from which to draw samples
+#!NOTE: the variables are in the standard domain [-1, 1]. The mapping to
+#       their physical range is done in ADE.py
+
 m1 = 6
 m2 = 6
 my_campaign.vary_param("Pe", dist=uq.distributions.legendre(m1))
@@ -37,11 +40,11 @@ my_campaign.populate_runs_dir()
 
 # 5. Run execution using Fabsim (on the localhost)
 sim_ID ='ade_example1'
-Fab_dir = '~/CWI/VECMA/FabSim3'
+Fab_home = '~/CWI/VECMA/FabSim3'
 
-cmd1 = "cd " + Fab_dir + " && fab localhost campaign2ensemble:" + \
+cmd1 = "cd " + Fab_home + " && fab localhost campaign2ensemble:" + \
         sim_ID + ",campaign_dir=" + my_campaign.campaign_dir
-cmd2 = "cd " + Fab_dir + " && fab localhost sc_ensemble:" + sim_ID
+cmd2 = "cd " + Fab_home + " && fab localhost sc_ensemble:" + sim_ID
 
 os.system(cmd1)
 os.system(cmd2)
