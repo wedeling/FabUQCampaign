@@ -43,5 +43,8 @@ The run directory `$campaign_dir` is available from the EasyVVUQ object. The Fab
 
 `cp -r ~/FabSim3/results/ade_example1_localhost_16/RUNS/Run_* $campaign_dir/runs`
 
-Afterwards, post-processing tasks in EasyVVUQ can be undertaken:
-+ To compute the mean and variance of the output use: `sc_analysis = uq.elements.analysis.SCAnalysis(my_campaign, value_cols=output_columns)`, followed by `sc_analysis.get_moments()`. Here, `output_columns` is the name of the column in the output CSV file containing the simulation results (u(x) in this case). 
+Afterwards, post-processing tasks in EasyVVUQ can be undertaken, by creating a `SCAnalysis` object: `sc_analysis = uq.elements.analysis.SCAnalysis(my_campaign, value_cols=output_columns)`. Here, `output_columns` is the name of the column in the output CSV file containing the simulation results (u(x) in this case).
+
++ To compute the mean and variance of the output use: `sc_analysis.get_moments()`.  
+
++ To generate a random output sample from the SC surrogate, use `sc_analysis.surrogate(xi)`, where `xi` is a random Monte Carlo input sample.
