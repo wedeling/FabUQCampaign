@@ -19,10 +19,11 @@ In the examples folder there is a script which runs an EasyVVUQ SC campaign usin
 where the Peclet Number (Pe) and forcing term (f) are the uncertain SC parameters, and u is the velocity subject to Dirichlet boundary conditions u(0)=u(1)=0. The script executes the ensemble using Fabsim, computes the first two moments of the output, generates some random sample of the SC surrogate and computes the first-order Sobol indices of Pe and f.
 
 The file `run_SC_Fab_campaign.py` contains the main script. The first 4 steps are the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs:
- 1. Create an EasyVVUQ campaign object, with `ade_input.json` as argument, which defines the UQ campaign.
- 2. Per uncertain parameter, select the input distribution and polynomial order.
- 3. Select the SC_Sampler and create a tensor grid from the 1D rules selected in step 2.
- 4. Create the ensemble run directories which will be used in Fabsim's `campaign2ensemble` subroutine.
+ 1. Create an EasyVVUQ campaign object, with `ade_input.json` as argument, which defines the UQ campaign:
+ `my_campaign = uq.Campaign(state_filename=input_json)`
+ 2. Per uncertain parameter, select the input distribution and polynomial order, e.g. `my_campaign.vary_param("Pe", dist=uq.distributions.legendre(6))`
+ 3. Select the SC_Sampler which creates a tensor grid from the 1D rules selected in step 2: `sc_sampler = uq.elements.sampling.SCSampler(my_campaign)`
+ 4. Create the ensemble run directories which will be used in Fabsim's `campaign2ensemble` subroutine: `my_campaign.populate_runs_dir()`
  
 The fifth step is specific to FabSim. For now, several variables need to be hardcoded, i.e.: 
  + A simulation identifier (`$sim_ID`)
