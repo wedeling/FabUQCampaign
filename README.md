@@ -53,5 +53,5 @@ Afterwards, post-processing tasks in EasyVVUQ can be undertaken, by creating a `
 
 ### Executing an ensemble job on a remote host
 
-To run the example script on a remote host, every instance of `localhost` must replaced by the `machine_name` of the remote host. Ensure the host is defined in `machines.yml`, and the user login information in `deploy/machines_user.yml`.
+To run the example script on a remote host, every instance of `localhost` must replaced by the `machine_name` of the remote host. Ensure the host is defined in `machines.yml`, and the user login information and `$ade_exec` in `deploy/machines_user.yml`.
 
