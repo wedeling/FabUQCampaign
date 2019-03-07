@@ -49,4 +49,4 @@ Afterwards, post-processing tasks in EasyVVUQ can be undertaken, by creating a `
 
 + To generate a random output sample from the SC surrogate, use `sc_analysis.surrogate(xi)`, where `xi` is a random Monte Carlo input sample.
 
-+ To compute the Sobol indices from the SC samples, use: `sc_analysis.get_Sobol_indices(typ)`, where `type` can be `'first_order'`
++ To compute the Sobol indices from the SC samples, use: `sc_analysis.get_Sobol_indices(typ)`, where `type` can be `'first_order'` or `'all'`.
