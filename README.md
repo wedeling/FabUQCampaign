@@ -1,5 +1,5 @@
 # FabSC
-This plugin runs the samples from an EasyVVUQ Stochastic Collocation (SC) campaign using FabSim3 via the *campaign2emsemble* subroutine.
+This plugin runs the samples from an ![EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) Stochastic Collocation (SC) campaign using FabSim3 via the *campaign2emsemble* subroutine.
 
 ## Installation
 Simply type `fab localhost install_plugin:FabSC` anywhere inside your FabSim3 install directory.
@@ -39,4 +39,6 @@ The fifth step is specific to FabSim. For now, several variables need to be hard
  1. `cd $fab_home && fab localhost campaign2ensemble:$sim_ID, campaign_dir=$campaign_dir`
  2. `cd $fab_home && fab localhost sc_ensemble:$sim_ID`
  
-The variable `$campaign_dir` is available from the EasyVVUQ object.
+The run directory `$campaign_dir` is available from the EasyVVUQ object. The $Fabsim results directory (`~/FanSim3/results`) has the same structure as the EasyVVUQ run directory, so the results can simply be copied back, in this case via
+
+`cp -r ~/FabSim3/results/ade_example1_localhost_16/RUNS/Run_* $campaign_dir/runs`
