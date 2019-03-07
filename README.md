@@ -11,12 +11,12 @@ Simply type `fab localhost install_plugin:FabSC` anywhere inside your FabSim3 in
 
 ## Detailed Examples
 
-### Executing a ensemble job on localhost
-In the examples folder there is a script which runs an EasyVVUQ SC campaign using FabSim3 for a simple advection-diffusion equation (ade) on the localhost. The governing equations are:
+### Executing an ensemble job on localhost
+In the examples folder there is a script which runs an EasyVVUQ SC campaign using FabSim3 for a simple advection-diffusion equation (ade) finite-element solver on the localhost. The governing equations are:
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cfrac%7Bdu%7D%7Bdx%7D%20&plus;%20%5Cfrac%7B1%7D%7BPe%7D%5Cfrac%7Bd%5E2u%7D%7Bdx%7D%20%3D%20f),
 
-where the Peclet Numer (Pe) and forcing term (f) are the uncertain SC parameters.
+where the Peclet Number (Pe) and forcing term (f) are the uncertain SC parameters, and u is the velocity subject to Dirichlet boundary conditions u(0)=u(1)=0.
 
 The file *run_SC_Fab_campaign.py* contains the main script. The first 4 steps are the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs:
  1. Create an EasyVVUQ campaign object, with *ade_input.json* as argument, which defines the UQ campaign.
@@ -32,5 +32,6 @@ The fifth step is specific to FabSim. For now, several variables need to be hard
 *localhost:*
 
  &nbsp;&nbsp;&nbsp;&nbsp;*ade_exec: "/home/wouter/CWI/VECMA/FabSim3/plugins/FabSC/examples/advection_diffusion/run_ADE.py"*
-
-
+ 
+ The following two commands execute the ensemble run:
+ 
