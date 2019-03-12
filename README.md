@@ -23,7 +23,7 @@ The file `run_SC_Fab_campaign.py` contains the main script. The first 4 steps ar
  `my_campaign = uq.Campaign(state_filename=input_json)`
  2. Per uncertain parameter, select the input distribution and polynomial order, e.g. `my_campaign.vary_param("Pe", dist=uq.distributions.legendre(6))`
  3. Select the SC_Sampler which creates a tensor grid from the 1D rules selected in step 2: `sc_sampler = uq.elements.sampling.SCSampler(my_campaign)`, and add the runs via `my_campaign.add_runs(sc_sampler, max_num=number_of_samples)`. The `number_of_samples` variable is simply the number of points in the tensor grid.
- 4. Create the ensemble run directories which will be used in Fabsim's `campaign2ensemble` subroutine: `my_campaign.populate_runs_dir()`
+ 4. Create the ensemble run directories which will be used in FabSim's `campaign2ensemble` subroutine: `my_campaign.populate_runs_dir()`
  
 The fifth step is specific to FabSim. For now, several variables need to be hardcoded, i.e.: 
  + A simulation identifier (`$sim_ID`)
