@@ -16,7 +16,7 @@ In the examples folder there is a script which runs an EasyVVUQ Stochastic Collo
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cfrac%7Bdu%7D%7Bdx%7D%20&plus;%20%5Cfrac%7B1%7D%7BPe%7D%5Cfrac%7Bd%5E2u%7D%7Bdx%7D%20%3D%20f),
 
-where the Peclet Number (Pe) and forcing term (f) are the uncertain SC parameters, and u is the velocity subject to Dirichlet boundary conditions u(0)=u(1)=0. The script executes the ensemble using Fabsim, computes the first two moments of the output, generates some random sample of the SC surrogate and computes the first-order Sobol indices of Pe and f.
+where the Peclet Number (Pe) and forcing term (f) are the uncertain SC parameters, and u is the velocity subject to Dirichlet boundary conditions u(0)=u(1)=0. The script executes the ensemble using FabSim, computes the first two moments of the output, generates some random sample of the SC surrogate and computes the first-order Sobol indices of Pe and f.
 
 The file `run_SC_Fab_campaign.py` contains the main script. The first 4 steps are the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs:
  1. Create an EasyVVUQ campaign object, with `ade_input.json` as argument, which defines the UQ campaign:
