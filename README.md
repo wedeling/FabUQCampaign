@@ -5,9 +5,9 @@ This plugin runs the samples from an ![EasyVVUQ](https://github.com/UCL-CCS/Easy
 Simply type `fab localhost install_plugin:FabUQCampaign` anywhere inside your FabSim3 install directory.
 
 ## Explanation of files
-+ `FabSC/FabUQCampaign.py`: contains the `run_UQ_sample` subroutine in which the job properties are specified, e.g. number of cores, memory, wall-time limit etc
-+ `FabSC/templates/run_UQ_sample`: contains the command-line execution command for a single EasyVVUQ sample.
-+ `FabSC/examples/advection_diffusion/`: an example script, see below.
++ `FabUQCampaign/FabUQCampaign.py`: contains the `run_UQ_sample` subroutine in which the job properties are specified, e.g. number of cores, memory, wall-time limit etc
++ `FabUQCampaign/templates/run_UQ_sample`: contains the command-line execution command for a single EasyVVUQ sample.
++ `FabUQCampaign/examples/advection_diffusion/`: an example script, see below.
 
 ## Detailed Examples
 
