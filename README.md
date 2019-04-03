@@ -21,8 +21,8 @@ where the Peclet Number (Pe) and forcing term (f) are the uncertain SC parameter
 The file `run_SC_Fab_campaign.py` contains the main script. The first 4 steps are the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs:
  1. Create an EasyVVUQ campaign object, with `ade_input.json` as argument, which defines the UQ campaign:
  `my_campaign = uq.Campaign(state_filename=input_json)`
- 2. Per uncertain parameter, select the input distribution and polynomial order, e.g. `my_campaign.vary_param("Pe", dist=uq.distributions.legendre(6))`
- 3. Select the SC_Sampler which creates a tensor grid from the 1D rules selected in step 2: `sc_sampler = uq.elements.sampling.SCSampler(my_campaign)`, and add the runs via `my_campaign.add_runs(sc_sampler, max_num=number_of_samples)`. The `number_of_samples` variable is simply the number of points in the tensor grid.
+ 2. Per uncertain parameter, select the input distribution via Chaospy, e.g. `my_campaign.vary_param("Pe", dist=cp.distributions.Uniform(-1, 1))`
+ 3. Select the SC_Sampler (and specify the polynomial order `p`), which creates a tensor grid from the 1D rules selected in step 2: `sc_sampler = uq.elements.sampling.SCSampler(my_campaign, p)`, and add the runs via `my_campaign.add_runs(sc_sampler, max_num=number_of_samples)`. The `number_of_samples` variable is simply the number of points in the tensor grid.
  4. Create the ensemble run directories which will be used in FabSim's `campaign2ensemble` subroutine: `my_campaign.populate_runs_dir()`
  
 Only the fifth step is specific to FabSim. For now, several variables need to be hardcoded, i.e.: 
@@ -45,7 +45,7 @@ The run directory `$campaign_dir` is available from the EasyVVUQ object. The `ca
 
 Afterwards, post-processing tasks in EasyVVUQ can be undertaken, by creating a `SCAnalysis` object: `sc_analysis = uq.elements.analysis.SCAnalysis(my_campaign, value_cols=output_columns)`. Here, `output_columns` is the name of the column in the output CSV file containing the simulation results (u(x) in this case).
 
-+ To compute the mean and variance of the output use: `sc_analysis.get_moments()`.  
++ To compute the mean and variance of the output use: `sc_analysis.get_moments(p)`.  
 
 + To generate a random output sample from the SC surrogate, use `sc_analysis.surrogate(xi)`, where `xi` is a random Monte Carlo input sample.
 
