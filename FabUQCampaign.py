@@ -40,4 +40,3 @@ def uq_ensemble(config="dummy_test",**args):
     env.script = 'run_UQ_sample'
 
     run_ensemble(config, sweep_dir, **args)
-    

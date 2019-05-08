@@ -3,4 +3,4 @@ $run_prefix
 
 /usr/bin/env > env.log
 
-python3 $ade_exec ade_in.json
+/home/wouter/anaconda3/bin/python3 $ocean_exec ocean_in.json
