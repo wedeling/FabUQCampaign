@@ -1,4 +1,4 @@
-# FabUQCampaign
+# FabUQCampaign 2D ocean model
 This plugin runs the samples from an ![EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) campaign using ![FabSim3](https://github.com/djgroen/FabSim3) via the `campaign2ensemble` subroutine.
 
 ## Installation
@@ -18,7 +18,7 @@ In the examples folder there is a script which runs an EasyVVUQ Stochastic Collo
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cnabla%5E2%5CPsi%20%3D%20%5Comega)
 
-The viscosities ![equation](https://latex.codecogs.com/gif.latex?%5Cnu) and ![equation](https://latex.codecogs.com/gif.latex?%5Cmu) are the uncertain parameters. Their values are computed in `ocean.py` by specifying a decay time. For ![equation](https://latex.codecogs.com/gif.latex?%5Cnu) we specify a uniformly distributed decay time between 1 and 5 days, and for ![equation](https://latex.codecogs.com/gif.latex?%5Cmu) between 85 and 90 days.
+The viscosities ![equation](https://latex.codecogs.com/gif.latex?%5Cnu) and ![equation](https://latex.codecogs.com/gif.latex?%5Cmu) are the uncertain parameters. Their values are computed in `ocean.py` by specifying a decay time. For ![equation](https://latex.codecogs.com/gif.latex?%5Cnu) we specify a uniformly distributed decay time between 1 and 5 days, and for ![equation](https://latex.codecogs.com/gif.latex?%5Cmu) between 85 and 90 days. The ocean model just runs for a simulation time of 1 day to limit the runtime of a single sample.
 
 The file `run_SC_Fab_campaign.py` contains the main script. The first 4 steps are the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs:
  1. Create an EasyVVUQ campaign object, with `ocean_input.json` as argument, which defines the UQ campaign:
@@ -53,5 +53,5 @@ Afterwards, post-processing tasks in EasyVVUQ can be undertaken, by creating a `
 
 ### Executing an ensemble job on a remote host
 
-To run the example script on a remote host, every instance of `localhost` must replaced by the `machine_name` of the remote host. Ensure the host is defined in `machines.yml`, and the user login information and `$ade_exec` in `deploy/machines_user.yml`.
+To run the example script on a remote host, every instance of `localhost` must replaced by the `machine_name` of the remote host. Ensure the host is defined in `machines.yml`, and the user login information and `$ocean_exec` in `deploy/machines_user.yml`.
 
