@@ -41,15 +41,13 @@ Only the fifth step is specific to FabSim. For now, several variables need to be
  1. `cd $fab_home && fab localhost campaign2ensemble:$sim_ID, campaign_dir=$campaign_dir`
  2. `cd $fab_home && fab localhost uq_ensemble:$sim_ID`
  
-The run directory `$campaign_dir` is available from the EasyVVUQ object. The `campaign2ensemble` results directory (located in `~/FanSim3/results`) has (by design) the same structure as the EasyVVUQ run directory, so the results can simply be copied back, in this case via
+The run directory `$campaign_dir` is available from the EasyVVUQ object. The `campaign2ensemble` results directory (located in `~/FabSim3/results`) has (by design) the same structure as the EasyVVUQ run directory, so the results can simply be copied back, in this case via
 
 `cp -r ~/FabSim3/results/$sim_ID_localhost_16/RUNS/Run_* $campaign_dir/runs`
 
 Afterwards, post-processing tasks in EasyVVUQ can be undertaken, by creating a `SCAnalysis` object: `sc_analysis = uq.elements.analysis.SCAnalysis(my_campaign, value_cols=output_columns)`. Here, `output_columns` is the name of the column in the output CSV file containing the simulation results (u(x) in this case).
 
-+ To compute the mean and variance of the output use: `sc_analysis.get_moments(p)`.  
-
-+ To generate a random output sample from the SC surrogate, use `sc_analysis.surrogate(xi)`, where `xi` is a random Monte Carlo input sample.
++ To compute the mean and variance of the output use: `sc_analysis.get_moments(m)`.  
 
 + To compute the Sobol indices from the SC samples, use: `sc_analysis.get_Sobol_indices(typ)`, where `typ` can be `'first_order'` or `'all'`.
 
