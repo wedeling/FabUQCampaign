@@ -59,7 +59,7 @@ os.system('cp -r ~/FabSim3/results/' + sim_ID + '_localhost_16/RUNS/Run_* ' + my
 #    dataframe.
 
 output_filename = my_campaign.params_info['out_file']['default']
-output_columns = ['u']
+output_columns = ['E']
 
 aggregate = uq.elements.collate.AggregateSamples(
                                                 my_campaign,
@@ -72,8 +72,7 @@ aggregate.apply()
 # 7.  Post-processing analysis: computes the 1st two statistical moments and
 #     gives the ability to use the SCAnalysis object as a surrogate, which
 #     interpolated the code samples to unobserved parameter variables.
-sc_analysis = uq.elements.analysis.SCAnalysis(
-    my_campaign, value_cols=output_columns)
+sc_analysis = uq.elements.analysis.SCAnalysis(my_campaign, value_cols=output_columns)
 results, output_file = sc_analysis.get_moments(polynomial_order=m)  # moment calculation
 # results, output_file = sc_analysis.apply()
 

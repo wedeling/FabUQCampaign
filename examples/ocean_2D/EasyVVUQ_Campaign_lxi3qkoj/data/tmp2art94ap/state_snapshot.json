@@ -61,22 +61,7 @@
             "version": "0.2",
             "category": "sampling",
             "info": "{\"num_draws_requested\": 25, \"num_draws_added\": 25}"
-        },
-        {
-            "name": "aggregate_samples",
-            "version": "0.1",
-            "category": "collation",
-            "info": "{\"files\": [\"/home/wouter/CWI/VECMA/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_lxi3qkoj/data/tmp2art94ap/aggregate_sample.tsv\"], \"type\": \"summary\", \"output_columns\": [\"E\"], \"state\": \"/home/wouter/CWI/VECMA/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_lxi3qkoj/data/tmp2art94ap/state_snapshot.json\"}"
         }
     ],
-    "data": {
-        "files": [
-            "/home/wouter/CWI/VECMA/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_lxi3qkoj/data/tmp2art94ap/aggregate_sample.tsv"
-        ],
-        "type": "summary",
-        "output_columns": [
-            "E"
-        ],
-        "state": "/home/wouter/CWI/VECMA/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_lxi3qkoj/data/tmp2art94ap/state_snapshot.json"
-    }
+    "data": {}
 }
