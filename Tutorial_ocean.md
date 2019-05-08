@@ -15,7 +15,9 @@ Simply type `fab localhost install_plugin:FabUQCampaign` anywhere inside your Fa
 In the examples folder there is a script which runs an EasyVVUQ Stochastic Collocation (SC) campaign using FabSim3 for a 2D ocean model.
 The governing equations are:
 
-![equation](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Cpartial%5Comega%7D%7B%5Cpartial%20t%7D%20&plus;%20%5Cfrac%7B%5Cpartial%5CPsi%7D%7B%5Cpartial%20x%7D%5Cfrac%7B%5Cpartial%5Comega%7D%7B%5Cpartial%20y%7D%20-%20%5Cfrac%7B%5Cpartial%5CPsi%7D%7B%5Cpartial%20y%7D%5Cfrac%7B%5Cpartial%5Comega%7D%7B%5Cpartial%20x%7D%20%3D%20%5Cnu%5Cnabla%5E2%5Comega%20&plus;%20%5Cmu%5Cleft%28F-%5Comega%5Cright%29)
+![equation](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Cpartial%5Comega%7D%7B%5Cpartial%20t%7D%20&plus;%20%5Cfrac%7B%5Cpartial%5CPsi%7D%7B%5Cpartial%20x%7D%5Cfrac%7B%5Cpartial%5Comega%7D%7B%5Cpartial%20y%7D%20-%20%5Cfrac%7B%5Cpartial%5CPsi%7D%7B%5Cpartial%20y%7D%5Cfrac%7B%5Cpartial%5Comega%7D%7B%5Cpartial%20x%7D%20%3D%20%7B%5Ccolor%7BRed%7D%20%5Cnu%7D%5Cnabla%5E2%5Comega%20&plus;%20%7B%5Ccolor%7BRed%7D%5Cmu%7D%5Cleft%28F-%5Comega%5Cright%29)
+
+![equation](https://latex.codecogs.com/gif.latex?%5Cnabla%5E2%5CPsi%20%3D%20%5Comega)
 
 where the Peclet Number (Pe) and forcing term (f) are the uncertain SC parameters, and u is the velocity subject to Dirichlet boundary conditions u(0)=u(1)=0. The script executes the ensemble using FabSim, computes the first two moments of the output, generates some random sample of the SC surrogate and computes the first-order Sobol indices of Pe and f.
 
