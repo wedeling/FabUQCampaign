@@ -56,7 +56,7 @@ from collections import OrderedDict
 
 @task
 def ocean2D():
-  ocean_path = "%s/examples/ocean_2D" % (get_plugin_path("UQCampaign"))
+  ocean_path = "%s/examples/ocean_2D" % (get_plugin_path("FabUQCampaign"))
 
   # Input file containing information about parameters of interest
   input_json = "%s/ocean_input.json" % ocean_path
