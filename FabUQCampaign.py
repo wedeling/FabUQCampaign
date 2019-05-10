@@ -89,9 +89,9 @@ def ocean2D(**args):
   # 5. Run execution using Fabsim (on the localhost)
   sim_ID = "ocean2D_%s" % env.label
 
-  cmd1 = "cd " + Fab_home + " && fab localhost campaign2ensemble:" + \
+  cmd1 = "fab localhost campaign2ensemble:" + \
         sim_ID + ",campaign_dir=" + my_campaign.campaign_dir
-  cmd2 = "cd " + Fab_home + " && fab localhost uq_ensemble:" + sim_ID
+  cmd2 = "fab localhost uq_ensemble:" + sim_ID
 
   local(cmd1)
   local(cmd2)
