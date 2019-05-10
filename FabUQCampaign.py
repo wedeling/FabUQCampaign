@@ -95,6 +95,7 @@ def ocean2D(**args):
 
   local(cmd1)
   local(cmd2)
+  fetch_results()
 
   local('cp -r ~/FabSim3/results/' + sim_ID + '_localhost_16/RUNS/Run_* ' + my_campaign.campaign_dir + '/runs')
 
