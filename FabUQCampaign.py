@@ -56,6 +56,7 @@ from collections import OrderedDict
 
 @task
 def ocean2D(**args):
+  update_environment(args)
   ocean_path = "%s/examples/ocean_2D" % (get_plugin_path("FabUQCampaign"))
 
   # Input file containing information about parameters of interest
