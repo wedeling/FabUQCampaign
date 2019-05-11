@@ -91,7 +91,7 @@ def ocean2D(**args):
 
   #cmd1 = "fab localhost campaign2ensemble:" + \
   #      sim_ID + ",campaign_dir=" + my_campaign.campaign_dir
-  campaign2ensemble(sim_ID,campaign_dir=my_campaign.campaign_dir)
+  campaign2ensemble(sim_ID, campaign_dir=my_campaign.campaign_dir)
   #cmd2 = "fab localhost uq_ensemble:" + sim_ID
   uq_ensemble(sim_ID)
   fetch_results()
