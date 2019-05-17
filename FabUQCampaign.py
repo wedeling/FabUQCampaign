@@ -55,17 +55,20 @@ import chaospy as cp
 from collections import OrderedDict
 
 @task
-def ocean2D(**args):
+def ocean2D(config, **args):
   update_environment(args)
-  ocean_path = "%s/examples/ocean_2D" % (get_plugin_path("FabUQCampaign"))
+  with_config(config)
+
+  ocean_path = "%s/examples/ocean_2D" % get_plugin_path("FabUQCampaign")
+  easyvvuq_workdir = "%s/tmp-easyvvuq" % get_plugin_path("FabUQCampaign")
 
   # Input file containing information about parameters of interest
-  input_json = "%s/ocean_input.json" % ocean_path
-  output_json = "%s/ocean_output.json" % ocean_path
+  input_json = "%s/ocean_input.json" % env.job_config_path_local
+  output_json = "%s/ocean_output.json" % easyvvuq_workdir #TODO: This could be changed to results dir if we want?
 
   # 1. Initialize `Campaign` object which information on parameters to be sampled
   #    and the values used for all sampling runs
-  my_campaign = uq.Campaign(name='ocean_test', state_filename=input_json)
+  my_campaign = uq.Campaign(name='ocean_test', workdir=easyvvuq_workdir, state_filename=input_json)
 
   # 2. Set which parameters we wish to include in the analysis and the
   #    distribution from which to draw samples
@@ -96,7 +99,8 @@ def ocean2D(**args):
   uq_ensemble(sim_ID)
   fetch_results()
 
-  local('cp -r ~/FabSim3/results/' + sim_ID + '_localhost_16/RUNS/Run_* ' + my_campaign.campaign_dir + '/runs')
+  #local('cp -r ~/FabSim3/results/' + sim_ID + '_localhost_16/RUNS/Run_* ' + my_campaign.campaign_dir + '/runs')
+  ensemble2campaign('~/FabSim3/results/' + sim_ID + '_localhost_16', my_campaign.campaign_dir)
 
   # 6. Aggregate the results from all runs.
   #    This makes use of the `Decoder` selected in the input file to interpret the
