@@ -39,14 +39,14 @@ my_campaign.populate_runs_dir()
 
 # 5. Run execution using Fabsim (on the localhost)
 sim_ID ='ocean_example1'
-Fab_home = '~/CWI/VECMA/FabSim3'
+Fab_home = '~/FabSim3'
 
 cmd1 = "cd " + Fab_home + " && fab localhost campaign2ensemble:" + \
         sim_ID + ",campaign_dir=" + my_campaign.campaign_dir
 cmd2 = "cd " + Fab_home + " && fab localhost uq_ensemble:" + sim_ID
 
-os.system(cmd1)
-os.system(cmd2)
+#os.system(cmd1)
+#os.system(cmd2)
 
 os.system('cp -r ~/FabSim3/results/' + sim_ID + '_localhost_16/RUNS/Run_* ' + my_campaign.campaign_dir + '/runs')
 

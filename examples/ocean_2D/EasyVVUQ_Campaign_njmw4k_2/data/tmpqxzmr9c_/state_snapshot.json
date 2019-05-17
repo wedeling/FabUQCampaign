@@ -1,0 +1,67 @@
+{
+    "app": {
+        "input_encoder": "generic_template",
+        "encoder_delimiter": null,
+        "output_decoder": "csv",
+        "template": "ocean.template",
+        "input_filename": "ocean_in.json",
+        "campaign_dir_prefix": "EasyVVUQ_Campaign_",
+        "campaign_dir": "/home/derek/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_njmw4k_2",
+        "runs_dir": null
+    },
+    "params": {
+        "decay_time_nu": {
+            "type": "real",
+            "min": "-1.0",
+            "max": "1.0",
+            "default": "0.0"
+        },
+        "decay_time_mu": {
+            "type": "real",
+            "min": "-1.0",
+            "max": "1.0",
+            "default": "0.0"
+        },
+        "out_file": {
+            "type": "str",
+            "default": "output.csv"
+        }
+    },
+    "fixtures": {},
+    "runs": {
+        "Run_0": "{\"decay_time_nu\": -0.9061798459386639, \"decay_time_mu\": -0.9061798459386639, \"out_file\": \"output.csv\"}",
+        "Run_1": "{\"decay_time_nu\": -0.9061798459386639, \"decay_time_mu\": -0.5384693101056832, \"out_file\": \"output.csv\"}",
+        "Run_2": "{\"decay_time_nu\": -0.9061798459386639, \"decay_time_mu\": 4.14343792302007e-17, \"out_file\": \"output.csv\"}",
+        "Run_3": "{\"decay_time_nu\": -0.9061798459386639, \"decay_time_mu\": 0.5384693101056831, \"out_file\": \"output.csv\"}",
+        "Run_4": "{\"decay_time_nu\": -0.9061798459386639, \"decay_time_mu\": 0.9061798459386639, \"out_file\": \"output.csv\"}",
+        "Run_5": "{\"decay_time_nu\": -0.5384693101056832, \"decay_time_mu\": -0.9061798459386639, \"out_file\": \"output.csv\"}",
+        "Run_6": "{\"decay_time_nu\": -0.5384693101056832, \"decay_time_mu\": -0.5384693101056832, \"out_file\": \"output.csv\"}",
+        "Run_7": "{\"decay_time_nu\": -0.5384693101056832, \"decay_time_mu\": 4.14343792302007e-17, \"out_file\": \"output.csv\"}",
+        "Run_8": "{\"decay_time_nu\": -0.5384693101056832, \"decay_time_mu\": 0.5384693101056831, \"out_file\": \"output.csv\"}",
+        "Run_9": "{\"decay_time_nu\": -0.5384693101056832, \"decay_time_mu\": 0.9061798459386639, \"out_file\": \"output.csv\"}",
+        "Run_10": "{\"decay_time_nu\": 4.14343792302007e-17, \"decay_time_mu\": -0.9061798459386639, \"out_file\": \"output.csv\"}",
+        "Run_11": "{\"decay_time_nu\": 4.14343792302007e-17, \"decay_time_mu\": -0.5384693101056832, \"out_file\": \"output.csv\"}",
+        "Run_12": "{\"decay_time_nu\": 4.14343792302007e-17, \"decay_time_mu\": 4.14343792302007e-17, \"out_file\": \"output.csv\"}",
+        "Run_13": "{\"decay_time_nu\": 4.14343792302007e-17, \"decay_time_mu\": 0.5384693101056831, \"out_file\": \"output.csv\"}",
+        "Run_14": "{\"decay_time_nu\": 4.14343792302007e-17, \"decay_time_mu\": 0.9061798459386639, \"out_file\": \"output.csv\"}",
+        "Run_15": "{\"decay_time_nu\": 0.5384693101056831, \"decay_time_mu\": -0.9061798459386639, \"out_file\": \"output.csv\"}",
+        "Run_16": "{\"decay_time_nu\": 0.5384693101056831, \"decay_time_mu\": -0.5384693101056832, \"out_file\": \"output.csv\"}",
+        "Run_17": "{\"decay_time_nu\": 0.5384693101056831, \"decay_time_mu\": 4.14343792302007e-17, \"out_file\": \"output.csv\"}",
+        "Run_18": "{\"decay_time_nu\": 0.5384693101056831, \"decay_time_mu\": 0.5384693101056831, \"out_file\": \"output.csv\"}",
+        "Run_19": "{\"decay_time_nu\": 0.5384693101056831, \"decay_time_mu\": 0.9061798459386639, \"out_file\": \"output.csv\"}",
+        "Run_20": "{\"decay_time_nu\": 0.9061798459386639, \"decay_time_mu\": -0.9061798459386639, \"out_file\": \"output.csv\"}",
+        "Run_21": "{\"decay_time_nu\": 0.9061798459386639, \"decay_time_mu\": -0.5384693101056832, \"out_file\": \"output.csv\"}",
+        "Run_22": "{\"decay_time_nu\": 0.9061798459386639, \"decay_time_mu\": 4.14343792302007e-17, \"out_file\": \"output.csv\"}",
+        "Run_23": "{\"decay_time_nu\": 0.9061798459386639, \"decay_time_mu\": 0.5384693101056831, \"out_file\": \"output.csv\"}",
+        "Run_24": "{\"decay_time_nu\": 0.9061798459386639, \"decay_time_mu\": 0.9061798459386639, \"out_file\": \"output.csv\"}"
+    },
+    "log": [
+        {
+            "name": "sc_sampler",
+            "version": "0.2",
+            "category": "sampling",
+            "info": "{\"num_draws_requested\": 25, \"num_draws_added\": 25}"
+        }
+    ],
+    "data": {}
+}

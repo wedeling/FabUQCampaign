@@ -6,7 +6,7 @@
         "template": "ocean.template",
         "input_filename": "ocean_in.json",
         "campaign_dir_prefix": "EasyVVUQ_Campaign_",
-        "campaign_dir": "/home/wouter/CWI/VECMA/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_lxi3qkoj",
+        "campaign_dir": "/home/derek/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_z4nvdbho",
         "runs_dir": null
     },
     "params": {
@@ -66,17 +66,17 @@
             "name": "aggregate_samples",
             "version": "0.1",
             "category": "collation",
-            "info": "{\"files\": [\"/home/wouter/CWI/VECMA/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_lxi3qkoj/data/tmp2art94ap/aggregate_sample.tsv\"], \"type\": \"summary\", \"output_columns\": [\"E\"], \"state\": \"/home/wouter/CWI/VECMA/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_lxi3qkoj/data/tmp2art94ap/state_snapshot.json\"}"
+            "info": "{\"files\": [\"/home/derek/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_z4nvdbho/data/tmp80nsfq9a/aggregate_sample.tsv\"], \"type\": \"summary\", \"output_columns\": [\"E\"], \"state\": \"/home/derek/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_z4nvdbho/data/tmp80nsfq9a/state_snapshot.json\"}"
         }
     ],
     "data": {
         "files": [
-            "/home/wouter/CWI/VECMA/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_lxi3qkoj/data/tmp2art94ap/aggregate_sample.tsv"
+            "/home/derek/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_z4nvdbho/data/tmp80nsfq9a/aggregate_sample.tsv"
         ],
         "type": "summary",
         "output_columns": [
             "E"
         ],
-        "state": "/home/wouter/CWI/VECMA/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_lxi3qkoj/data/tmp2art94ap/state_snapshot.json"
+        "state": "/home/derek/FabSim3/plugins/FabUQCampaign/examples/ocean_2D/EasyVVUQ_Campaign_z4nvdbho/data/tmp80nsfq9a/state_snapshot.json"
     }
 }
