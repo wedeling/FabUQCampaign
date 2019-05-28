@@ -57,10 +57,9 @@ The file `examples/advection_diffusion/sc/ade_model.py` contains the main script
     output_filename = params["out_file"]["default"]
     output_columns = ["u"]
     
-    encoder = uq.encoders.GenericEncoder(
-        template_fname='./sc/ade.template',
-        delimiter='$',
-        target_filename='ade_in.json')
+    encoder = uq.encoders.GenericEncoder(template_fname='./sc/ade.template',
+                                         delimiter='$',
+                                         target_filename='ade_in.json')
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                     output_columns=output_columns,
                                     header=0)
