@@ -56,7 +56,7 @@ The first steps are the same as for an EasyVVUQ campaign that does not use FabSi
     }
 ```
 
-3. Create an encoder, decoder and collation element. The encoder links the template file to EasyVVUQ and defines the name of the input file (`ocean_in.json`). The ade model `examples/ocean_2D/sc/ocean.py` writes the total energy (`E`) to a simple `.csv` file, hence we select the `SimpleCSV` decoder, where in this case we have a single output column:
+3. Create an encoder, decoder and collation element. The encoder links the template file to EasyVVUQ and defines the name of the input file (`ocean_in.json`). The model `examples/ocean_2D/sc/ocean.py` writes the total energy (`E`) to a simple `.csv` file, hence we select the `SimpleCSV` decoder, where in this case we have a single output column:
 ```python
     output_filename = params["out_file"]["default"]
     output_columns = ["E"]
