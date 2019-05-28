@@ -24,7 +24,7 @@ The viscosities ![equation](https://latex.codecogs.com/gif.latex?%5Cnu) and ![eq
 The first steps are the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs:
 
  1. Create an EasyVVUQ campaign object: `my_campaign = uq.Campaign(name='sc', work_dir=tmpdir)`
- 2. Define the parameter space of the ade model, comprising of the uncertain parameters Pe and f, plus the name of the output file of `ade_model.py`:
+ 2. Define the parameter space of the model, comprising of the uncertain parameters `decay_time_nu` and `decay_time_mu`, plus the name of the output file of `ocean.py`:
  
 ```python
     # Define parameter space
