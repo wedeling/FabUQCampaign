@@ -9,6 +9,9 @@ Simply type `fab localhost install_plugin:FabUQCampaign` anywhere inside your Fa
 + `FabUQCampaign/templates/run_UQ_sample`: contains the command-line execution command for a single EasyVVUQ sample.
 + `FabUQCampaign/examples/advection_diffusion/`: an example script, see below.
 
+## Dependencies
++ The example below requires EasyVVUQ >= 0.3
+
 ## Detailed Examples
 
 ### Executing an ensemble job on localhost
