@@ -19,9 +19,51 @@ In the examples folder there is a script which runs an EasyVVUQ Stochastic Collo
 where the Peclet Number (Pe) and forcing term (f) are the uncertain SC parameters, and u is the velocity subject to Dirichlet boundary conditions u(0)=u(1)=0. The script executes the ensemble using FabSim, computes the first two moments of the output, generates some random sample of the SC surrogate and computes the Sobol indices of Pe and f.
 
 The file `examples/advection_diffusion/sc/ade_model.py` contains the main script. The first 4 steps are the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs:
- 1. Create an EasyVVUQ campaign object, with `ade_input.json` as argument, which defines the UQ campaign:
- `my_campaign = uq.Campaign(state_filename=input_json)`
- 2. Per uncertain parameter, select the input distribution via Chaospy, e.g. `my_campaign.vary_param("Pe", dist=cp.distributions.Uniform(-1, 1))`
+
+ 1. Create an EasyVVUQ campaign object: `my_campaign = uq.Campaign(name='sc', work_dir=tmpdir)`
+ 2. Define the parameter space of the ade model, comprising of the uncertain parameters Pe and f, plus the name of the output file of `ade_model.py`:
+ 
+```python
+    params = {
+        "Pe": {
+            "type": "real",
+            "min": "1.0",
+            "max": "2000.0",
+            "default": "100.0"},
+        "f": {
+            "type": "real",
+            "min": "0.0",
+            "max": "10.0",
+            "default": "1.0"},
+        "out_file": {
+            "type": "str",
+            "default": "output.csv"}}
+```
+2. (continued): the `params` dict corresponds to the template file `examples/advection_diffusion/sc/ade.template`, which defines the input of a single model run. The content of this file is as follows:
+```
+{"outfile": "$out_file", "Pe": "$Pe", "f": "$f"}
+```
+2. (continued): Select which paramaters of `params` are assigned a Chaospy input distribution, and add these paramaters to the `vary` dict, e.g.:
+
+```python
+    vary = {
+        "Pe": cp.Uniform(100.0, 200.0),
+        "f": cp.Normal(1.0, 0.1)
+    }
+```
+
+3. Create an encoder, decoder and collation element.
+```python
+    encoder = uq.encoders.GenericEncoder(
+        template_fname='./sc/ade.template',
+        delimiter='$',
+        target_filename='ade_in.json')
+    decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
+                                    output_columns=output_columns,
+                                    header=0)
+    collation = uq.collate.AggregateSamples(average=False)
+```
+ 
  3. Select the SC_Sampler (and specify the polynomial order `p`), which creates a tensor grid from the 1D rules selected in step 2: `sc_sampler = uq.elements.sampling.SCSampler(my_campaign, p)`, and add the runs via `my_campaign.add_runs(sc_sampler, max_num=number_of_samples)`. The `number_of_samples` variable is simply the number of points in the tensor grid.
  4. Create the ensemble run directories which will be used in FabSim's `campaign2ensemble` subroutine: `my_campaign.populate_runs_dir()`
  
