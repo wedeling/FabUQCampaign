@@ -9,6 +9,10 @@ Simply type `fab localhost install_plugin:FabUQCampaign` anywhere inside your Fa
 + `FabUQCampaign/templates/run_UQ_sample`: contains the command-line execution command for a single EasyVVUQ sample.
 + `FabUQCampaign/examples/ocean_2D/`: an example script, see below.
 
+## Dependencies
++ The example below requires EasyVVUQ >= 0.3
++ `FabUQCampaign/examples/ocean_2D/ocean.py` requires ![h5py](https://github.com/h5py/h5py).
+
 ## Detailed Examples
 
 ### Executing an ensemble job on localhost
