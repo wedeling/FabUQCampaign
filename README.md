@@ -69,11 +69,23 @@ The file `examples/advection_diffusion/sc/ade_model.py` contains the main script
  4. Now we have to select a sampler, in this case we use the Stochastic Collocation (SC) sampler:
  ```python
      my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=3)
+     my_campaign.set_sampler(my_sampler)
  ```
  
  4. (continued) If left unspecified, the polynomial order of the SC expansion will be set to 4. If instead we wish te use a Polynomial Chaos Expansion (PCE) sampler, simply replace `SCSampler` with `PCESampler`.
  
- 4. Create the ensemble run directories which will be used in FabSim's `campaign2ensemble` subroutine: `my_campaign.populate_runs_dir()`
+ 5. The following commands ensure that we draw all samples, and create the ensemble run directories which will be used in FabSim's `campaign2ensemble` subroutine:
+ ```python 
+     my_campaign.draw_samples()
+     my_campaign.populate_runs_dir()
+ ```
+ 
+ 6. To execute the runs, we can use a sequential approach on the localhost via
+ ```python
+     my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
+        "./sc/ade_model.py ade_in.json"))
+ ```
+ 6. (continued) We can also execute them via FamSim.
  
 Only the fifth step is specific to FabSim. For now, several variables need to be hardcoded, i.e.: 
  + A simulation identifier (`$sim_ID`)
