@@ -33,9 +33,9 @@ def test_sc(tmpdir):
 
     # Create an encoder, decoder and collation element for PCE test app
     encoder = uq.encoders.GenericEncoder(
-        template_fname='./sc/sc.template',
+        template_fname='./sc/ade.template',
         delimiter='$',
-        target_filename='sc_in.json')
+        target_filename='ade_in.json')
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                     output_columns=output_columns,
                                     header=0)
@@ -65,24 +65,24 @@ def test_sc(tmpdir):
 
     my_campaign.populate_runs_dir()
  
-    #Run execution using Fabsim (on the localhost)
-    sim_ID ='ade_example1'
-    Fab_home = '~/CWI/VECMA/FabSim3'
+#    #Run execution using Fabsim (on the localhost)
+#    sim_ID ='ade_example1'
+#    Fab_home = '~/CWI/VECMA/FabSim3'
+#    
+#    cmd1 = "cd " + Fab_home + " && fab localhost campaign2ensemble:" + \
+#            sim_ID + ",campaign_dir=" + my_campaign.campaign_dir
+#    cmd2 = "cd " + Fab_home + " && fab localhost uq_ensemble:" + sim_ID
+#    
+#    print(cmd1)
+#    print(cmd2)
+#    
+#    os.system(cmd1)
+#    os.system(cmd2)
+#    
+#    os.system('cp -r ~/FabSim3/results/' + sim_ID + '_localhost_16/RUNS/Run_* ' + my_campaign.campaign_dir + '/runs')
     
-    cmd1 = "cd " + Fab_home + " && fab localhost campaign2ensemble:" + \
-            sim_ID + ",campaign_dir=" + my_campaign.campaign_dir
-    cmd2 = "cd " + Fab_home + " && fab localhost uq_ensemble:" + sim_ID
-    
-    print(cmd1)
-    print(cmd2)
-    
-    os.system(cmd1)
-    os.system(cmd2)
-    
-    os.system('cp -r ~/FabSim3/results/' + sim_ID + '_localhost_16/RUNS/Run_* ' + my_campaign.campaign_dir + '/runs')
-    
-#    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
-#        "./sc/sc_model.py sc_in.json"))
+    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
+        "./sc/ade_model.py ade_in.json"))
 
     my_campaign.collate()
 
