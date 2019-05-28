@@ -52,8 +52,11 @@ The file `examples/advection_diffusion/sc/ade_model.py` contains the main script
     }
 ```
 
-3. Create an encoder, decoder and collation element.
+3. Create an encoder, decoder and collation element. The encoder links the template file to EasyVVUQ and defines the name of the input file (`ade_in.json`). The ade model `examples/advection_diffusion/sc/ade_model.py` writes the velocity output (`u`) to a simple `.csv` file, hence we select the `SimpleCSV` decoder, where in this case we have a single output column:
 ```python
+    output_filename = params["out_file"]["default"]
+    output_columns = ["u"]
+    
     encoder = uq.encoders.GenericEncoder(
         template_fname='./sc/ade.template',
         delimiter='$',
@@ -61,10 +64,16 @@ The file `examples/advection_diffusion/sc/ade_model.py` contains the main script
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                     output_columns=output_columns,
                                     header=0)
-    collation = uq.collate.AggregateSamples(average=False)
+    collation = uq.collate.AggregateSamples()
 ```
  
- 3. Select the SC_Sampler (and specify the polynomial order `p`), which creates a tensor grid from the 1D rules selected in step 2: `sc_sampler = uq.elements.sampling.SCSampler(my_campaign, p)`, and add the runs via `my_campaign.add_runs(sc_sampler, max_num=number_of_samples)`. The `number_of_samples` variable is simply the number of points in the tensor grid.
+ 4. Now we have to select a sampler, in this case we use the Stochastic Collocation (SC) sampler:
+ ```python
+     my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=3)
+ ```
+ 
+ 4. (continued) If left unspecified, the polynomial order of the SC expansion will be set to 4. If instead we wish te use a Polynomial Chaos Expansion (PCE) sampler, simply replace `SCSampler` with `PCESampler`.
+ 
  4. Create the ensemble run directories which will be used in FabSim's `campaign2ensemble` subroutine: `my_campaign.populate_runs_dir()`
  
 Only the fifth step is specific to FabSim. For now, several variables need to be hardcoded, i.e.: 
