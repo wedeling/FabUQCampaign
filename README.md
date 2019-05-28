@@ -18,7 +18,7 @@ In the examples folder there is a script which runs an EasyVVUQ Stochastic Collo
 
 where the Peclet Number (Pe) and forcing term (f) are the uncertain SC parameters, and u is the velocity subject to Dirichlet boundary conditions u(0)=u(1)=0. The script executes the ensemble using FabSim, computes the first two moments of the output, generates some random sample of the SC surrogate and computes the Sobol indices of Pe and f.
 
-The file `examples/advection_diffusion/sc/ade_model.py` contains the main script. The first 4 steps are the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs:
+The file `examples/advection_diffusion/sc/ade_model.py` contains the main script. The first steps are the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs:
 
  1. Create an EasyVVUQ campaign object: `my_campaign = uq.Campaign(name='sc', work_dir=tmpdir)`
  2. Define the parameter space of the ade model, comprising of the uncertain parameters Pe and f, plus the name of the output file of `ade_model.py`:
