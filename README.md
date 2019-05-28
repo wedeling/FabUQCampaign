@@ -85,7 +85,7 @@ The file `examples/advection_diffusion/sc/ade_model.py` contains the main script
      my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
         "./sc/ade_model.py ade_in.json"))
  ```
- 6. (continued) We can also execute them via FamSim.
+ 6. (continued) Note that this command contains the command line instruction for a single model run, i.e. `./sc/ade_model.py ade_in.json`. To allow `ade_model.py` to be executed in this way, a shebang command is placed on the 1st line of `ade_model.py` that links to the python interpreter that we wish to use, e.g. `#!/usr/bin/env python3`, or in the case of a Anaconda interpreter, use `#!/home/yourusername/anaconda3/bin/python`. We can also execute them via FamSim.
  
 Only the fifth step is specific to FabSim. For now, several variables need to be hardcoded, i.e.: 
  + A simulation identifier (`$sim_ID`)
