@@ -1,9 +1,10 @@
 # EasyVVUQ Stochastic Collocation tutorial
+This tutorial describes how to create a Stochastic Collocation EasyVVUQ campaign. Creating a Polynomial Chaos campaign is very similar, and we indicate below where the code must be modified if Polynomial Choas is preferred.
 
 ## Explanation of files
-+ `tests/test_SC.py` (from EasyVVUQ root directory): the complete example script which is described below
-+ `tests/sc/sc_model.py`: a finite element solver of the advection-diffusion equation
-+ `tests/sc/sc.template`: the EasyVVUQ template of the input file
++ `tests/test_SC.py` (from EasyVVUQ root directory): the complete example script which is described below in detail.
++ `tests/sc/sc_model.py`: a finite element solver of the advection-diffusion equation with uncertain coefficients.
++ `tests/sc/sc.template`: the EasyVVUQ template of the input file for a single sample of `sc_model.py`.
 
 ### Executing an ensemble job on localhost
 Thus, `tests/test_SC.py` is a script which runs an EasyVVUQ Stochastic Collocation (SC) campaign for a simple advection-diffusion equation (ade) finite-element solver on the localhost. The governing equations are:
@@ -12,7 +13,7 @@ Thus, `tests/test_SC.py` is a script which runs an EasyVVUQ Stochastic Collocati
 
 where the Peclet Number (Pe) and forcing term (f) are the uncertain SC parameters, and u is the velocity subject to Dirichlet boundary conditions u(0)=u(1)=0. The script executes the ensemble using FabSim, computes the first two moments of the output, generates some random sample of the SC surrogate and computes the Sobol indices of Pe and f.
 
-The file `examples/advection_diffusion/sc/ade_model.py` contains the main script. The first steps are the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs:
+All steps are described below:
 
  1. Create an EasyVVUQ campaign object: `my_campaign = uq.Campaign(name='sc', work_dir=tmpdir)`
  2. Define the parameter space of the ade model, comprising of the uncertain parameters Pe and f, plus the name of the output file of `ade_model.py`:
@@ -51,7 +52,7 @@ The file `examples/advection_diffusion/sc/ade_model.py` contains the main script
     output_filename = params["out_file"]["default"]
     output_columns = ["u"]
     
-    encoder = uq.encoders.GenericEncoder(template_fname='./sc/ade.template',
+    encoder = uq.encoders.GenericEncoder(template_fname='tests/sc/ade.template',
                                          delimiter='$',
                                          target_filename='ade_in.json')
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
@@ -77,7 +78,7 @@ The file `examples/advection_diffusion/sc/ade_model.py` contains the main script
  6. To execute the runs (and collect the results), we can use a sequential approach on the localhost via
  ```python
      my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
-        "./sc/ade_model.py ade_in.json"))
+        "tests/sc/ade_model.py ade_in.json"))
      my_campaign.collate()
  ```
  6. (continued) Note that this command contains the command line instruction for a single model run, i.e. `./sc/ade_model.py ade_in.json`. To allow `ade_model.py` to be executed in this way, a shebang command is placed on the 1st line of `ade_model.py` that links to the python interpreter that we wish to use, e.g. `#!/usr/bin/env python3`, or in the case of a Anaconda interpreter, use `#!/home/yourusername/anaconda3/bin/python`.  
