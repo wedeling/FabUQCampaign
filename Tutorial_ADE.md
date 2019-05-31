@@ -2,12 +2,12 @@
 This tutorial describes how to create a Stochastic Collocation EasyVVUQ campaign. Creating a Polynomial Chaos campaign is very similar, and we indicate below where the code must be modified if Polynomial Chaos is preferred.
 
 ## Explanation of files
-+ `tests/test_SC.py` (from EasyVVUQ root directory): the complete example script which is described below in detail.
++ `tests/test_sc.py` (from EasyVVUQ root directory): the complete example script which is described below in detail.
 + `tests/sc/sc_model.py`: a finite element solver of the advection-diffusion equation with uncertain coefficients.
 + `tests/sc/sc.template`: the EasyVVUQ template of the input file for a single sample of `sc_model.py`.
 
 ### Executing an ensemble job on localhost
-Thus, `tests/test_SC.py` is a script which runs an EasyVVUQ Stochastic Collocation (SC) campaign for a simple advection-diffusion equation (ade) finite-element solver on the localhost. The governing equations are:
+Thus, `tests/test_sc.py` is a script which runs an EasyVVUQ Stochastic Collocation (SC) campaign for a simple advection-diffusion equation (ade) finite-element solver on the localhost. The governing equations are:
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cfrac%7Bdu%7D%7Bdx%7D%20&plus;%20%5Cfrac%7B1%7D%7BPe%7D%5Cfrac%7Bd%5E2u%7D%7Bdx%7D%20%3D%20f),
 
