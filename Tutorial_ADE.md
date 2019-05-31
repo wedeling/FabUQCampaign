@@ -78,10 +78,10 @@ All steps are described below:
  6. To execute the runs (and collect the results), we can use a sequential approach on the localhost via
  ```python
      my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
-        "tests/sc/ade_model.py sc_in.json"))
+        "tests/sc/sc_model.py sc_in.json"))
      my_campaign.collate()
  ```
- 6. (continued) Note that this command contains the command line instruction for a single model run, i.e. `tests/sc/sc_model.py ade_in.json`. To allow `sc_model.py` to be executed in this way, a shebang command is placed on the 1st line of `ade_model.py` that links to the python interpreter that we wish to use, e.g. `#!/usr/bin/env python3`, or in the case of a Anaconda interpreter, use `#!/home/yourusername/anaconda3/bin/python`.  
+ 6. (continued) Note that this command contains the command line instruction for a single model run, i.e. `tests/sc/sc_model.py sc_in.json`. To allow `sc_model.py` to be executed in this way, a shebang command is placed on the 1st line of `sc_model.py` that links to the python interpreter that we wish to use, e.g. `#!/usr/bin/env python3`, or in the case of a Anaconda interpreter, use `#!/home/yourusername/anaconda3/bin/python`.  
 
 7. Afterwards, post-processing tasks in EasyVVUQ can be undertaken via:
 ```python
