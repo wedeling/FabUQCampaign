@@ -16,7 +16,7 @@ where the Peclet Number (Pe) and forcing term (f) are the uncertain SC parameter
 All steps are described below:
 
  1. Create an EasyVVUQ campaign object: `my_campaign = uq.Campaign(name='sc', work_dir=tmpdir)`
- 2. Define the parameter space of the ade model, comprising of the uncertain parameters Pe and f, plus the name of the output file of `ade_model.py`:
+ 2. Define the parameter space of the ade model, comprising of the uncertain parameters Pe and f, plus the name of the output file of `sc_model.py`:
  
 ```python
     params = {
