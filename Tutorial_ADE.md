@@ -34,7 +34,7 @@ All steps are described below:
             "type": "str",
             "default": "output.csv"}}
 ```
-2. (continued): the `params` dict corresponds to the template file `examples/advection_diffusion/sc/ade.template`, which defines the input of a single model run. The content of this file is as follows:
+2. (continued): the `params` dict corresponds to the template file `tests/sc/sc.template`, which defines the input of a single model run. The content of this file is as follows:
 ```
 {"outfile": "$out_file", "Pe": "$Pe", "f": "$f"}
 ```
