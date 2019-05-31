@@ -1,5 +1,5 @@
 # EasyVVUQ Stochastic Collocation tutorial
-This tutorial describes how to create a Stochastic Collocation EasyVVUQ campaign. Creating a Polynomial Chaos campaign is very similar, and we indicate below where the code must be modified if Polynomial Choas is preferred.
+This tutorial describes how to create a Stochastic Collocation EasyVVUQ campaign. Creating a Polynomial Chaos campaign is very similar, and we indicate below where the code must be modified if Polynomial Chaos is preferred.
 
 ## Explanation of files
 + `tests/test_SC.py` (from EasyVVUQ root directory): the complete example script which is described below in detail.
