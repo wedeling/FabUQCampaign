@@ -54,7 +54,7 @@ All steps are described below:
     
     encoder = uq.encoders.GenericEncoder(template_fname='tests/sc/ade.template',
                                          delimiter='$',
-                                         target_filename='ade_in.json')
+                                         target_filename='sc_in.json')
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                     output_columns=output_columns,
                                     header=0)
@@ -69,7 +69,7 @@ All steps are described below:
  
  4. (continued) If left unspecified, the polynomial order of the SC expansion will be set to 4. If instead we wish te use a Polynomial Chaos Expansion (PCE) sampler, simply replace `SCSampler` with `PCESampler`.
  
- 5. The following commands ensure that we draw all samples, and create the ensemble run directories which will be used in FabSim's `campaign2ensemble` subroutine:
+ 5. The following commands ensure that we draw all samples, and create the ensemble run directories:
  ```python 
      my_campaign.draw_samples()
      my_campaign.populate_runs_dir()
