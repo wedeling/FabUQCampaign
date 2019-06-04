@@ -28,7 +28,9 @@ Fab_home = '~/CWI/VECMA/FabSim3'    #specify the home dir of FabSim3
  
 `localhost:`
 
- &nbsp;&nbsp;&nbsp;&nbsp;`ade_exec: "$fab_home/plugins/FabUQCampaign/examples/advection_diffusion/run_ADE.py"`
+ &nbsp;&nbsp;&nbsp;&nbsp;`ade_exec: "<fab_home>/plugins/FabUQCampaign/examples/advection_diffusion/run_ADE.py"`
+
+Here, `<fab_home>` is the same directory as specifed above.
 
 ### Executing an ensemble job on localhost
 The governing equations of the advection-diffusion equations are:
