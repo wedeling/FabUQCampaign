@@ -15,7 +15,7 @@ Simply type `fab localhost install_plugin:FabUQCampaign` anywhere inside your Fa
 ## Detailed Examples
 
 ### Inputs
- + In the examples folder the script `examples/advection_diffusion/fab_ade.py` runs an EasyVVUQ Stochastic Collocation (SC) campaign using FabSim3 for a simple advection-diffusion equation (ade) finite-element solver on the localhost. In order to run it, the FabSim3 home directory must be hard coded. To do so, near the top of the file, the following must be specified:
+ + In the examples folder the script `examples/advection_diffusion/fab_ade.py` runs an EasyVVUQ Stochastic Collocation (SC) campaign using FabSim3 for a simple advection-diffusion equation (ade) finite-element solver on the localhost. In order to run it, the FabSim3 home directory must be hard coded. To do so, near the top of the script, the following must be specified:
 
 ```python
 ####################
