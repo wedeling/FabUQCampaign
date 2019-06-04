@@ -7,15 +7,25 @@ Simply type `fab localhost install_plugin:FabUQCampaign` anywhere inside your Fa
 ## Explanation of files
 + `FabUQCampaign/FabUQCampaign.py`: contains the `run_UQ_sample` subroutine in which the job properties are specified, e.g. number of cores, memory, wall-time limit etc
 + `FabUQCampaign/templates/run_UQ_sample`: contains the command-line execution command for a single EasyVVUQ sample.
-+ `FabUQCampaign/examples/advection_diffusion/`: an example script, see below.
++ `FabUQCampaign/examples/advection_diffusion/*`: an example script, see below.
 
 ## Dependencies
 + The example below requires EasyVVUQ >= 0.3
 
 ## Detailed Examples
 
+### Inputs
+In the examples folder the script `examples/advection_diffusion/fab_ade.py` runs an EasyVVUQ Stochastic Collocation (SC) campaign using FabSim3 for a simple advection-diffusion equation (ade) finite-element solver on the localhost. In order to run it, the FabSim3 home directory must be hard coded. To do so, near the top of the file, the following must be specified:
+
+```python
+####################
+# HARD-CODED INPUT #
+####################
+Fab_home = '~/CWI/VECMA/FabSim3'    #specify the home dir of FabSim3
+```
+
 ### Executing an ensemble job on localhost
-In the examples folder there is a script which runs an EasyVVUQ Stochastic Collocation (SC) campaign using FabSim3 for a simple advection-diffusion equation (ade) finite-element solver on the localhost. The governing equations are:
+The governing equations of the advection-diffusion equations are:
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cfrac%7Bdu%7D%7Bdx%7D%20&plus;%20%5Cfrac%7B1%7D%7BPe%7D%5Cfrac%7Bd%5E2u%7D%7Bdx%7D%20%3D%20f),
 
