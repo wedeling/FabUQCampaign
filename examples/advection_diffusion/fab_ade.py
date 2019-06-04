@@ -12,15 +12,20 @@ __license__ = "LGPL"
 ####################
 Fab_home = '~/CWI/VECMA/FabSim3'    #specify the home dir of FabSim3
 
+#home directory of user
+home = os.path.expanduser('~')
+
 #subroutine which runs the EasyVVUQ ensemble with FabSim's campaign2ensemble 
-################################################################################################
-#IMPORTANT: ASSUMES THAT FABSIM3 STORES THE RESULTS IN THE STANDARD LOCATION ~/FabSim3/results #
-################################################################################################
-def run_FabSim3_ensemble(sim_ID):
+#Assumes standard directory ~/FabSim3/results contains the results
+#If not, specify fab_results as well
+def run_FabUQ_ensemble(campaign_dir, fab_results = home + '/FabSim3/results'):
+    
+    #sets the sim_ID to the random EasyVVUQ id, e.g. sim_ID = 'EasyVVUQ_Campaign_pk9yoovr'
+    sim_ID = campaign_dir.split('/')[-1]
     
     #the 2 commandline instructions needed to run the ensemble
     cmd1 = "cd " + Fab_home + " && fab localhost campaign2ensemble:" + \
-            sim_ID + ",campaign_dir=" + my_campaign.campaign_dir
+            sim_ID + ",campaign_dir=" + campaign_dir
     cmd2 = "cd " + Fab_home + " && fab localhost uq_ensemble:" + sim_ID
     
     print(cmd1)
@@ -30,19 +35,16 @@ def run_FabSim3_ensemble(sim_ID):
     os.system(cmd1)
     os.system(cmd2)
     
-    #home directory of user
-    home = os.path.expanduser('~')
-    
-    #loop through all result dirs to find results corresponding to sim_ID
-    dirs = os.listdir(home + '/FabSim3/results')
+    #loop through all result dirs to find result dir of sim_ID
+    dirs = os.listdir(fab_results)
     for dir_i in dirs:
         if sim_ID in dir_i:
             break
     
     #where FabSim stored the results   
-    result_dirs = home + '/FabSim3/results/' + dir_i + '/RUNS/Run_* '
+    result_dirs = fab_results + '/' + dir_i + '/RUNS/Run_* '
     #where EasyVVUQ expects the results
-    dest_dirs = my_campaign.campaign_dir + '/runs'
+    dest_dirs = campaign_dir + '/runs'
     print('Copying results from', result_dirs, 'to', dest_dirs)
     
     #copy results back
@@ -97,7 +99,7 @@ def test_sc(tmpdir):
         "f": cp.Normal(1.0, 0.01)
     }
 
-    my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=3)
+    my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=1)
 
     # Associate the sampler with the campaign
     my_campaign.set_sampler(my_sampler)
@@ -107,10 +109,7 @@ def test_sc(tmpdir):
     my_campaign.populate_runs_dir()
  
     #Run execution using Fabsim (on the localhost)
-    sim_ID = my_campaign.campaign_dir.split('/')[-1]
-
-    #run the ensemble using FabSim3
-    run_FabSim3_ensemble(sim_ID)
+    run_FabUQ_ensemble(my_campaign.campaign_dir)
     
 #   Use this instead to run the samples using EasyVVUQ on the localhost
 #    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
