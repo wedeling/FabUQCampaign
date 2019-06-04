@@ -29,7 +29,7 @@ Fab_home = '~/CWI/VECMA/FabSim3'    #specify the home dir of FabSim3
  
 `localhost:`
 
- &nbsp;&nbsp;&nbsp;&nbsp;`ocean_exec: "<fab_home>/plugins/FabUQCampaign/examples/ocean_2d/sc/ocean.py"`
+ &nbsp;&nbsp;&nbsp;&nbsp;`ocean_exec: "<fab_home>/plugins/FabUQCampaign/examples/ocean_2D/sc/ocean.py"`
 
 Here, `<fab_home>` is the same directory as specifed above.
 
@@ -41,7 +41,7 @@ In the examples folder the script `examples/ocean_2D/sc/ocean.py` runs an EasyVV
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cnabla%5E2%5CPsi%20%3D%20%5Comega)
 
-The viscosities ![equation](https://latex.codecogs.com/gif.latex?%5Cnu) and ![equation](https://latex.codecogs.com/gif.latex?%5Cmu) are the uncertain parameters. Their values are computed in `ocean.py` by specifying a decay time. For ![equation](https://latex.codecogs.com/gif.latex?%5Cnu) we specify a uniformly distributed decay time between 1 and 5 days, and for ![equation](https://latex.codecogs.com/gif.latex?%5Cmu) between 85 and 90 days. For illustration purposes, the ocean model just runs for a simulation time of 1 day to limit the runtime of a single sample. This can be easily extended by changing `t_end` in `examples/ocean_2d/sc/ocean.py`.
+The viscosities ![equation](https://latex.codecogs.com/gif.latex?%5Cnu) and ![equation](https://latex.codecogs.com/gif.latex?%5Cmu) are the uncertain parameters. Their values are computed in `ocean.py` by specifying a decay time, which is assigned a user-specified distribution. For illustration purposes, the ocean model just runs for a simulation time of 1 day to limit the runtime of a single sample. This can be easily extended by changing `t_end` in `examples/ocean_2D/sc/ocean.py`.
 
 
 The first steps are exactly the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs:
@@ -78,6 +78,8 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
         "decay_time_mu": cp.Normal(90.0, 1.0)
     }
 ```
+
+2. (continued) Here, the mean values are the decay times in days.
 
 3. Create an encoder, decoder and collation element. The encoder links the template file to EasyVVUQ and defines the name of the input file (`ocean_in.json`). The model `examples/ocean_2D/sc/ocean.py` writes the total energy (`E`) to a simple `.csv` file, hence we select the `SimpleCSV` decoder, where in this case we have a single output column:
 ```python
@@ -122,7 +124,7 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
 ```
 7. (continued) The `results` dict contains the first 2 statistical moments and Sobol indices for every quantity of interest defined in `output_columns`. If the PCE sampler was used, `SCAnalysis` should be replaced with `PCEAnalysis`.
 
-### Executing an ensemble job on a remote host
+<!---### Executing an ensemble job on a remote host
 
-To run the example script on a remote host, every instance of `localhost` must replaced by the `machine_name` of the remote host. Ensure the host is defined in `machines.yml`, and the user login information and `$ocean_exec` in `deploy/machines_user.yml`.
+To run the example script on a remote host, every instance of `localhost` must replaced by the `machine_name` of the remote host. Ensure the host is defined in `machines.yml`, and the user login information and `$ocean_exec` in `deploy/machines_user.yml`.--->
 
