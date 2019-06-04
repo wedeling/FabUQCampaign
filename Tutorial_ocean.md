@@ -11,12 +11,12 @@ Simply type `fab localhost install_plugin:FabUQCampaign` anywhere inside your Fa
 
 ## Dependencies
 + The example below requires EasyVVUQ >= 0.3
-+ `FabUQCampaign/examples/ocean_2D/ocean.py` requires ![h5py](https://github.com/h5py/h5py).
++ `FabUQCampaign/examples/ocean_2D/sc/ocean.py` requires ![h5py](https://github.com/h5py/h5py).
 
 ## Detailed Examples
 
 ### Inputs
- + In the examples folder the script `examples/ocean_2d/fab_ocean.py` runs an EasyVVUQ Stochastic Collocation (SC) campaign using FabSim3 for a 2D ocean model on the localhost. In order to run it, the FabSim3 home directory must be hard coded. To do so, near the top of the script, the following must be specified:
+ + In the examples folder the script `examples/ocean_2D/fab_ocean.py` runs an EasyVVUQ Stochastic Collocation (SC) campaign using FabSim3 for a 2D ocean model on the localhost. In order to run it, the FabSim3 home directory must be hard coded. To do so, near the top of the script, the following must be specified:
 
 ```python
 ####################
@@ -35,7 +35,7 @@ Here, `<fab_home>` is the same directory as specifed above.
 
 
 ### Executing an ensemble job on localhost
-In the examples folder the script `examples/ocean_2d/sc/ocean.py` runs an EasyVVUQ Stochastic Collocation (SC) campaign using FabSim3 for a 2D ocean model on a square domain with periodic boundary conditions. Essentially, the governing equations are the Navier-Stokes equations written in terms of the vorticity ![equation](https://latex.codecogs.com/gif.latex?%5Comega) and stream function ![equation](https://latex.codecogs.com/gif.latex?%5CPsi), plus an additional forcing term F:
+In the examples folder the script `examples/ocean_2D/sc/ocean.py` runs an EasyVVUQ Stochastic Collocation (SC) campaign using FabSim3 for a 2D ocean model on a square domain with periodic boundary conditions. Essentially, the governing equations are the Navier-Stokes equations written in terms of the vorticity ![equation](https://latex.codecogs.com/gif.latex?%5Comega) and stream function ![equation](https://latex.codecogs.com/gif.latex?%5CPsi), plus an additional forcing term F:
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Cpartial%5Comega%7D%7B%5Cpartial%20t%7D%20&plus;%20%5Cfrac%7B%5Cpartial%5CPsi%7D%7B%5Cpartial%20x%7D%5Cfrac%7B%5Cpartial%5Comega%7D%7B%5Cpartial%20y%7D%20-%20%5Cfrac%7B%5Cpartial%5CPsi%7D%7B%5Cpartial%20y%7D%5Cfrac%7B%5Cpartial%5Comega%7D%7B%5Cpartial%20x%7D%20%3D%20%7B%5Ccolor%7BRed%7D%20%5Cnu%7D%5Cnabla%5E2%5Comega%20&plus;%20%7B%5Ccolor%7BRed%7D%5Cmu%7D%5Cleft%28F-%5Comega%5Cright%29)
 
@@ -44,7 +44,7 @@ In the examples folder the script `examples/ocean_2d/sc/ocean.py` runs an EasyVV
 The viscosities ![equation](https://latex.codecogs.com/gif.latex?%5Cnu) and ![equation](https://latex.codecogs.com/gif.latex?%5Cmu) are the uncertain parameters. Their values are computed in `ocean.py` by specifying a decay time. For ![equation](https://latex.codecogs.com/gif.latex?%5Cnu) we specify a uniformly distributed decay time between 1 and 5 days, and for ![equation](https://latex.codecogs.com/gif.latex?%5Cmu) between 85 and 90 days. For illustration purposes, the ocean model just runs for a simulation time of 1 day to limit the runtime of a single sample. This can be easily extended by changing `t_end` in `examples/ocean_2d/sc/ocean.py`.
 
 
-The first steps are the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs:
+The first steps are exactly the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs:
 
  1. Create an EasyVVUQ campaign object: `my_campaign = uq.Campaign(name='sc', work_dir=tmpdir)`
  2. Define the parameter space of the model, comprising of the uncertain parameters `decay_time_nu` and `decay_time_mu`, plus the name of the output file of `ocean.py`:
@@ -107,31 +107,12 @@ The first steps are the same as for an EasyVVUQ campaign that does not use FabSi
      my_campaign.populate_runs_dir()
  ```
  
- 6. To execute the runs (and collect the results), we can use a sequential approach on the localhost via
+6. We then use FabSim to run the ensemble via:
+ 
  ```python
-     my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
-        "./sc/ocean.py ocean_in.json"))
-     my_campaign.collate()
+ run_FabUQ_ensemble(my_campaign.campaign_dir)
  ```
- 6. (continued) Note that this command contains the command line instruction for a single model run, i.e. `./sc/ocean.py ocean_in.json`. To allow `ocean.py` to be executed in this way, a shebang command is placed on the 1st line of `ocean.py` that links to the python interpreter that we wish to use, e.g. `#!/usr/bin/env python3`, or in the case of a Anaconda interpreter, use `#!/home/yourusername/anaconda3/bin/python`. Instead of EasyVVUQ's `ExecuteLocal`, we can also use FabSim to run the ensemble.
-
-Only this step is specific to FabSim. For now, several variables need to be hardcoded, i.e.: 
- + A simulation identifier (`$sim_ID`)
- + Your FabSim home directory (`$fab_home`)
- + The `FabUQCampaign/template/run_UQ_sample` file contains the command line instruction to run a single sample, in this case: `python3 $ocean_exec ocean_in.json`. Here, `ocean_in.json` is just the input file with the parameter values generated by EasyVVUQ. Furthermore, `$ocean_exec` is the full path to the Python script which runs the ocean model `ocean.py` at the parameters of `ocean_in.json`. It is defined in `deploy/machines_user.yml`, which in this case looks like
- 
-`localhost:`
-
- &nbsp;&nbsp;&nbsp;&nbsp;`ocean_exec: "$fab_home/plugins/FabUQCampaign/examples/ocean_2D/ocean.py"`
- 
- The following two commands execute the ensemble run:
- 
- 1. `cd $fab_home && fab localhost campaign2ensemble:$sim_ID, campaign_dir=$campaign_dir`
- 2. `cd $fab_home && fab localhost uq_ensemble:$sim_ID`
- 
-The run directory `$campaign_dir` is available from the EasyVVUQ object. The `campaign2ensemble` results directory (located in `~/FabSim3/results`) has (by design) the same structure as the EasyVVUQ run directory, so the results can simply be copied back, in this case via
-
-`cp -r ~/FabSim3/results/$sim_ID_localhost_16/RUNS/Run_* $campaign_dir/runs`
+6. (continued) the subroutine `run_FabUQ_campaign` is located in the same file as the example script. 
 
 7. Afterwards, post-processing tasks in EasyVVUQ can be undertaken via:
 ```python
