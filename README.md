@@ -99,11 +99,12 @@ The file `examples/advection_diffusion/sc/ade_model.py` contains the finite-elem
 
  &nbsp;&nbsp;&nbsp;&nbsp;`ade_exec: "$fab_home/plugins/FabUQCampaign/examples/advection_diffusion/run_ADE.py"`
 
-6.(continued) We then use FabSim to run the ensemble via:
+6. (continued) We then use FabSim to run the ensemble via:
  
  ```python
  run_FabUQ_ensemble(my_campaign.campaign_dir)
  ```
+6. (continued) the subroutine `run_FabUQ_campaign` is located in the same file as the example script. 
 
 7. Afterwards, post-processing tasks in EasyVVUQ can be undertaken via:
 ```python
