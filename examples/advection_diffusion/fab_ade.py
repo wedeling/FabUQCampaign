@@ -134,7 +134,8 @@ def test_sc(tmpdir):
 
 #runs the script
 if __name__ == "__main__":
-    
+
+    #home dir of this file    
     HOME = os.path.abspath(os.path.dirname(__file__))
 
     results, sc_analysis, my_campaign = test_sc("/tmp/")

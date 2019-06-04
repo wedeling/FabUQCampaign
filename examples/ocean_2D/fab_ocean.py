@@ -76,7 +76,7 @@ def test_sc(tmpdir):
 
     # Create an encoder, decoder and collation element for PCE test app
     encoder = uq.encoders.GenericEncoder(
-        template_fname='./sc/ocean.template',
+        template_fname= HOME + '/sc/ocean.template',
         delimiter='$',
         target_filename='ocean_in.json')
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
@@ -133,6 +133,9 @@ def test_sc(tmpdir):
     return results, sc_analysis
 
 if __name__ == "__main__":
+    
+    #home dir of this file    
+    HOME = os.path.abspath(os.path.dirname(__file__))
 
     results, sc_analysis = test_sc("/tmp/")
     mu = results['statistical_moments']['E']['mean']
