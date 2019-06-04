@@ -99,7 +99,7 @@ def compute_E_and_Z(w_hat_n, verbose=True):
 
 import numpy as np
 import os, h5py, sys, json
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 ####################################################################################
 # the json input file containing the values of the parameters, and the output file #
@@ -117,8 +117,8 @@ output_filename = inputs['outfile']
 
 ###############################################################################
 
-plt.close('all')
-plt.rcParams['image.cmap'] = 'seismic'
+#plt.close('all')
+#plt.rcParams['image.cmap'] = 'seismic'
 
 HOME = os.path.abspath(os.path.dirname(__file__))
 
@@ -189,7 +189,7 @@ mu = 1.0/(day*decay_time_mu)
 
 #start, end time (in days) + time step
 t = 0.0*day
-t_end = 10.0*day
+t_end = 1.0*day
 dt = 0.01
 
 n_steps = np.ceil((t_end-t)/dt).astype('int')
@@ -295,5 +295,4 @@ header = 'E'
 np.savetxt(output_filename, np.array([np.mean(E)]), 
            delimiter=",", comments='',
            header=header)
-
-plt.show()
+#plt.show()

@@ -7,6 +7,49 @@ import os
 # author: Wouter Edeling
 __license__ = "LGPL"
 
+####################
+# HARD-CODED INPUT #
+####################
+Fab_home = '~/CWI/VECMA/FabSim3'    #specify the home dir of FabSim3
+
+#home directory of user
+home = os.path.expanduser('~')
+
+#subroutine which runs the EasyVVUQ ensemble with FabSim's campaign2ensemble 
+#Assumes standard directory ~/FabSim3/results contains the results
+#If not, specify fab_results as well
+def run_FabUQ_ensemble(campaign_dir, fab_results = home + '/FabSim3/results'):
+    
+    #sets the sim_ID to the random EasyVVUQ id, e.g. sim_ID = 'EasyVVUQ_Campaign_pk9yoovr'
+    sim_ID = campaign_dir.split('/')[-1]
+    
+    #the 2 commandline instructions needed to run the ensemble
+    cmd1 = "cd " + Fab_home + " && fab localhost campaign2ensemble:" + \
+            sim_ID + ",campaign_dir=" + campaign_dir
+    cmd2 = "cd " + Fab_home + " && fab localhost uq_ensemble:" + sim_ID
+    
+    print(cmd1)
+    print(cmd2)
+ 
+    #execute the ensemble
+    os.system(cmd1)
+    os.system(cmd2)
+    
+    #loop through all result dirs to find result dir of sim_ID
+    dirs = os.listdir(fab_results)
+    for dir_i in dirs:
+        if sim_ID in dir_i:
+            break
+    
+    #where FabSim stored the results   
+    result_dirs = fab_results + '/' + dir_i + '/RUNS/Run_* '
+    #where EasyVVUQ expects the results
+    dest_dirs = campaign_dir + '/runs'
+    print('Copying results from', result_dirs, 'to', dest_dirs)
+    
+    #copy results back
+    os.system('cp -r ' + result_dirs + dest_dirs)
+
 def test_sc(tmpdir):
     
     # Set up a fresh campaign called "sc"
@@ -65,24 +108,12 @@ def test_sc(tmpdir):
 
     my_campaign.populate_runs_dir()
  
-#    #Run execution using Fabsim (on the localhost)
-#    sim_ID ='ade_example1'
-#    Fab_home = '~/CWI/VECMA/FabSim3'
-#    
-#    cmd1 = "cd " + Fab_home + " && fab localhost campaign2ensemble:" + \
-#            sim_ID + ",campaign_dir=" + my_campaign.campaign_dir
-#    cmd2 = "cd " + Fab_home + " && fab localhost uq_ensemble:" + sim_ID
-#    
-#    print(cmd1)
-#    print(cmd2)
-#    
-#    os.system(cmd1)
-#    os.system(cmd2)
-#    
-#    os.system('cp -r ~/FabSim3/results/' + sim_ID + '_localhost_16/RUNS/Run_* ' + my_campaign.campaign_dir + '/runs')
+    #Run execution using Fabsim (on the localhost)
+    run_FabUQ_ensemble(my_campaign.campaign_dir)
     
-    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
-        "./sc/ocean.py ocean_in.json"))
+#   #Use this instead to run the samples using EasyVVUQ on the localhost
+#    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
+#        "./sc/ocean.py ocean_in.json"))
 
     my_campaign.collate()
 
@@ -93,6 +124,12 @@ def test_sc(tmpdir):
 
     results = my_campaign.get_last_analysis()
 
+    # Save and reload campaign
+    state_file = tmpdir + "sc_state.json"
+    my_campaign.save_state(state_file)
+    new = uq.Campaign(state_file=state_file, work_dir=tmpdir)
+    print(new)
+
     return results, sc_analysis
 
 if __name__ == "__main__":
@@ -100,10 +137,8 @@ if __name__ == "__main__":
     results, sc_analysis = test_sc("/tmp/")
     mu = results['statistical_moments']['E']['mean']
     std = results['statistical_moments']['E']['std']
-    
-    print('Mean energy =', mu)
-    print('Standard dev energy =', std)
-    print('Sobol indices of', [param for param in sc_analysis.sampler.vary.keys()])
+
+    print('=================================================')    
+    print('Sobol indices:')
     print(results['sobol_indices']['E'])
-    
-    plt.show()
+    print('=================================================')    

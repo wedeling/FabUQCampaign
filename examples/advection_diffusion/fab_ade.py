@@ -130,7 +130,7 @@ def test_sc(tmpdir):
     new = uq.Campaign(state_file=state_file, work_dir=tmpdir)
     print(new)
 
-    return results, sc_analysis, my_campaign
+    return results, sc_analysis,
 
 #runs the script
 if __name__ == "__main__":
