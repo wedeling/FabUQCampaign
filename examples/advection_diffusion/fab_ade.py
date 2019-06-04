@@ -7,6 +7,48 @@ import os
 # author: Wouter Edeling
 __license__ = "LGPL"
 
+####################
+# HARD-CODED INPUT #
+####################
+Fab_home = '~/CWI/VECMA/FabSim3'    #specify the home dir of FabSim3
+
+#subroutine which runs the EasyVVUQ ensemble with FabSim's campaign2ensemble 
+################################################################################################
+#IMPORTANT: ASSUMES THAT FABSIM3 STORES THE RESULTS IN THE STANDARD LOCATION ~/FabSim3/results #
+################################################################################################
+def run_FabSim3_ensemble(sim_ID):
+    
+    #the 2 commandline instructions needed to run the ensemble
+    cmd1 = "cd " + Fab_home + " && fab localhost campaign2ensemble:" + \
+            sim_ID + ",campaign_dir=" + my_campaign.campaign_dir
+    cmd2 = "cd " + Fab_home + " && fab localhost uq_ensemble:" + sim_ID
+    
+    print(cmd1)
+    print(cmd2)
+ 
+    #execute the ensemble
+    os.system(cmd1)
+    os.system(cmd2)
+    
+    #home directory of user
+    home = os.path.expanduser('~')
+    
+    #loop through all result dirs to find results corresponding to sim_ID
+    dirs = os.listdir(home + '/FabSim3/results')
+    for dir_i in dirs:
+        if sim_ID in dir_i:
+            break
+    
+    #where FabSim stored the results   
+    result_dirs = home + '/FabSim3/results/' + dir_i + '/RUNS/Run_* '
+    #where EasyVVUQ expects the results
+    dest_dirs = my_campaign.campaign_dir + '/runs'
+    print('Copying results from', result_dirs, 'to', dest_dirs)
+    
+    #copy results back
+    os.system('cp -r ' + result_dirs + dest_dirs)
+
+#An EasyVVUQ stochastic collocation advection diffusion example
 def test_sc(tmpdir):
     
     # Set up a fresh campaign called "sc"
@@ -33,7 +75,7 @@ def test_sc(tmpdir):
 
     # Create an encoder, decoder and collation element for PCE test app
     encoder = uq.encoders.GenericEncoder(
-        template_fname='./sc/ade.template',
+        template_fname=HOME+'/sc/ade.template',
         delimiter='$',
         target_filename='ade_in.json')
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
@@ -52,37 +94,27 @@ def test_sc(tmpdir):
     # Create the sampler
     vary = {
         "Pe": cp.Uniform(100.0, 200.0),
-        "f": cp.Normal(1.0, 0.1)
+        "f": cp.Normal(1.0, 0.01)
     }
 
-    my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=4)
+    my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=3)
 
     # Associate the sampler with the campaign
     my_campaign.set_sampler(my_sampler)
 
     # Will draw all (of the finite set of samples)
     my_campaign.draw_samples()
-
     my_campaign.populate_runs_dir()
  
-#    #Run execution using Fabsim (on the localhost)
-#    sim_ID ='ade_example1'
-#    Fab_home = '~/CWI/VECMA/FabSim3'
-#    
-#    cmd1 = "cd " + Fab_home + " && fab localhost campaign2ensemble:" + \
-#            sim_ID + ",campaign_dir=" + my_campaign.campaign_dir
-#    cmd2 = "cd " + Fab_home + " && fab localhost uq_ensemble:" + sim_ID
-#    
-#    print(cmd1)
-#    print(cmd2)
-#    
-#    os.system(cmd1)
-#    os.system(cmd2)
-#    
-#    os.system('cp -r ~/FabSim3/results/' + sim_ID + '_localhost_16/RUNS/Run_* ' + my_campaign.campaign_dir + '/runs')
+    #Run execution using Fabsim (on the localhost)
+    sim_ID = my_campaign.campaign_dir.split('/')[-1]
+
+    #run the ensemble using FabSim3
+    run_FabSim3_ensemble(sim_ID)
     
-    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
-        "./sc/ade_model.py ade_in.json"))
+#   Use this instead to run the samples using EasyVVUQ on the localhost
+#    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
+#        "./sc/ade_model.py ade_in.json"))
 
     my_campaign.collate()
 
@@ -93,68 +125,77 @@ def test_sc(tmpdir):
 
     results = my_campaign.get_last_analysis()
 
-    return results, sc_analysis
+    # Save and reload campaign
+    state_file = tmpdir + "sc_state.json"
+    my_campaign.save_state(state_file)
+    new = uq.Campaign(state_file=state_file, work_dir=tmpdir)
+    print(new)
 
+    return results, sc_analysis, my_campaign
+
+#runs the script
 if __name__ == "__main__":
+    
+    HOME = os.path.abspath(os.path.dirname(__file__))
 
-    results, sc_analysis = test_sc("/tmp/")
+    results, sc_analysis, my_campaign = test_sc("/tmp/")
     mu = results['statistical_moments']['u']['mean']
     std = results['statistical_moments']['u']['std']
-    
+
     x = np.linspace(0, 1, mu.size)
-    
+
     ###################################
     # Plot the moments and SC samples #
     ###################################
-    
+
     fig = plt.figure(figsize=[10, 5])
     ax = fig.add_subplot(121, xlabel='x', ylabel='u',
                          title=r'code mean +/- standard deviation')
     ax.plot(x, mu, 'b', label='mean')
     ax.plot(x, mu + std, '--r', label='std-dev')
     ax.plot(x, mu - std, '--r')
-    
+
     #####################################
     # Plot the random surrogate samples #
     #####################################
-    
+
     ax = fig.add_subplot(122, xlabel='x', ylabel='u',
                          title='some Monte Carlo surrogate samples')
-    
+
     # generate random samples of unobserved parameter values
     n_mc = 100
-    dists = sc_analysis.sampler.vary
+    dists = sc_analysis.sampler.vary.vary_dict
     xi_mc = np.zeros([n_mc, 2])
     xi_mc[:, 0] = dists['Pe'].sample(n_mc)
     xi_mc[:, 1] = dists['f'].sample(n_mc)
-    
+
     # evaluate the surrogate at these values
     for i in range(n_mc):
         ax.plot(x, sc_analysis.surrogate('u', xi_mc[i]), 'g')
-    
+
     plt.tight_layout()
-    
+
     ######################
     # Plot Sobol indices #
     ######################
-    
+
     fig = plt.figure()
     ax = fig.add_subplot(
         111,
         xlabel='x',
         ylabel='Sobol indices',
         title='spatial dist. Sobol indices, Pe only important in viscous regions')
-    
+
     lbl = ['Pe', 'f', 'Pe-f interaction']
     idx = 0
-    
+
     for S_i in results['sobol_indices']['u']:
         ax.plot(x, results['sobol_indices']['u'][S_i], label=lbl[idx])
         idx += 1
-    
+
     leg = plt.legend(loc=0)
     leg.draggable(True)
-    
+
     plt.tight_layout()
-    
+
     plt.show()
