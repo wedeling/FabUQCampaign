@@ -10,7 +10,7 @@ __license__ = "LGPL"
 ####################
 # HARD-CODED INPUT #
 ####################
-Fab_home = '~/CWI/VECMA/FabSim3'    #specify the home dir of FabSim3
+Fab_home = '../../../..'    #specify the home dir of FabSim3
 
 #home directory of user
 home = os.path.expanduser('~')
