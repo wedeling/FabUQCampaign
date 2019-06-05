@@ -119,7 +119,13 @@ The file `examples/advection_diffusion/sc/ade_model.py` contains the finite-elem
  ```python
  run_FabUQ_ensemble(my_campaign.campaign_dir)
  ```
-6. (continued) the subroutine `run_FabUQ_campaign` is located in the same file as the example script. 
+6. (continued) the subroutine `run_FabUQ_campaign` is located in the same file as the example script. It basically executes a single command line function:
+
+```python
+def run_FabUQ_ensemble(campaign_dir):
+    sim_ID = campaign_dir.split('/')[-1]
+    os.system("fab localhost run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ade")
+```
 
 7. Afterwards, post-processing tasks in EasyVVUQ can be undertaken via:
 ```python
