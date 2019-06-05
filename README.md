@@ -25,7 +25,8 @@ Note that FabUQCampaign relies on EasyVVUQ. As such, make sure you have EasyVVUQ
 
 Here, `<fab_home>` is your FabSim3 home directory.
 
-+ To couple the advection diffusion template to FabUQCampaign, the followin code is added to `FabUQCampaign.py`:
++ To couple this advection diffusion template to FabUQCampaign, the following code is added to `FabUQCampaign.py`:
+
 ```py
 @task
 def uq_ensemble_ade(config="dummy_test",**args):
@@ -78,17 +79,26 @@ The file `examples/advection_diffusion/sc/ade_model.py` contains the finite-elem
 
 3. Create an encoder, decoder and collation element. The encoder links the template file to EasyVVUQ and defines the name of the input file (`ade_in.json`). The ade model `examples/advection_diffusion/sc/ade_model.py` writes the velocity output (`u`) to a simple `.csv` file, hence we select the `SimpleCSV` decoder, where in this case we have a single output column:
 ```python
-    output_filename = params["out_file"]["default"]
-    output_columns = ["u"]
-    
-    encoder = uq.encoders.GenericEncoder(template_fname='./sc/ade.template',
-                                         delimiter='$',
-                                         target_filename='ade_in.json')
+    encoder = uq.encoders.GenericEncoder(
+        template_fname = HOME + '/sc/ade.template',
+        delimiter='$',
+        target_filename='ade_in.json')
+        
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                     output_columns=output_columns,
                                     header=0)
-    collation = uq.collate.AggregateSamples()
+
+    collater = uq.collate.AggregateSamples(average=False)
+    my_campaign.set_collater(collater)
 ```
+
+ 3. (continued) `HOME` is the absolute path to the script file. The app is then added to the campaign object via
+ ```python
+     my_campaign.add_app(name="sc",
+                        params=params,
+                        encoder=encoder,
+                        decoder=decoder)
+ ```
  
  4. Now we have to select a sampler, in this case we use the Stochastic Collocation (SC) sampler:
  ```python
