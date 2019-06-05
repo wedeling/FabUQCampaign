@@ -29,7 +29,7 @@ def run_UQ_sample(config,**args):
     job(dict(script='run_UQ_sample', wall_time='0:15:0', memory='2G'),args)
 
 @task
-def uq_ensemble(config="dummy_test",**args):
+def uq_ensemble(config="dummy_test", script="ERROR: PARAMETER script SHOULD BE DEFINED FOR TASK UQ_ENSEMBLE",**args):
     """
     Submits an ensemble of EasyVVUQ jobs.
     One job is run for each file in <config_file_directory>/dummy_test/SWEEP.
@@ -37,11 +37,25 @@ def uq_ensemble(config="dummy_test",**args):
     
     path_to_config = find_config_file_path(config)
     sweep_dir = path_to_config + "/SWEEP"
-    env.script = 'run_UQ_sample'
+    env.script = script
 
     run_ensemble(config, sweep_dir, **args)
+
+@task
+def uq_ensemble_ocean(config="dummy_test",**args):
+    """
+    Submits an ocean_2D ensemble.
+    """
+    uq_ensemble(config, 'run_UQ_sample_ocean', **args)
+
+@task
+def uq_ensemble_ade(config="dummy_test",**args):
+    """
+    Submits an advection_diffusion ensemble.
+    """
+    uq_ensemble(config, 'run_UQ_sample_ade', **args)
     
- 
+
 #import numpy as np
 #import matplotlib.pyplot as plt
 #import easyvvuq as uq

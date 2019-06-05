@@ -26,7 +26,7 @@ def run_FabUQ_ensemble(campaign_dir, fab_results = home + '/FabSim3/results'):
     #the 2 commandline instructions needed to run the ensemble
     cmd1 = "cd " + Fab_home + " && fab localhost campaign2ensemble:" + \
             sim_ID + ",campaign_dir=" + campaign_dir
-    cmd2 = "cd " + Fab_home + " && fab localhost uq_ensemble:" + sim_ID
+    cmd2 = "cd " + Fab_home + " && fab localhost uq_ensemble_ade:" + sim_ID
     
     print(cmd1)
     print(cmd2)
@@ -196,7 +196,7 @@ if __name__ == "__main__":
         idx += 1
 
     leg = plt.legend(loc=0)
-    leg.draggable(True)
+    leg.set_draggable(True)
 
     plt.tight_layout()
 

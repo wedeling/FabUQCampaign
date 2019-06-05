@@ -26,7 +26,7 @@ def run_FabUQ_ensemble(campaign_dir, fab_results = home + '/FabSim3/results'):
     #the 2 commandline instructions needed to run the ensemble
     cmd1 = "cd " + Fab_home + " && fab localhost campaign2ensemble:" + \
             sim_ID + ",campaign_dir=" + campaign_dir
-    cmd2 = "cd " + Fab_home + " && fab localhost uq_ensemble:" + sim_ID
+    cmd2 = "cd " + Fab_home + " && fab localhost uq_ensemble_ocean:" + sim_ID
     
     print(cmd1)
     print(cmd2)
