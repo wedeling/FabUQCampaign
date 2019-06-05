@@ -7,11 +7,6 @@ import os
 # author: Wouter Edeling
 __license__ = "LGPL"
 
-####################
-# HARD-CODED INPUT #
-####################
-Fab_home = '../../../..'    #specify the home dir of FabSim3
-
 #home directory of user
 home = os.path.expanduser('~')
 
@@ -24,9 +19,9 @@ def run_FabUQ_ensemble(campaign_dir, fab_results = home + '/FabSim3/results'):
     sim_ID = campaign_dir.split('/')[-1]
     
     #the 2 commandline instructions needed to run the ensemble
-    cmd1 = "cd " + Fab_home + " && fab localhost campaign2ensemble:" + \
+    cmd1 = "fab localhost campaign2ensemble:" + \
             sim_ID + ",campaign_dir=" + campaign_dir
-    cmd2 = "cd " + Fab_home + " && fab localhost uq_ensemble_ade:" + sim_ID
+    cmd2 = "fab localhost uq_ensemble_ade:" + sim_ID
     
     print(cmd1)
     print(cmd2)
