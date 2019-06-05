@@ -11,40 +11,9 @@ __license__ = "LGPL"
 home = os.path.expanduser('~')
 
 #subroutine which runs the EasyVVUQ ensemble with FabSim's campaign2ensemble 
-#Assumes standard directory ~/FabSim3/results contains the results
-#If not, specify fab_results as well
-def run_FabUQ_ensemble(campaign_dir, fab_results = home + '/FabSim3/results'):
-    
-    #sets the sim_ID to the random EasyVVUQ id, e.g. sim_ID = 'EasyVVUQ_Campaign_pk9yoovr'
+def run_FabUQ_ensemble(campaign_dir):
     sim_ID = campaign_dir.split('/')[-1]
-    
-    #the 2 commandline instructions needed to run the ensemble
-    cmd1 = "fab localhost campaign2ensemble:" + \
-            sim_ID + ",campaign_dir=" + campaign_dir
-    cmd2 = "fab localhost uq_ensemble_ade:" + sim_ID
-    
-    print(cmd1)
-    print(cmd2)
- 
-    #execute the ensemble
-    os.system(cmd1)
-    os.system(cmd2)
-    os.system('fab localhost fetch_results')
-    
-    #loop through all result dirs to find result dir of sim_ID
-    dirs = os.listdir(fab_results)
-    for dir_i in dirs:
-        if sim_ID in dir_i:
-            break
-    
-    #where FabSim stored the results   
-    result_dirs = fab_results + '/' + dir_i + '/RUNS/Run_* '
-    #where EasyVVUQ expects the results
-    dest_dirs = campaign_dir + '/runs'
-    print('Copying results from', result_dirs, 'to', dest_dirs)
-    
-    #copy results back
-    os.system('cp -r ' + result_dirs + dest_dirs)
+    os.system("fab localhost run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ade")
 
 #An EasyVVUQ stochastic collocation advection diffusion example
 def test_sc(tmpdir):
