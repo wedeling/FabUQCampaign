@@ -83,20 +83,22 @@ def test_sc(tmpdir):
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                     output_columns=output_columns,
                                     header=0)
-    collation = uq.collate.AggregateSamples(average=False)
+#    collation = uq.collate.AggregateSamples(average=False)
 
     # Add the SC app (automatically set as current app)
-    my_campaign.add_app(name="sc",
+    my_campaign.add_app(name="cannonsim",
                         params=params,
                         encoder=encoder,
-                        decoder=decoder,
-                        collation=collation
-                        )
+                        decoder=decoder)
+    
+    # Create a collation element for this campaign
+    collater = uq.collate.AggregateSamples(average=False)
+    my_campaign.set_collater(collater)
 
     # Create the sampler
     vary = {
         "Pe": cp.Uniform(100.0, 200.0),
-        "f": cp.Normal(1.0, 0.01)
+        "f": cp.Normal(1.0, 0.1)
     }
 
     my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=1)
@@ -130,7 +132,7 @@ def test_sc(tmpdir):
     new = uq.Campaign(state_file=state_file, work_dir=tmpdir)
     print(new)
 
-    return results, sc_analysis,
+    return results, sc_analysis
 
 #runs the script
 if __name__ == "__main__":
@@ -138,7 +140,7 @@ if __name__ == "__main__":
     #home dir of this file    
     HOME = os.path.abspath(os.path.dirname(__file__))
 
-    results, sc_analysis, my_campaign = test_sc("/tmp/")
+    results, sc_analysis = test_sc("/tmp/")
     mu = results['statistical_moments']['u']['mean']
     std = results['statistical_moments']['u']['std']
 
