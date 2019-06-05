@@ -29,6 +29,7 @@ def run_FabUQ_ensemble(campaign_dir, fab_results = home + '/FabSim3/results'):
     #execute the ensemble
     os.system(cmd1)
     os.system(cmd2)
+    os.system('fab localhost fetch_results')
     
     #loop through all result dirs to find result dir of sim_ID
     dirs = os.listdir(fab_results)
