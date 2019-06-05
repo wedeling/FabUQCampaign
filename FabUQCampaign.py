@@ -46,12 +46,28 @@ def uq_ensemble_ocean(config="dummy_test",**args):
     """
     Submits an ocean_2D ensemble.
     """
-    uq_ensemble(config, 'run_UQ_sample_ocean', **args)
+    uq_ensemble(config, 'ocean', **args)
 
 @task
 def uq_ensemble_ade(config="dummy_test",**args):
     """
     Submits an advection_diffusion ensemble.
     """
-    uq_ensemble(config, 'run_UQ_sample_ade', **args)
-    
+    uq_ensemble(config, 'ade', **args)
+
+@task
+def run_uq_ensemble(config, campaign_dir, script_name, **args):
+
+    campaign2ensemble(config, campaign_dir=campaign_dir)
+    uq_ensemble(config, script_name)
+    fetch_results()
+
+    #loop through all result dirs to find result dir of sim_ID
+    dirs = os.listdir(env.local_results)
+    for dir_i in dirs:
+        if config in dir_i:
+            break
+
+    print('Copying results from', env.local_results + '/' + dir_i + 'to' + campaign_dir)
+    ensemble2campaign(env.local_results + '/' + dir_i, campaign_dir, **args)
+
