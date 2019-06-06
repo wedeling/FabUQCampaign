@@ -11,9 +11,10 @@ __license__ = "LGPL"
 home = os.path.expanduser('~')
 
 #subroutine which runs the EasyVVUQ ensemble with FabSim's campaign2ensemble 
-def run_FabUQ_ensemble(campaign_dir):
+def run_FabUQ_ensemble(campaign_dir, machine = 'localhost'):
     sim_ID = campaign_dir.split('/')[-1]
-    os.system("fab localhost run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ade")
+    os.system("fab " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ade")
+    #os.system("fab localhost fetch_results")
 
 #An EasyVVUQ stochastic collocation advection diffusion example
 def test_sc(tmpdir):
@@ -40,25 +41,24 @@ def test_sc(tmpdir):
     output_filename = params["out_file"]["default"]
     output_columns = ["u"]
 
-    # Create an encoder, decoder and collation element for PCE test app
+    # Create an encoder, decoder and collation element 
     encoder = uq.encoders.GenericEncoder(
-        template_fname=HOME+'/sc/ade.template',
+        template_fname = HOME + '/sc/ade.template',
         delimiter='$',
         target_filename='ade_in.json')
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                     output_columns=output_columns,
                                     header=0)
-#    collation = uq.collate.AggregateSamples(average=False)
 
-    # Add the SC app (automatically set as current app)
-    my_campaign.add_app(name="cannonsim",
-                        params=params,
-                        encoder=encoder,
-                        decoder=decoder)
-    
     # Create a collation element for this campaign
     collater = uq.collate.AggregateSamples(average=False)
     my_campaign.set_collater(collater)
+
+    # Add the SC app (automatically set as current app)
+    my_campaign.add_app(name="sc",
+                        params=params,
+                        encoder=encoder,
+                        decoder=decoder)
 
     # Create the sampler
     vary = {
@@ -76,7 +76,7 @@ def test_sc(tmpdir):
     my_campaign.populate_runs_dir()
  
     #Run execution using Fabsim (on the localhost)
-    run_FabUQ_ensemble(my_campaign.campaign_dir)
+    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='eagle')
     
 #   Use this instead to run the samples using EasyVVUQ on the localhost
 #    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
