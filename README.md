@@ -145,11 +145,11 @@ To run the example script on a remote host, the `machine_name` of the remote hos
     run_FabUQ_ensemble(my_campaign.campaign_dir, machine='eagle')
 ```
 
-Ensure the host is defined in `machines.yml`, and the user login information and `$ade_exec` in `deploy/machines_user.yml`. This will look something like:
+Ensure the host is defined in `machines.yml`, and the user login information and `$ade_exec` in `deploy/machines_user.yml`. For the `eagle` machine, this will look something like:
 ```
 eagle:
  username: "plg<your_username>"
  budget: "vecma2019"
- ade_exec: "/home/plgrid/<your_username>/ade_model.py"
+ ade_exec: "/home/plgrid/plg<your_username>/ade_model.py"
 ```
 
