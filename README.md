@@ -124,9 +124,9 @@ The file `examples/advection_diffusion/sc/ade_model.py` contains the finite-elem
 6. (continued) the subroutine `run_FabUQ_campaign` is located in the same file as the example script. It basically executes a single command line instruction:
 
 ```python
-def run_FabUQ_ensemble(campaign_dir):
+def run_FabUQ_ensemble(campaign_dir, machine = 'localhost'):
     sim_ID = campaign_dir.split('/')[-1]
-    os.system("fab localhost run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ade")
+    os.system("fab " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ade")
 ```
 
 7. Afterwards, post-processing tasks in EasyVVUQ can be undertaken via:
@@ -137,7 +137,13 @@ def run_FabUQ_ensemble(campaign_dir):
 ```
 7. (continued) The `results` dict contains the first 2 statistical moments and Sobol indices for every quantity of interest defined in `output_columns`. If the PCE sampler was used, `SCAnalysis` should be replaced with `PCEAnalysis`.
 
-<!---### Executing an ensemble job on a remote host
+### Executing an ensemble job on a remote host
 
-To run the example script on a remote host, every instance of `localhost` must replaced by the `machine_name` of the remote host. Ensure the host is defined in `machines.yml`, and the user login information and `$ade_exec` in `deploy/machines_user.yml`.--->
+To run the example script on a remote host, the `machine_name` of the remote host must be passed to `run_FabUQ_ensemble`, e.g.:
+
+```python
+    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='eagle')
+```
+
+Ensure the host is defined in `machines.yml`, and the user login information and `$ade_exec` in `deploy/machines_user.yml`.
 
