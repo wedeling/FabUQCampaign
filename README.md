@@ -9,7 +9,7 @@ Note that FabUQCampaign relies on EasyVVUQ. As such, make sure you have EasyVVUQ
 ## Explanation of files
 + `FabUQCampaign/FabUQCampaign.py`: contains the `run_UQ_sample` subroutine in which the job properties are specified, e.g. number of cores, memory, wall-time limit etc.
 
-+ `FabUQCampaign/examples/advection_diffusion/*`: an example script, applying EasyVVUQ to a 1D advection diffusion equation, the Detailed Example section below.
++ `FabUQCampaign/examples/advection_diffusion/*`: an example script, applying EasyVVUQ to a 1D advection diffusion equation, see the Detailed Example section below.
 
 + `FabUQCampaign/templates/ade`: contains the command-line instruction to draw a single EasyVVUQ sample of the advection diffusion equation.
 
