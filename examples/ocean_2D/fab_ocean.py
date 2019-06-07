@@ -13,9 +13,9 @@ home = os.path.expanduser('~')
 #subroutine which runs the EasyVVUQ ensemble with FabSim's campaign2ensemble 
 #Assumes standard directory ~/FabSim3/results contains the results
 #If not, specify fab_results as well
-def run_FabUQ_ensemble(campaign_dir):
+def run_FabUQ_ensemble(campaign_dir, machine = 'localhost'):
     sim_ID = campaign_dir.split('/')[-1]
-    os.system("fab localhost run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ocean")
+    os.system("fab " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ocean")
 
 def test_sc(tmpdir):
     
@@ -49,7 +49,6 @@ def test_sc(tmpdir):
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                     output_columns=output_columns,
                                     header=0)
-#    collation = uq.collate.AggregateSamples(average=False)
 
     # Add the SC app (automatically set as current app)
     my_campaign.add_app(name="sc",
@@ -68,7 +67,7 @@ def test_sc(tmpdir):
         "decay_time_mu": cp.Normal(90.0, 1.0)
     }
 
-    my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=2)
+    my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=1)
 
     # Associate the sampler with the campaign
     my_campaign.set_sampler(my_sampler)
@@ -107,7 +106,7 @@ if __name__ == "__main__":
     #home dir of this file    
     HOME = os.path.abspath(os.path.dirname(__file__))
 
-    results, sc_analysis = test_sc("/tmp/")
+    results, analysis = test_sc("/tmp/")
     mu = results['statistical_moments']['E']['mean']
     std = results['statistical_moments']['E']['std']
 

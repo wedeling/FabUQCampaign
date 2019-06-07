@@ -14,7 +14,6 @@ home = os.path.expanduser('~')
 def run_FabUQ_ensemble(campaign_dir, machine = 'localhost'):
     sim_ID = campaign_dir.split('/')[-1]
     os.system("fab " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ade")
-    #os.system("fab localhost fetch_results")
 
 #An EasyVVUQ stochastic collocation advection diffusion example
 def test_sc(tmpdir):
@@ -76,7 +75,7 @@ def test_sc(tmpdir):
     my_campaign.populate_runs_dir()
  
     #Run execution using Fabsim (on the localhost)
-    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='eagle')
+    run_FabUQ_ensemble(my_campaign.campaign_dir)
     
 #   Use this instead to run the samples using EasyVVUQ on the localhost
 #    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
@@ -105,7 +104,7 @@ if __name__ == "__main__":
     #home dir of this file    
     HOME = os.path.abspath(os.path.dirname(__file__))
 
-    results, sc_analysis = test_sc("/tmp/")
+    results, analysis = test_sc("/tmp/")
     mu = results['statistical_moments']['u']['mean']
     std = results['statistical_moments']['u']['std']
 
@@ -126,21 +125,23 @@ if __name__ == "__main__":
     # Plot the random surrogate samples #
     #####################################
 
-    ax = fig.add_subplot(122, xlabel='x', ylabel='u',
-                         title='some Monte Carlo surrogate samples')
-
-    # generate random samples of unobserved parameter values
-    n_mc = 100
-    dists = sc_analysis.sampler.vary.vary_dict
-    xi_mc = np.zeros([n_mc, 2])
-    xi_mc[:, 0] = dists['Pe'].sample(n_mc)
-    xi_mc[:, 1] = dists['f'].sample(n_mc)
-
-    # evaluate the surrogate at these values
-    for i in range(n_mc):
-        ax.plot(x, sc_analysis.surrogate('u', xi_mc[i]), 'g')
-
-    plt.tight_layout()
+    #for now, only implemented in SC
+    if analysis.element_name() == 'SC_Analysis':
+        ax = fig.add_subplot(122, xlabel='x', ylabel='u',
+                             title='some Monte Carlo surrogate samples')
+    
+        # generate random samples of unobserved parameter values
+        n_mc = 100
+        dists = analysis.sampler.vary.vary_dict
+        xi_mc = np.zeros([n_mc, 2])
+        xi_mc[:, 0] = dists['Pe'].sample(n_mc)
+        xi_mc[:, 1] = dists['f'].sample(n_mc)
+    
+        # evaluate the surrogate at these values
+        for i in range(n_mc):
+            ax.plot(x, analysis.surrogate('u', xi_mc[i]), 'g')
+    
+        plt.tight_layout()
 
     ######################
     # Plot Sobol indices #
@@ -156,9 +157,15 @@ if __name__ == "__main__":
     lbl = ['Pe', 'f', 'Pe-f interaction']
     idx = 0
 
-    for S_i in results['sobol_indices']['u']:
-        ax.plot(x, results['sobol_indices']['u'][S_i], label=lbl[idx])
-        idx += 1
+    if analysis.element_name() == 'SC_Analysis':
+        
+        for S_i in results['sobol_indices']['u']:
+            ax.plot(x, results['sobol_indices']['u'][S_i], label=lbl[idx])
+            idx += 1
+    else:
+        for S_i in results['sobol_indices']['u'][1]:
+            ax.plot(x, results['sobol_indices']['u'][1][S_i], label=lbl[idx])
+            idx += 1
 
     leg = plt.legend(loc=0)
     leg.set_draggable(True)

@@ -6,6 +6,7 @@
 # This file contains FabSim definitions specific to FabDummy.
 
 from base.fab import *
+import os
 
 # Add local script, blackbox and template path.
 add_local_paths("FabUQCampaign")
