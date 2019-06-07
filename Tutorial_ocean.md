@@ -114,7 +114,7 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
      my_campaign.set_sampler(my_sampler)
  ```
  
- 4. (continued) If left unspecified, the polynomial order of the SC expansion will be set to 4. If instead we wish te use a Polynomial Chaos Expansion (PCE) sampler, simply replace `SCSampler` with `PCESampler`.
+ 4. (continued) If left unspecified, the polynomial order of the SC expansion will be set to 4. 
  
  5. The following commands ensure that we draw all samples, and create the ensemble run directories which will be used in FabSim's `campaign2ensemble` subroutine:
  ```python 
@@ -140,7 +140,7 @@ def run_FabUQ_ensemble(campaign_dir, machine = 'localhost'):
     my_campaign.apply_analysis(sc_analysis)
     results = my_campaign.get_last_analysis()
 ```
-7. (continued) The `results` dict contains the first 2 statistical moments and Sobol indices for every quantity of interest defined in `output_columns`. If the PCE sampler was used, `SCAnalysis` should be replaced with `PCEAnalysis`.
+7. (continued) The `results` dict contains the first 2 statistical moments and Sobol indices for every quantity of interest defined in `output_columns`. 
 ### Executing an ensemble job on a remote host
 
 To run the example script on a remote host, the `machine_name` of the remote host must be passed to `run_FabUQ_ensemble`, e.g.:
