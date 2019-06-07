@@ -88,17 +88,25 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
 
 3. Create an encoder, decoder and collation element. The encoder links the template file to EasyVVUQ and defines the name of the input file (`ocean_in.json`). The model `examples/ocean_2D/sc/ocean.py` writes the total energy (`E`) to a simple `.csv` file, hence we select the `SimpleCSV` decoder, where in this case we have a single output column:
 ```python
-    output_filename = params["out_file"]["default"]
-    output_columns = ["E"]
-    
-    encoder = uq.encoders.GenericEncoder(template_fname='./sc/ocean.template',
-                                         delimiter='$',
-                                         target_filename='ocean_in.json')
+    encoder = uq.encoders.GenericEncoder(
+        template_fname = HOME + '/sc/ocean.template',
+        delimiter='$',
+        target_filename='ocean_in.json')
+        
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                     output_columns=output_columns,
                                     header=0)
-    collation = uq.collate.AggregateSamples()
+
+    collater = uq.collate.AggregateSamples(average=False)
+    my_campaign.set_collater(collater)
 ```
+3. (continued) `HOME` is the absolute path to the script file. The app is then added to the EasyVVUQ campaign object via
+ ```python
+     my_campaign.add_app(name="sc",
+                        params=params,
+                        encoder=encoder,
+                        decoder=decoder)
+ ```
  
  4. Now we have to select a sampler, in this case we use the Stochastic Collocation (SC) sampler:
  ```python
@@ -119,8 +127,13 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
  ```python
  run_FabUQ_ensemble(my_campaign.campaign_dir)
  ```
-6. (continued) the subroutine `run_FabUQ_campaign` is located in the same file as the example script. 
+6. (continued) the subroutine `run_FabUQ_campaign` is located in the same file as the example script. It basically executes a single command line instruction:
 
+```python
+def run_FabUQ_ensemble(campaign_dir, machine = 'localhost'):
+    sim_ID = campaign_dir.split('/')[-1]
+    os.system("fab " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ocean")
+```
 7. Afterwards, post-processing tasks in EasyVVUQ can be undertaken via:
 ```python
     sc_analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
@@ -128,8 +141,19 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
     results = my_campaign.get_last_analysis()
 ```
 7. (continued) The `results` dict contains the first 2 statistical moments and Sobol indices for every quantity of interest defined in `output_columns`. If the PCE sampler was used, `SCAnalysis` should be replaced with `PCEAnalysis`.
+### Executing an ensemble job on a remote host
 
-<!---### Executing an ensemble job on a remote host
+To run the example script on a remote host, the `machine_name` of the remote host must be passed to `run_FabUQ_ensemble`, e.g.:
 
-To run the example script on a remote host, every instance of `localhost` must replaced by the `machine_name` of the remote host. Ensure the host is defined in `machines.yml`, and the user login information and `$ocean_exec` in `deploy/machines_user.yml`.--->
+```python
+    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='eagle')
+```
+
+Ensure the host is defined in `machines.yml`, and the user login information and `$ade_exec` in `deploy/machines_user.yml`. For the `eagle` machine, this will look something like:
+```
+eagle:
+ username: "plg<your_username>"
+ budget: "vecma2019"
+ ade_exec: "/home/plgrid/plg<your_username>/ade_model.py"
+```
 
