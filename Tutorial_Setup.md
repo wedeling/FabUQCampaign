@@ -22,7 +22,7 @@ Below you can find installation instructions for each of these packages.
 
 ### Installing EasyVVUQ
 
-EasyVVUQ can be installed either via `pip install easyvvuq`, or manually from the source:
+EasyVVUQ can be installed either via `pip3 install easyvvuq`, or manually from the source:
 ```
 git clone https://github.com/UCL-CCS/EasyVVUQ.git
 cd EasyVVUQ/
