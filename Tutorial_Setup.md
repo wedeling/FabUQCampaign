@@ -1,7 +1,7 @@
 Setup activities for the FabUQCampaign tutorials
 =====
 
-This document describes what you need to do to set up all the software required for the FabUQCampaign tutorials on the
+This document describes what you need to do to set up all the software required for the FabUQCampaign tutorials of the
 advection-diffusion equation and 2D ocean model.
 
 ## Prerequisites
@@ -42,25 +42,18 @@ We will assume that you will install FabSim3 in a directory called (FabSim3 Home
 
 _NOTE: Please make sure both `machines.yml` and `machines_user.yml` are configured correctly based on the installation guide._
 
-
 Once you have installed FabSim3, you can install FabUQCampaign by typing:
 ```
 fabsim localhost install_plugin:FabUQCampaign
 ```
 The FabUQCampaign plugin will appear in `~/FabSim3/plugins/FabUQCampaign`.
-
-
-## 2. Configuration
-
-Once you have installed the required dependencies, you will need to take a few small configuration steps:
-1. Go to `(FabSim Home)/deploy`
-2. Open `machines_user.yml`
-3. Under the section `default:`, please add the following lines:
-   <br/> a. `  flee_location=(Flee Home)`
-   <br/> _NOTE: Please replace (Flee Home) with your actual install directory._
-   <br/> b. `  flare_location=(Flare Home)`
-   <br/> _NOTE: Please replace (Flare Home) with your actual install directory._
    
- ## 3. Main tutorial
+ ## 2. Main tutorial
  
- Once you have completed these tasks, you can do the main tutorial at https://github.com/djgroen/FabFlee/blob/master/doc/Tutorial.md
+ Once you have completed these tasks, you can do the advection-diffusion tutorial at:
+ 
+ https://github.com/wedeling/FabUQCampaign/blob/master/README.md
+ 
+ or the 2D ocean model tutorial at:
+ 
+ https://github.com/wedeling/FabUQCampaign/blob/master/Tutorial_ocean.md
