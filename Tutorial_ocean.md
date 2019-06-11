@@ -5,6 +5,9 @@ This plugin runs the samples from an ![EasyVVUQ](https://github.com/UCL-CCS/Easy
 Simply type `fabsim localhost install_plugin:FabUQCampaign` anywhere inside your FabSim3 install directory.
 
 ## Explanation of files
+
++ The `FabUQCampaign` directory contains all files listed below. This directory is located at `<fab_home>/plugins/FabUQCampaign`, where `<fab_home>` is your FabSim3 home directory.
+
 + `FabUQCampaign/FabUQCampaign.py`: contains the `run_UQ_sample` subroutine in which the job properties are specified, e.g. number of cores, memory, wall-time limit etc.
 
 + `FabUQCampaign/examples/ocean_2D/*`: an example script, applying EasyVVUQ to a 2D ocean model, see the Detailed Example section below.
