@@ -2,9 +2,7 @@
 This plugin runs the samples from an ![EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) campaign using ![FabSim3](https://github.com/djgroen/FabSim3) via the `campaign2ensemble` subroutine.
 
 ## Installation
-Simply type `fabsim localhost install_plugin:FabUQCampaign` anywhere inside your FabSim3 install directory.
-
-Note that FabUQCampaign relies on EasyVVUQ. As such, make sure you have EasyVVUQ installed.
+To install all dependencies, first follow the instructions in https://github.com/wedeling/FabUQCampaign/blob/master/Tutorial_Setup.md
 
 ## Explanation of files
 
@@ -15,9 +13,6 @@ Note that FabUQCampaign relies on EasyVVUQ. As such, make sure you have EasyVVUQ
 + `FabUQCampaign/examples/advection_diffusion/*`: an example script, applying EasyVVUQ to a 1D advection diffusion equation, see the Detailed Example section below.
 
 + `FabUQCampaign/templates/ade`: contains the command-line instruction to draw a single EasyVVUQ sample of the advection diffusion equation.
-
-## Dependencies
-+ The example below requires EasyVVUQ >= 0.3
 
 ## Detailed Example
 
