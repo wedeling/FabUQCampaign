@@ -6,7 +6,7 @@ advection-diffusion equation and 2D ocean model.
 
 ## Prerequisites
 
-To perform this tutorial, you will require 
+To perform the tutorials, you will require 
 * Linux environment
 * Python 3.6+
 * Python libraries
