@@ -2,7 +2,7 @@
 This plugin runs the samples from an ![EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) campaign using ![FabSim3](https://github.com/djgroen/FabSim3) via the `campaign2ensemble` subroutine.
 
 ## Installation
-Simply type `fab localhost install_plugin:FabUQCampaign` anywhere inside your FabSim3 install directory.
+Simply type `fabsim localhost install_plugin:FabUQCampaign` anywhere inside your FabSim3 install directory.
 
 Note that FabUQCampaign relies on EasyVVUQ. As such, make sure you have EasyVVUQ installed.
 
@@ -126,7 +126,7 @@ The file `examples/advection_diffusion/sc/ade_model.py` contains the finite-elem
 ```python
 def run_FabUQ_ensemble(campaign_dir, machine = 'localhost'):
     sim_ID = campaign_dir.split('/')[-1]
-    os.system("fab " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ade")
+    os.system("fabsim " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ade")
 ```
 
 7. Afterwards, post-processing tasks in EasyVVUQ can be undertaken via:
