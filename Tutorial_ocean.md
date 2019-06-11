@@ -2,7 +2,7 @@
 This plugin runs the samples from an ![EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) campaign using ![FabSim3](https://github.com/djgroen/FabSim3) via the `campaign2ensemble` subroutine.
 
 ## Installation
-Simply type `fabsim localhost install_plugin:FabUQCampaign` anywhere inside your FabSim3 install directory.
+To install all dependencies, first follow the instructions in https://github.com/wedeling/FabUQCampaign/blob/master/Tutorial_Setup.md
 
 ## Explanation of files
 
