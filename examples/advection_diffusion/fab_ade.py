@@ -13,7 +13,7 @@ home = os.path.expanduser('~')
 #subroutine which runs the EasyVVUQ ensemble with FabSim's campaign2ensemble 
 def run_FabUQ_ensemble(campaign_dir, machine = 'localhost'):
     sim_ID = campaign_dir.split('/')[-1]
-    os.system("fab " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ade")
+    os.system("fabsim " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ade")
 
 #An EasyVVUQ stochastic collocation advection diffusion example
 def test_sc(tmpdir):

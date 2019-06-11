@@ -15,7 +15,7 @@ home = os.path.expanduser('~')
 #If not, specify fab_results as well
 def run_FabUQ_ensemble(campaign_dir, machine = 'localhost'):
     sim_ID = campaign_dir.split('/')[-1]
-    os.system("fab " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ocean")
+    os.system("fabsim " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ocean")
 
 def test_sc(tmpdir):
     
@@ -78,7 +78,7 @@ def test_sc(tmpdir):
     my_campaign.populate_runs_dir()
  
     #Run execution using Fabsim (on the localhost)
-    run_FabUQ_ensemble(my_campaign.campaign_dir)
+    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='localhost')
     
 #   #Use this instead to run the samples using EasyVVUQ on the localhost
 #    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
