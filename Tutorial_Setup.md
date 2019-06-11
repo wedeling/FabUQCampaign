@@ -13,6 +13,7 @@ To perform the tutorials, you will require
    * numpy (see https://www.numpy.org)
    * EasyVVUQ (see https://github.com/UCL-CCS/EasyVVUQ)
    * matplotlib (see https://matplotlib.org)
+   * h5py (only for ocean model tutorial, see https://github.com/h5py/h5py)
 * The following software packages:
    * FabSim3
    * The FabUQCampaign plugin
