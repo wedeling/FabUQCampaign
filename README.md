@@ -12,7 +12,7 @@ To install all dependencies, first follow the instructions in https://github.com
 
 + `FabUQCampaign/FabUQCampaign.py`: contains the `run_UQ_sample` subroutine in which the job properties are specified, e.g. number of cores, memory, wall-time limit etc.
 
-+ `FabUQCampaign/examples/advection_diffusion/*`: an example script, applying EasyVVUQ to a 1D advection diffusion equation, see the Detailed Example section below.
++ `FabUQCampaign/examples/advection_diffusion/*`: an example script, applying EasyVVUQ to a 1D advection diffusion equation. See the Detailed Example section below.
 
 + `FabUQCampaign/templates/ade`: contains the command-line instruction to draw a single EasyVVUQ sample of the advection diffusion equation.
 
@@ -39,16 +39,16 @@ def uq_ensemble_ade(config="dummy_test",**args):
 ```
 
 ### Executing an ensemble job on localhost
-The governing equations of the advection-diffusion equations are:
+The advection-diffusion equation is given by:
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cfrac%7Bdu%7D%7Bdx%7D%20&plus;%20%5Cfrac%7B1%7D%7BPe%7D%5Cfrac%7Bd%5E2u%7D%7Bdx%5E2%7D%3Df),
 
-where the Peclet Number (Pe) and forcing term (f) are the uncertain SC parameters, and u is the velocity subject to Dirichlet boundary conditions u(0)=u(1)=0. The script executes the ensemble using FabSim, computes the first two moments of the output, generates some random sample of the SC surrogate and computes the Sobol indices of Pe and f.
+where the Peclet Number (Pe) and constant external forcing term (f) are the uncertain Stochastic Collocation (SC) parameters, and u is the velocity subject to Dirichlet boundary conditions u(0)=u(1)=0. The script executes the ensemble using FabSim, computes the first two moments of the output, generates some random sample of the SC surrogate and computes the Sobol indices of Pe and f.
 
 The file `examples/advection_diffusion/sc/ade_model.py` contains the finite-element solver which receives the values of Pe and f.  Most steps are exactly the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs:
 
  1. Create an EasyVVUQ campaign object: `my_campaign = uq.Campaign(name='sc', work_dir=tmpdir)`
- 2. Define the parameter space of the ade model, comprising of the uncertain parameters Pe and f, plus the name of the output file of `ade_model.py`:
+ 2. Define the parameter space of the advection diffusion equation, which consists of the uncertain parameters Pe and f, plus the name of the output file of `ade_model.py`:
  
 ```python
     params = {
@@ -145,7 +145,7 @@ To run the example script on a remote host, the `machine_name` of the remote hos
     run_FabUQ_ensemble(my_campaign.campaign_dir, machine='eagle')
 ```
 
-Ensure the host is defined in `machines.yml`, and the user login information and `$ade_exec` in `deploy/machines_user.yml`. For the `eagle` machine, this will look something like:
+Ensure the host is defined in `machines.yml`, and the user login information and `$ade_exec` in `deploy/machines_user.yml`. For the `eagle` machine, this will look similar to the following:
 ```
 eagle:
  username: "plg<your_username>"
