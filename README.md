@@ -102,7 +102,7 @@ The file `examples/advection_diffusion/sc/ade_model.py` contains the finite-elem
                         decoder=decoder)
  ```
  
- 4. Now we have to select a sampler, in this case we use the Stochastic Collocation (SC) sampler:
+ 4. Now we have to select a sampler, in this case we use the SC sampler:
  ```python
      my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=3)
      my_campaign.set_sampler(my_sampler)
