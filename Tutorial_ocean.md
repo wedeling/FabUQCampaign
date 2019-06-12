@@ -12,7 +12,7 @@ To install all dependencies, first follow the instructions in https://github.com
 
 + `FabUQCampaign/FabUQCampaign.py`: contains the `run_UQ_sample` subroutine in which the job properties are specified, e.g. number of cores, memory, wall-time limit etc.
 
-+ `FabUQCampaign/examples/ocean_2D/*`: an example script, applying EasyVVUQ to a 2D ocean model, see the Detailed Example section below.
++ `FabUQCampaign/examples/ocean_2D/*`: an example script, applying EasyVVUQ to a 2D ocean model. See the Detailed Example section below.
 
 + `FabUQCampaign/templates/ocean`: contains the command-line instruction to draw a single EasyVVUQ sample of the ocean model.
 
@@ -113,7 +113,7 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
                         decoder=decoder)
  ```
  
- 4. Now we have to select a sampler, in this case we use the Stochastic Collocation (SC) sampler:
+ 4. Now we have to select a sampler, in this case we use the SC sampler:
  ```python
      my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=3)
      my_campaign.set_sampler(my_sampler)
@@ -154,7 +154,7 @@ To run the example script on a remote host, the `machine_name` of the remote hos
     run_FabUQ_ensemble(my_campaign.campaign_dir, machine='eagle')
 ```
 
-Ensure the host is defined in `machines.yml`, and the user login information and `$ocean_exec` in `deploy/machines_user.yml`. For the `eagle` machine, this will look something like:
+Ensure the host is defined in `machines.yml`, and the user login information and `$ocean_exec` in `deploy/machines_user.yml`. For the `eagle` machine, this will look similar to the following:
 ```
 eagle:
  username: "plg<your_username>"
