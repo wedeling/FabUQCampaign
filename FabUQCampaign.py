@@ -61,14 +61,14 @@ def run_uq_ensemble(config, campaign_dir, script_name, **args):
 
     campaign2ensemble(config, campaign_dir=campaign_dir)
     uq_ensemble(config, script_name)
-    fetch_results()
-
-    #loop through all result dirs to find result dir of sim_ID
-    dirs = os.listdir(env.local_results)
-    for dir_i in dirs:
-        if config in dir_i:
-            break
-
-    print('Copying results from', env.local_results + '/' + dir_i + 'to' + campaign_dir)
-    ensemble2campaign(env.local_results + '/' + dir_i, campaign_dir, **args)
+#    fetch_results()
+#
+#    #loop through all result dirs to find result dir of sim_ID
+#    dirs = os.listdir(env.local_results)
+#    for dir_i in dirs:
+#        if config in dir_i:
+#            break
+#
+#    print('Copying results from', env.local_results + '/' + dir_i + 'to' + campaign_dir)
+#    ensemble2campaign(env.local_results + '/' + dir_i, campaign_dir, **args)
 

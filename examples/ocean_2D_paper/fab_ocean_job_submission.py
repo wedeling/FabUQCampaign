@@ -25,17 +25,17 @@ def test_sc(tmpdir):
     # Define parameter space
     params = {
         "decay_time_nu": {
-            "type": "real",
-            "min": "0.0",
-            "max": "1000.0",
-            "default": "5.0"},
+            "type": "float",
+            "min": 0.0,
+            "max": 1000.0,
+            "default": 5.0},
         "decay_time_mu": {
-            "type": "real",
-            "min": "0.0",
-            "max": "1000.0",
-            "default": "90.0"},
+            "type": "float",
+            "min": 0.0,
+            "max": 1000.0,
+            "default": 90.0},
         "out_file": {
-            "type": "str",
+            "type": "string",
             "default": "output.csv"}}
 
     output_filename = params["out_file"]["default"]
@@ -78,7 +78,7 @@ def test_sc(tmpdir):
     my_campaign.populate_runs_dir()
  
     #Run execution using Fabsim (on the localhost)
-    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='localhost')
+    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='eagle_vecma')
     
 #   #Use this instead to run the samples using EasyVVUQ on the localhost
 #    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
