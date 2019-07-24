@@ -78,7 +78,7 @@ def test_sc(tmpdir):
     my_campaign.populate_runs_dir()
  
     #Run execution using Fabsim (on the localhost)
-    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='eagle')
+    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='localhost')
     
 #   #Use this instead to run the samples using EasyVVUQ on the localhost
 #    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
