@@ -15,6 +15,7 @@ def run_FabUQ_ensemble(campaign_dir, machine = 'localhost'):
     sim_ID = campaign_dir.split('/')[-1]
     os.system("fabsim " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ocean")
 
+#Create EasyVVUQ Campaign and submit the jobs via FabSim3
 def run_sc_samples(tmpdir):
     
     # Set up a fresh campaign called "sc"
@@ -37,7 +38,7 @@ def run_sc_samples(tmpdir):
             "default": "output.csv"}}
 
     output_filename = params["out_file"]["default"]
-    output_columns = ["E", "Z"]
+    output_columns = ["E_mean", "Z_mean", "E_std", "Z_std"]
 
     # Create an encoder, decoder and collation element for PCE test app
     encoder = uq.encoders.GenericEncoder(
@@ -76,7 +77,7 @@ def run_sc_samples(tmpdir):
     my_campaign.populate_runs_dir()
  
     #Run execution using Fabsim (on the localhost)
-    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='eagle_vecma')
+    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='localhost')
     
     #Save the Campaign
     my_campaign.save_state("campaign_state.json")

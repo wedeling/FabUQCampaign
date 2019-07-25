@@ -190,12 +190,15 @@ mu = 1.0/(day*decay_time_mu)
 #start, end time (in days) + time step
 t = 0.0*day
 t_end = 1.0*day
+#initial time period during which no data is stored
+t_burn = 0.576*day
 dt = 0.01
 
+n_burn = np.ceil((t_burn-t)/dt).astype('int')
 n_steps = np.ceil((t_end-t)/dt).astype('int')
 
-E = np.zeros(n_steps)
-Z = np.zeros(n_steps)
+E = np.zeros(n_steps-n_burn)
+Z = np.zeros(n_steps-n_burn)
 
 #constant factor that appears in AB/BDI2 time stepping scheme, multiplying the Fourier coefficient w_hat_np1
 norm_factor = 1.0/(3.0/(2.0*dt) - nu*k_squared + mu)
@@ -252,13 +255,17 @@ print('Grid = ', N, 'x', N)
 print('t_begin = ', t/day, 'days')
 print('t_end = ', t_end/day, 'days')
 
+idx = 0
+
 #time loop
 for n in range(n_steps):
     
     #solve for next time step
     w_hat_np1_HF, VgradW_hat_n_HF = get_w_hat_np1(w_hat_n_HF, w_hat_nm1_HF, VgradW_hat_nm1_HF, P, norm_factor)
 
-    E[n] , Z[n] = compute_E_and_Z(w_hat_np1_HF, verbose=False)
+    if n >= n_burn:
+        E[idx] , Z[idx] = compute_E_and_Z(w_hat_np1_HF, verbose=False)
+        idx += 1
 
     #update variables
     t += dt
@@ -289,11 +296,11 @@ if state_store == True:
         qoi = eval(key)
         h5f.create_dataset(key, data = qoi)
         
-    h5f.close()  
+    h5f.close()
 
 #output csv file    
-header = 'E, Z'
-np.savetxt(output_filename, np.array([np.mean(E), np.mean(Z)]).reshape([1,2]), 
+header = 'E_mean, Z_mean, E_std, Z_std'
+np.savetxt(output_filename, np.array([np.mean(E), np.mean(Z), np.std(E), np.std(Z)]).reshape([1,4]), 
            delimiter=", ", comments='',
            header=header)
 #plt.show()

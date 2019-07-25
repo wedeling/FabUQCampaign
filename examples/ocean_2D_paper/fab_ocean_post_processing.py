@@ -28,16 +28,14 @@ def post_proc(tmpdir):
     output_columns = my_campaign._active_app_decoder.output_columns
     
     #fetch the results from the (remote) host via FabSim3
-    get_UQ_results(my_campaign.campaign_dir, machine='eagle_vecma')
+    get_UQ_results(my_campaign.campaign_dir, machine='localhost')
 
     #collate output
     my_campaign.collate()
 
     # Post-processing analysis
     sc_analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
-
     my_campaign.apply_analysis(sc_analysis)
-
     results = my_campaign.get_last_analysis()
 
     return results, my_campaign
@@ -50,12 +48,12 @@ if __name__ == "__main__":
     #test_sc("/tmp/")
 
     results, my_campaign = post_proc("/tmp/")
-    mu = results['statistical_moments']['E']['mean']
-    std = results['statistical_moments']['E']['std']
+    mu = results['statistical_moments']['E_mean']['mean']
+    std = results['statistical_moments']['E_mean']['std']
 
     print('=================================================')    
     print('Sobol indices E:')
-    print(results['sobol_indices']['E'])
+    print(results['sobol_indices']['E_mean'])
     print('Sobol indices Z:')
-    print(results['sobol_indices']['Z'])
+    print(results['sobol_indices']['Z_mean'])
     print('=================================================')

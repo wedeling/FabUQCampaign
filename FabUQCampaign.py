@@ -26,7 +26,7 @@ def run_UQ_sample(config,**args):
     update_environment(args)
     with_config(config)
     execute(put_configs,config)
-    job(dict(script='run_UQ_sample', wall_time='0:15:0', memory='2G'),args)
+    job(dict(script='run_UQ_sample', job_wall_time='0:15:0', memory='2G'),args)
 
 @task
 def uq_ensemble(config="dummy_test", script="ERROR: PARAMETER script SHOULD BE DEFINED FOR TASK UQ_ENSEMBLE",**args):

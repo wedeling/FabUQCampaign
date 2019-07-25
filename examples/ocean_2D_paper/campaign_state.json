@@ -1,10 +1,10 @@
 {
-    "db_location": "sqlite:////tmp/EasyVVUQ_Campaign_pmkkym_gtest.db",
+    "db_location": "sqlite:////tmp/EasyVVUQ_Campaign_dfq_32xltest.db",
     "db_type": "sql",
     "active_sampler_id": 1,
     "active_app": "sc",
     "campaign_name": "sc",
-    "campaign_dir": "EasyVVUQ_Campaign_pmkkym_g",
+    "campaign_dir": "EasyVVUQ_Campaign_dfq_32xl",
     "log": [
         {
             "element": {
