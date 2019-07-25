@@ -3,7 +3,6 @@
 # This source file is part of the FabSim software toolkit, which is distributed under the BSD 3-Clause license.
 # Please refer to LICENSE for detailed information regarding the licensing.
 #
-# This file contains FabSim definitions specific to FabDummy.
 
 from base.fab import *
 import os
@@ -58,6 +57,9 @@ def uq_ensemble_ade(config="dummy_test",**args):
 
 @task
 def run_uq_ensemble(config, campaign_dir, script_name, **args):
+    """
+    Generic subsmission of samples
+    """
 
     campaign2ensemble(config, campaign_dir=campaign_dir)
     uq_ensemble(config, script_name)
@@ -72,3 +74,19 @@ def run_uq_ensemble(config, campaign_dir, script_name, **args):
 #    print('Copying results from', env.local_results + '/' + dir_i + 'to' + campaign_dir)
 #    ensemble2campaign(env.local_results + '/' + dir_i, campaign_dir, **args)
 
+@task
+def get_uq_samples(config, campaign_dir, **args):
+    """
+    Fetches sample output from host, and copies results to EasyVVUQ work directory
+    """
+    
+    fetch_results()
+
+    #loop through all result dirs to find result dir of sim_ID
+    dirs = os.listdir(env.local_results)
+    for dir_i in dirs:
+        if config in dir_i:
+            break
+
+    print('Copying results from', env.local_results + '/' + dir_i + 'to' + campaign_dir)
+    ensemble2campaign(env.local_results + '/' + dir_i, campaign_dir, **args)

@@ -1,0 +1,20 @@
+{
+    "db_location": "sqlite:////tmp/EasyVVUQ_Campaign_pmkkym_gtest.db",
+    "db_type": "sql",
+    "active_sampler_id": 1,
+    "active_app": "sc",
+    "campaign_name": "sc",
+    "campaign_dir": "EasyVVUQ_Campaign_pmkkym_g",
+    "log": [
+        {
+            "element": {
+                "name": "sc_sampler",
+                "version": "0.3",
+                "category": "sampling"
+            },
+            "info": {
+                "num_added": 4
+            }
+        }
+    ]
+}
