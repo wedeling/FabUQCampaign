@@ -62,11 +62,11 @@ def run_sc_samples(tmpdir):
 
     # Create the sampler
     vary = {
-        "decay_time_nu": cp.Uniform(1.0, 7.0),
+        "decay_time_nu": cp.Uniform(1.0, 5.0),
         "decay_time_mu": cp.Uniform(85.0, 95.0)
     }
 
-    my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=1)
+    my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=5)
 
     # Associate the sampler with the campaign
     my_campaign.set_sampler(my_sampler)
@@ -77,10 +77,10 @@ def run_sc_samples(tmpdir):
     my_campaign.populate_runs_dir()
  
     #Run execution using Fabsim (on the localhost)
-    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='localhost')
+    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='eagle_vecma')
     
     #Save the Campaign
-    my_campaign.save_state("campaign_state.json")
+    my_campaign.save_state("campaign_state_p5.json")
     
 if __name__ == "__main__":
     
@@ -88,4 +88,4 @@ if __name__ == "__main__":
     HOME = os.path.abspath(os.path.dirname(__file__))
 
     #perform the EasyVVUQ steps up to sampling
-    run_sc_samples("/tmp/")
+    run_sc_samples(home + "/VECMA/Campaigns/")

@@ -41,6 +41,11 @@ def get_w_hat_np1(w_hat_n, w_hat_nm1, VgradW_hat_nm1, P, norm_factor, sgs_hat = 
     
     return w_hat_np1, VgradW_hat_n
 
+def draw():
+    plt.subplot(111)
+    plt.contourf(x, y, w_np1_HF, 100)
+    plt.tight_layout()
+
 #compute spectral filter
 def get_P(cutoff):
     
@@ -99,26 +104,31 @@ def compute_E_and_Z(w_hat_n, verbose=True):
 
 import numpy as np
 import os, h5py, sys, json
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+from drawnow import drawnow
 
 ####################################################################################
 # the json input file containing the values of the parameters, and the output file #
 ####################################################################################
 
-json_input = sys.argv[1]
+#json_input = sys.argv[1]
+#
+#with open(json_input, "r") as f:
+#    inputs = json.load(f)
+#    
+#decay_time_nu = float(inputs['decay_time_nu'])
+#decay_time_mu = float(inputs['decay_time_mu'])
+#
+#output_filename = inputs['outfile']
 
-with open(json_input, "r") as f:
-    inputs = json.load(f)
-    
-decay_time_nu = float(inputs['decay_time_nu'])
-decay_time_mu = float(inputs['decay_time_mu'])
-
-output_filename = inputs['outfile']
+decay_time_nu = 5.0
+decay_time_mu = 95.0
+output_filename = 'output.csv'
 
 ###############################################################################
 
-#plt.close('all')
-#plt.rcParams['image.cmap'] = 'seismic'
+plt.close('all')
+plt.rcParams['image.cmap'] = 'seismic'
 
 HOME = os.path.abspath(os.path.dirname(__file__))
 
@@ -189,16 +199,12 @@ mu = 1.0/(day*decay_time_mu)
 
 #start, end time (in days) + time step
 t = 0.0*day
-t_end = 1.0*day
+t_end = 100.0*day
 #initial time period during which no data is stored
-t_burn = 0.576*day
+t_burn = 65*day
 dt = 0.01
-
 n_burn = np.ceil((t_burn-t)/dt).astype('int')
 n_steps = np.ceil((t_end-t)/dt).astype('int')
-
-E = np.zeros(n_steps-n_burn)
-Z = np.zeros(n_steps-n_burn)
 
 #constant factor that appears in AB/BDI2 time stepping scheme, multiplying the Fourier coefficient w_hat_np1
 norm_factor = 1.0/(3.0/(2.0*dt) - nu*k_squared + mu)
@@ -212,6 +218,14 @@ sim_ID = 'run1'
 state_store = False
 #restart from a stored state
 restart = False
+#plot the solution during executaion
+plot = False
+plot_frame_rate = np.floor(1.0*day/dt).astype('int')
+#store data
+store = True
+store_frame_rate = np.floor(0.25*day/dt).astype('int')
+#data lists
+E = []; Z = []
 
 #forcing term
 F = 2**1.5*np.cos(5*x)*np.cos(5*y);
@@ -255,7 +269,8 @@ print('Grid = ', N, 'x', N)
 print('t_begin = ', t/day, 'days')
 print('t_end = ', t_end/day, 'days')
 
-idx = 0
+#some counters
+j = 0; j2 = 0
 
 #time loop
 for n in range(n_steps):
@@ -263,12 +278,24 @@ for n in range(n_steps):
     #solve for next time step
     w_hat_np1_HF, VgradW_hat_n_HF = get_w_hat_np1(w_hat_n_HF, w_hat_nm1_HF, VgradW_hat_nm1_HF, P, norm_factor)
 
-    if n >= n_burn:
-        E[idx] , Z[idx] = compute_E_and_Z(w_hat_np1_HF, verbose=False)
-        idx += 1
+    #plot solution every plot_frame_rate. Requires drawnow() package
+    if j == plot_frame_rate and plot == True:
+        j = 0
+
+        w_np1_HF = np.fft.irfft2(w_hat_np1_HF)
+        drawnow(draw)
+
+    #store data
+    if j2 == store_frame_rate and store == True:
+
+        j2 = 0
+        
+        if n >= n_burn:
+            E_n , Z_n = compute_E_and_Z(w_hat_np1_HF, verbose=False)
+            E.append(E_n); Z.append(Z_n)
 
     #update variables
-    t += dt
+    t += dt; j += 1; j2 += 1
     w_hat_nm1_HF = np.copy(w_hat_n_HF)
     w_hat_n_HF = np.copy(w_hat_np1_HF)
     VgradW_hat_nm1_HF = np.copy(VgradW_hat_n_HF)
@@ -298,9 +325,10 @@ if state_store == True:
         
     h5f.close()
 
-#output csv file    
-header = 'E_mean, Z_mean, E_std, Z_std'
-np.savetxt(output_filename, np.array([np.mean(E), np.mean(Z), np.std(E), np.std(Z)]).reshape([1,4]), 
-           delimiter=", ", comments='',
-           header=header)
+if store == True:
+    #output csv file    
+    header = 'E_mean, Z_mean, E_std, Z_std'
+    np.savetxt(output_filename, np.array([np.mean(E), np.mean(Z), np.std(E), np.std(Z)]).reshape([1,4]), 
+               delimiter=", ", comments='',
+               header=header)
 #plt.show()
