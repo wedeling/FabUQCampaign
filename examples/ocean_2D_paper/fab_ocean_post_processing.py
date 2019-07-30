@@ -20,7 +20,7 @@ def get_UQ_results(campaign_dir, machine = 'localhost'):
 def post_proc(tmpdir):
     
     #Reload the campaign
-    my_campaign = uq.Campaign(state_file="campaign_state_p4.json", work_dir=tmpdir)
+    my_campaign = uq.Campaign(state_file="campaign_state_p5.json", work_dir=tmpdir)
 
     print('========================================================')
     print('Reloaded campaign', my_campaign.campaign_dir.split('/')[-1])
@@ -56,6 +56,11 @@ if __name__ == "__main__":
     mu_Z = results['statistical_moments']['Z_mean']['mean']
     std_Z = results['statistical_moments']['Z_mean']['std']
 
+    print('========================================================')
+    print('Mean E =', mu_E)
+    print('Std E =', std_E)
+    print('Mean Z =', mu_Z)
+    print('Std E =', std_Z)
     print('========================================================')
     print('Sobol indices E:')
     print(results['sobol_indices']['E_mean'])

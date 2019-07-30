@@ -11,9 +11,9 @@ __license__ = "LGPL"
 home = os.path.expanduser('~')
 
 #subroutine which runs the EasyVVUQ ensemble with FabSim's campaign2ensemble 
-def run_FabUQ_ensemble(campaign_dir, machine = 'localhost'):
+def run_FabUQ_ensemble(campaign_dir, script_name, machine = 'localhost'):
     sim_ID = campaign_dir.split('/')[-1]
-    os.system("fabsim " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ocean")
+    os.system("fabsim " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=" + script_name)
 
 #Create EasyVVUQ Campaign and submit the jobs via FabSim3
 def run_sc_samples(tmpdir):
@@ -66,7 +66,7 @@ def run_sc_samples(tmpdir):
         "decay_time_mu": cp.Uniform(85.0, 95.0)
     }
 
-    my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=5)
+    my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=1)
 
     # Associate the sampler with the campaign
     my_campaign.set_sampler(my_sampler)
@@ -76,11 +76,11 @@ def run_sc_samples(tmpdir):
 
     my_campaign.populate_runs_dir()
  
-    #Run execution using Fabsim (on the localhost)
-    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='eagle_vecma')
+    #Run execution using Fabsim 
+    run_FabUQ_ensemble(my_campaign.campaign_dir, script_name='ocean', machine='localhost')
     
     #Save the Campaign
-    my_campaign.save_state("campaign_state_p5.json")
+    #my_campaign.save_state("campaign_state_p6.json")
     
 if __name__ == "__main__":
     

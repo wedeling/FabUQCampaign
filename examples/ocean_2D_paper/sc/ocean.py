@@ -199,9 +199,9 @@ mu = 1.0/(day*decay_time_mu)
 
 #start, end time (in days) + time step
 t = 0.0*day
-t_end = 100.0*day
+t_end = 1.0*day
 #initial time period during which no data is stored
-t_burn = 65*day
+t_burn = 0*day
 dt = 0.01
 n_burn = np.ceil((t_burn-t)/dt).astype('int')
 n_steps = np.ceil((t_end-t)/dt).astype('int')
