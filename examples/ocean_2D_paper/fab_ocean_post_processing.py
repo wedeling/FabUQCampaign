@@ -3,6 +3,7 @@ import numpy as np
 import easyvvuq as uq
 import matplotlib.pyplot as plt
 import os
+import fabsim3_cmd_api as fab
 
 # author: Wouter Edeling
 __license__ = "LGPL"
@@ -20,7 +21,7 @@ def get_UQ_results(campaign_dir, machine = 'localhost'):
 def post_proc(tmpdir):
     
     #Reload the campaign
-    my_campaign = uq.Campaign(state_file="campaign_state_p6.json", work_dir=tmpdir)
+    my_campaign = uq.Campaign(state_file="campaign_state_p4.json", work_dir=tmpdir)
 
     print('========================================================')
     print('Reloaded campaign', my_campaign.campaign_dir.split('/')[-1])
@@ -31,7 +32,8 @@ def post_proc(tmpdir):
     output_columns = my_campaign._active_app_decoder.output_columns
     
     #fetch the results from the (remote) host via FabSim3
-    get_UQ_results(my_campaign.campaign_dir, machine='eagle_vecma')
+    #get_UQ_results(my_campaign.campaign_dir, machine='eagle_vecma')
+    fab.get_uq_samples(my_campaign.campaign_dir, machine='eagle_vecma')
 
     #collate output
     my_campaign.collate()
@@ -75,7 +77,7 @@ if __name__ == "__main__":
     #################################
     
     #number of MC samples
-    n_mc = 5000
+    n_mc = 50
     
     #get the input distributions
     theta = my_sampler.vary.get_values()

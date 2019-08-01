@@ -3,6 +3,7 @@ import numpy as np
 import easyvvuq as uq
 import matplotlib.pyplot as plt
 import os
+import fabsim3_cmd_api as fab
 
 # author: Wouter Edeling
 __license__ = "LGPL"
@@ -77,10 +78,12 @@ def run_sc_samples(tmpdir):
     my_campaign.populate_runs_dir()
  
     #Run execution using Fabsim 
-    run_FabUQ_ensemble(my_campaign.campaign_dir, script_name='ocean', machine='localhost')
+    #run_FabUQ_ensemble(my_campaign.campaign_dir, script_name='ocean', machine='eagle_vecma')
+    
+    fab.run_uq_ensemble(my_campaign.campaign_dir, 'ocean', machine='eagle_vecma')
     
     #Save the Campaign
-    #my_campaign.save_state("campaign_state_p6.json")
+    my_campaign.save_state("campaign_state_tmp.json")
     
 if __name__ == "__main__":
     
