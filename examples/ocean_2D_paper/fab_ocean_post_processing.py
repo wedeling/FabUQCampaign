@@ -20,7 +20,7 @@ def get_UQ_results(campaign_dir, machine = 'localhost'):
 def post_proc(tmpdir):
     
     #Reload the campaign
-    my_campaign = uq.Campaign(state_file="campaign_state_p5.json", work_dir=tmpdir)
+    my_campaign = uq.Campaign(state_file="campaign_state_p6.json", work_dir=tmpdir)
 
     print('========================================================')
     print('Reloaded campaign', my_campaign.campaign_dir.split('/')[-1])
