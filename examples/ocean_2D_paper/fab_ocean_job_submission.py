@@ -11,16 +11,16 @@ __license__ = "LGPL"
 #home directory of user
 home = os.path.expanduser('~')
 
-#subroutine which runs the EasyVVUQ ensemble with FabSim's campaign2ensemble 
-def run_FabUQ_ensemble(campaign_dir, script_name, machine = 'localhost'):
-    sim_ID = campaign_dir.split('/')[-1]
-    os.system("fabsim " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=" + script_name)
+##subroutine which runs the EasyVVUQ ensemble with FabSim's campaign2ensemble 
+#def run_FabUQ_ensemble(campaign_dir, script_name, machine = 'localhost'):
+#    sim_ID = campaign_dir.split('/')[-1]
+#    os.system("fabsim " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=" + script_name)
 
 #Create EasyVVUQ Campaign and submit the jobs via FabSim3
 def run_sc_samples(tmpdir):
     
     # Set up a fresh campaign called "sc"
-    my_campaign = uq.Campaign(name='sc', work_dir=tmpdir)
+    my_campaign = uq.Campaign(name='ocean', work_dir=tmpdir)
 
     # Define parameter space
     params = {
