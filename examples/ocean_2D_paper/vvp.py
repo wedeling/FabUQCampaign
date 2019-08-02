@@ -32,9 +32,9 @@ SPECS of the aggregation_function:
 """
 
 """
-*******
-CHANGES
-*******
+***********
+SUGGESTIONS
+***********
 1) 'validate_ensemble_output' may not be a good name, this function will be 
    used for verification as well, changed it to 'ensemble_vvp'
 2) 'validation_function': same comment, changed it to 'partition_function',
