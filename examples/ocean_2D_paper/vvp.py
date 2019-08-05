@@ -40,9 +40,11 @@ SUGGESTIONS
 2) 'validation_function': same comment, changed it to 'partition_function',
    being the opposite of 'aggregation_function', something that acts on a single sample only
 3) print("AVERAGED VALIDATION SCORE ...) line is removed
-4) added **kwargs in case the partition function takes more than the result_dir as argument
+4) added **kwargs in case the partition/aggragation function takes more than the result_dir as argument
 5) added the possibility of multiple results_dirs
-6) added the possibility of selecting a subset of sample directories via 'sample_dirs' in kwargs 
+6) added the possibility of hand-selecting selecting (a subset of) the sample directories via 'items' in kwargs 
+   !! This is also required if the order in which the scores are appended is important
+   since os.listdirs returns an illogical order
 """
 
 def ensemble_vvp(results_dirs, partition_function, aggregation_function, **kwargs):
@@ -58,15 +60,14 @@ def ensemble_vvp(results_dirs, partition_function, aggregation_function, **kwarg
 
         scores = []
         
-        #use a subset of user-specified sample directories if specified, 
+        #use user-specified sample directories if specified, 
         #otherwise look for uq results in all directories in results_dir
-        if 'sample_dirs' in kwargs:
-            items = kwargs['sample_dirs']
+        if 'items' in kwargs:
+            items = kwargs['items']
         else:
             items = os.listdir("{}".format(results_dir))
         
         for item in items:
-            print(item)
             if os.path.isdir(os.path.join(results_dir, item)):
                 print(os.path.join(results_dir, item))
                 scores.append(partition_function(os.path.join(results_dir, item), **kwargs))

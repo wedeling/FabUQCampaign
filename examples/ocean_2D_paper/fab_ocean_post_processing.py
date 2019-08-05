@@ -19,7 +19,8 @@ home = os.path.expanduser('~')
 #    os.system("fabsim " + machine + " get_uq_samples:" + sim_ID + ",campaign_dir=" + campaign_dir)
 
 #should be part of EasyVVUQ SCSampler
-def load_uq_csv_output(run_dir, qoi='E_mean'):
+def load_uq_csv_output(run_dir, **kwargs):
+    qoi = kwargs['qoi']
     df = pd.read_csv(run_dir + '/output.csv', names=['E_mean', 'Z_mean', 'E_std', 'Z_std'])
     return np.float(df[qoi].values[1])
 
@@ -33,18 +34,32 @@ def load_uq_results(campaign_dir, **kwargs):
     return df
 
 def plot_convergence(scores, **kwargs):
-    
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    
+    """
+    plot the convegence of the statistical moments
+    """
     means = []
     stds = []    
     
     for score in scores:
         means.append(score['statistical_moments'][kwargs['qoi']]['mean'][0])
         stds.append(score['statistical_moments'][kwargs['qoi']]['std'][0])
-        
-    ax.plot(means, '-ro')
+
+    fig = plt.figure(figsize=[8,4])
+    ax1 = fig.add_subplot(121)
+    ax1.plot(means, '-bo')
+    ax2 = fig.add_subplot(122)
+    ax2.plot(stds, '-bo')
+    
+    ax1.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+    ax2.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+
+    plt.tight_layout()
+    
+def plot_samples_2D(scores, **kwargs):
+    
+    scores = np.array(scores).reshape([7,7])
+    plt.contourf(scores, 100)
+    plt.colorbar()
         
 #post processing of UQ samples executed via FabSim. All samples must have been completed
 #before this subroutine is executed. Use 'fabsim <machine_name> job_stat' to check their status
@@ -72,6 +87,7 @@ def post_proc(state_file, work_dir):
     sc_analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
     my_campaign.apply_analysis(sc_analysis)
     results = my_campaign.get_last_analysis()
+    results['n_samples'] = sc_analysis._number_of_samples
     
     #store data
     store_uq_results(my_campaign.campaign_dir, results)
@@ -85,28 +101,30 @@ if __name__ == "__main__":
 
     work_dir = home + "/VECMA/Campaigns/"
 
-    results, sc_analysis, my_sampler, my_campaign = post_proc(state_file="campaign_state_p4.json", work_dir = work_dir)
-    mu_E = results['statistical_moments']['E_mean']['mean']
-    std_E = results['statistical_moments']['E_mean']['std']
-    mu_Z = results['statistical_moments']['Z_mean']['mean']
-    std_Z = results['statistical_moments']['Z_mean']['std']
-
-    print('========================================================')
-    print('Mean E =', mu_E)
-    print('Std E =', std_E)
-    print('Mean Z =', mu_Z)
-    print('Std E =', std_Z)
-    print('========================================================')
-    print('Sobol indices E:')
-    print(results['sobol_indices']['E_mean'])
-    print(results['sobol_indices']['E_std'])
-    print('Sobol indices Z:')
-    print(results['sobol_indices']['Z_mean'])
-    print(results['sobol_indices']['Z_std'])
-    print('========================================================')
-     
-    my_campaign_p4 = uq.Campaign(state_file="campaign_state_p4.json", work_dir = work_dir)
-    my_campaign_p5 = uq.Campaign(state_file="campaign_state_p5.json", work_dir = work_dir)
+#    results, sc_analysis, my_sampler, my_campaign = post_proc(state_file="campaign_state_p6.json", work_dir = work_dir)
+#    mu_E = results['statistical_moments']['E_mean']['mean']
+#    std_E = results['statistical_moments']['E_mean']['std']
+#    mu_Z = results['statistical_moments']['Z_mean']['mean']
+#    std_Z = results['statistical_moments']['Z_mean']['std']
+#
+#    print('========================================================')
+#    print('Mean E =', mu_E)
+#    print('Std E =', std_E)
+#    print('Mean Z =', mu_Z)
+#    print('Std E =', std_Z)
+#    print('========================================================')
+#    print('Sobol indices E:')
+#    print(results['sobol_indices']['E_mean'])
+#    print(results['sobol_indices']['E_std'])
+#    print('Sobol indices Z:')
+#    print(results['sobol_indices']['Z_mean'])
+#    print(results['sobol_indices']['Z_std'])
+#    print('========================================================')
+#     
+#
+#    my_campaign_p3 = uq.Campaign(state_file="campaign_state_p3.json", work_dir = work_dir)
+#    my_campaign_p4 = uq.Campaign(state_file="campaign_state_p4.json", work_dir = work_dir)
+#    my_campaign_p5 = uq.Campaign(state_file="campaign_state_p5.json", work_dir = work_dir)
     my_campaign_p6 = uq.Campaign(state_file="campaign_state_p6.json", work_dir = work_dir)
 #    
 #    #make a histrogram from the samples for each EasyVVUQ campaign
@@ -114,12 +132,18 @@ if __name__ == "__main__":
 #                      my_campaign_p5.campaign_dir + '/runs',
 #                      my_campaign_p6.campaign_dir + '/runs'], 
 #                      load_uq_csv_output, plt.hist)
- 
-    sample_dirs = [my_campaign_p4.campaign_dir, my_campaign_p5.campaign_dir,
-                   my_campaign_p6.campaign_dir,]
-    #print the results for all EasyVVUQ campaigns found in the work directory
-    vvp.ensemble_vvp(work_dir, load_uq_results, plot_convergence, qoi='E_mean',
-                     sample_dirs=sample_dirs)
+# 
+#    sample_dirs = [my_campaign_p3.campaign_dir, 
+#                   my_campaign_p4.campaign_dir, 
+#                   my_campaign_p5.campaign_dir,
+#                   my_campaign_p6.campaign_dir]
+#    
+#    #print the results for all EasyVVUQ campaigns found in the work directory
+#    vvp.ensemble_vvp(work_dir, load_uq_results, plot_convergence, qoi='E_mean',
+#                     sample_dirs=sample_dirs)
+
+    items = ['Run_' + str(i) for i in range(1, 50)]
+    vvp.ensemble_vvp(my_campaign_p6.campaign_dir + '/runs', load_uq_csv_output, plot_samples_2D, qoi='E_mean', items=items)
 
     #################################
     # Use SC expansion as surrogate #

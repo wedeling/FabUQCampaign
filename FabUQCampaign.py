@@ -83,10 +83,15 @@ def get_uq_samples(config, campaign_dir, **args):
     fetch_results()
 
     #loop through all result dirs to find result dir of sim_ID
+    found = False
     dirs = os.listdir(env.local_results)
     for dir_i in dirs:
         if config in dir_i:
+            found = True
             break
 
-    print('Copying results from', env.local_results + '/' + dir_i + 'to' + campaign_dir)
-    ensemble2campaign(env.local_results + '/' + dir_i, campaign_dir, **args)
+    if found:
+        print('Copying results from', env.local_results + '/' + dir_i + 'to' + campaign_dir)
+        ensemble2campaign(env.local_results + '/' + dir_i, campaign_dir, **args)
+    else:
+        print('Campaign dir not found')

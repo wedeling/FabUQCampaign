@@ -67,8 +67,7 @@ def run_sc_samples(tmpdir):
         "decay_time_mu": cp.Uniform(85.0, 95.0)
     }
 
-    my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=3)
-
+    my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=1)
     # Associate the sampler with the campaign
     my_campaign.set_sampler(my_sampler)
 
@@ -78,12 +77,10 @@ def run_sc_samples(tmpdir):
     my_campaign.populate_runs_dir()
  
     #Run execution using Fabsim 
-    #run_FabUQ_ensemble(my_campaign.campaign_dir, script_name='ocean', machine='eagle_vecma')
-    
     fab.run_uq_ensemble(my_campaign.campaign_dir, 'ocean', machine='eagle_vecma')
     
     #Save the Campaign
-    my_campaign.save_state("campaign_state_p3.json")
+    my_campaign.save_state("campaign_state_p1.json")
     
 if __name__ == "__main__":
     
