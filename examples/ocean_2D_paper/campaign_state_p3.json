@@ -1,0 +1,20 @@
+{
+    "db_location": "sqlite:////home/wouter/VECMA/Campaigns/EasyVVUQ_Campaign_r09zk_ictest.db",
+    "db_type": "sql",
+    "active_sampler_id": 1,
+    "active_app": "sc",
+    "campaign_name": "ocean",
+    "campaign_dir": "EasyVVUQ_Campaign_r09zk_ic",
+    "log": [
+        {
+            "element": {
+                "name": "sc_sampler",
+                "version": "0.3",
+                "category": "sampling"
+            },
+            "info": {
+                "num_added": 16
+            }
+        }
+    ]
+}
