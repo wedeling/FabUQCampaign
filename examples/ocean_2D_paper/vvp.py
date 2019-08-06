@@ -37,17 +37,17 @@ SUGGESTIONS
 ***********
 1) 'validate_ensemble_output' may not be a good name, this function will be 
    used for verification as well, changed it to 'ensemble_vvp'
-2) 'validation_function': same comment, changed it to 'partition_function',
+2) 'validation_function': same comment, changed it to 'sample_testing_function',
    being the opposite of 'aggregation_function', something that acts on a single sample only
 3) print("AVERAGED VALIDATION SCORE ...) line is removed
-4) added **kwargs in case the partition/aggragation function takes more than the result_dir as argument
+4) added **kwargs in case the sample_testing/aggragation function takes more than the result_dir as argument
 5) added the possibility of multiple results_dirs
 6) added the possibility of hand-selecting selecting (a subset of) the sample directories via 'items' in kwargs 
    !! This is also required if the order in which the scores are appended is important
    since os.listdirs returns an illogical order
 """
 
-def ensemble_vvp(results_dirs, partition_function, aggregation_function, **kwargs):
+def ensemble_vvp(results_dirs, sample_testing_function, aggregation_function, **kwargs):
     """
     Goes through all the output directories and calculates the scores.
     """
@@ -70,7 +70,7 @@ def ensemble_vvp(results_dirs, partition_function, aggregation_function, **kwarg
         for item in items:
             if os.path.isdir(os.path.join(results_dir, item)):
                 print(os.path.join(results_dir, item))
-                scores.append(partition_function(os.path.join(results_dir, item), **kwargs))
+                scores.append(sample_testing_function(os.path.join(results_dir, item), **kwargs))
     
         #print("scores:", scores)
         aggregation_function(scores, **kwargs)
