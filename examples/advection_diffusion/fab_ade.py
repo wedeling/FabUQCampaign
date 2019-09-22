@@ -24,17 +24,17 @@ def test_sc(tmpdir):
     # Define parameter space
     params = {
         "Pe": {
-            "type": "real",
-            "min": "1.0",
-            "max": "2000.0",
-            "default": "100.0"},
+            "type": "float",
+            "min": 1.0,
+            "max": 2000.0,
+            "default": 100.0},
         "f": {
-            "type": "real",
-            "min": "0.0",
-            "max": "10.0",
-            "default": "1.0"},
+            "type": "float",
+            "min": 0.0,
+            "max": 10.0,
+            "default": 1.0},
         "out_file": {
-            "type": "str",
+            "type": "string",
             "default": "output.csv"}}
 
     output_filename = params["out_file"]["default"]
@@ -74,12 +74,12 @@ def test_sc(tmpdir):
     my_campaign.draw_samples()
     my_campaign.populate_runs_dir()
  
-    #Run execution using Fabsim (on the localhost)
-    run_FabUQ_ensemble(my_campaign.campaign_dir)
+#    #Run execution using Fabsim (on the localhost)
+#    run_FabUQ_ensemble(my_campaign.campaign_dir)
     
 #   Use this instead to run the samples using EasyVVUQ on the localhost
-#    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
-#        "./sc/ade_model.py ade_in.json"))
+    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
+        "./sc/ade_model.py ade_in.json"))
 
     my_campaign.collate()
 
