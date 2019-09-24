@@ -77,10 +77,10 @@ def run_sc_samples(tmpdir):
     my_campaign.populate_runs_dir()
  
     #Run execution using Fabsim 
-    fab.run_uq_ensemble(my_campaign.campaign_dir, 'ocean', machine='eagle_vecma')
+    fab.run_uq_ensemble(my_campaign.campaign_dir, 'ocean', machine='localhost')
     
     #Save the Campaign
-    my_campaign.save_state("campaign_state_p1.json")
+    my_campaign.save_state("campaign_state_test.json")
     
 if __name__ == "__main__":
     
