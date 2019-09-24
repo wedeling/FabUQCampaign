@@ -49,17 +49,14 @@ def run_sc_samples(tmpdir):
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                     output_columns=output_columns,
                                     header=0)
+    collater = uq.collate.AggregateSamples(average=False)
 
     # Add the SC app (automatically set as current app)
     my_campaign.add_app(name="sc",
                         params=params,
                         encoder=encoder,
-                        decoder=decoder
-                        )
-    
-    # Create a collation element for this campaign
-    collater = uq.collate.AggregateSamples(average=False)
-    my_campaign.set_collater(collater)
+                        decoder=decoder,
+                        collater=collater)    
 
     # Create the sampler
     vary = {
@@ -88,4 +85,4 @@ if __name__ == "__main__":
     HOME = os.path.abspath(os.path.dirname(__file__))
 
     #perform the EasyVVUQ steps up to sampling
-    run_sc_samples(home + "/VECMA/Campaigns/")
+    run_sc_samples("/tmp")

@@ -1,0 +1,20 @@
+{
+    "db_location": "sqlite:////tmp/EasyVVUQ_Campaign_lo14vvx6test.db",
+    "db_type": "sql",
+    "active_app": "sc",
+    "campaign_name": "ocean",
+    "campaign_dir": "EasyVVUQ_Campaign_lo14vvx6",
+    "log": [
+        {
+            "element": {
+                "name": "sc_sampler",
+                "version": "0.4",
+                "category": "sampling"
+            },
+            "info": {
+                "num_added": 4,
+                "replicas": 1
+            }
+        }
+    ]
+}

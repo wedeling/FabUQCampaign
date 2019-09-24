@@ -104,31 +104,31 @@ def compute_E_and_Z(w_hat_n, verbose=True):
 
 import numpy as np
 import os, h5py, sys, json
-import matplotlib.pyplot as plt
-from drawnow import drawnow
+#import matplotlib.pyplot as plt
+#from drawnow import drawnow
 
 ####################################################################################
 # the json input file containing the values of the parameters, and the output file #
 ####################################################################################
 
-#json_input = sys.argv[1]
-#
-#with open(json_input, "r") as f:
-#    inputs = json.load(f)
-#    
-#decay_time_nu = float(inputs['decay_time_nu'])
-#decay_time_mu = float(inputs['decay_time_mu'])
-#
-#output_filename = inputs['outfile']
+json_input = sys.argv[1]
 
-decay_time_nu = 5.0
-decay_time_mu = 95.0
-output_filename = 'output.csv'
+with open(json_input, "r") as f:
+    inputs = json.load(f)
+    
+decay_time_nu = float(inputs['decay_time_nu'])
+decay_time_mu = float(inputs['decay_time_mu'])
+
+output_filename = inputs['outfile']
+
+#decay_time_nu = 5.0
+#decay_time_mu = 95.0
+#output_filename = 'output.csv'
 
 ###############################################################################
 
-plt.close('all')
-plt.rcParams['image.cmap'] = 'seismic'
+#plt.close('all')
+#plt.rcParams['image.cmap'] = 'seismic'
 
 HOME = os.path.abspath(os.path.dirname(__file__))
 
@@ -199,9 +199,9 @@ mu = 1.0/(day*decay_time_mu)
 
 #start, end time (in days) + time step
 t = 0.0*day
-t_end = 1.0*day
+t_end = t + 1*day
 #initial time period during which no data is stored
-t_burn = 0*day
+t_burn = 0.0*day
 dt = 0.01
 n_burn = np.ceil((t_burn-t)/dt).astype('int')
 n_steps = np.ceil((t_end-t)/dt).astype('int')

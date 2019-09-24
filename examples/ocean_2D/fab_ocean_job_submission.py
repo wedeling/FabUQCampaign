@@ -3,6 +3,7 @@ import numpy as np
 import easyvvuq as uq
 import matplotlib.pyplot as plt
 import os
+import fabsim3_cmd_api as fab
 
 # author: Wouter Edeling
 __license__ = "LGPL"
@@ -20,26 +21,26 @@ def run_FabUQ_ensemble(campaign_dir, machine = 'localhost'):
 def test_sc(tmpdir):
     
     # Set up a fresh campaign called "sc"
-    my_campaign = uq.Campaign(name='sc', work_dir=tmpdir)
+    my_campaign = uq.Campaign(name='ocean', work_dir=tmpdir)
 
     # Define parameter space
     params = {
         "decay_time_nu": {
-            "type": "real",
-            "min": "0.0",
-            "max": "1000.0",
-            "default": "5.0"},
+            "type": "float",
+            "min": 0.0,
+            "max": 1000.0,
+            "default": 5.0},
         "decay_time_mu": {
-            "type": "real",
-            "min": "0.0",
-            "max": "1000.0",
-            "default": "90.0"},
+            "type": "float",
+            "min": 0.0,
+            "max": 1000.0,
+            "default": 90.0},
         "out_file": {
-            "type": "str",
+            "type": "string",
             "default": "output.csv"}}
 
     output_filename = params["out_file"]["default"]
-    output_columns = ["E"]
+    output_columns = ["E_mean"]
 
     # Create an encoder, decoder and collation element for PCE test app
     encoder = uq.encoders.GenericEncoder(
@@ -49,26 +50,22 @@ def test_sc(tmpdir):
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                     output_columns=output_columns,
                                     header=0)
+    collater = uq.collate.AggregateSamples(average=False)
 
     # Add the SC app (automatically set as current app)
     my_campaign.add_app(name="sc",
                         params=params,
                         encoder=encoder,
-                        decoder=decoder
-                        )
-    
-    # Create a collation element for this campaign
-    collater = uq.collate.AggregateSamples(average=False)
-    my_campaign.set_collater(collater)
+                        decoder=decoder,
+                        collater=collater)    
 
     # Create the sampler
     vary = {
-        "decay_time_nu": cp.Normal(5.0, 0.1),
-        "decay_time_mu": cp.Normal(90.0, 1.0)
+        "decay_time_nu": cp.Uniform(1.0, 5.0),
+        "decay_time_mu": cp.Uniform(85.0, 95.0)
     }
 
     my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=1)
-
     # Associate the sampler with the campaign
     my_campaign.set_sampler(my_sampler)
 
@@ -77,40 +74,17 @@ def test_sc(tmpdir):
 
     my_campaign.populate_runs_dir()
  
-    #Run execution using Fabsim (on the localhost)
-    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='localhost')
-    
-#   #Use this instead to run the samples using EasyVVUQ on the localhost
-#    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
-#        "./sc/ocean.py ocean_in.json"))
+    #Run execution using Fabsim 
+    fab.run_uq_ensemble(my_campaign.campaign_dir, 'ocean', machine='localhost')
 
-    my_campaign.collate()
-
-    # Post-processing analysis
-    sc_analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
-
-    my_campaign.apply_analysis(sc_analysis)
-
-    results = my_campaign.get_last_analysis()
-
-    # Save and reload campaign
-    state_file = tmpdir + "sc_state.json"
-    my_campaign.save_state(state_file)
-    new = uq.Campaign(state_file=state_file, work_dir=tmpdir)
-    print(new)
-
-    return results, sc_analysis
-
+    #Save the Campaign
+    my_campaign.save_state("campaign_state_test.json")
+ 
 if __name__ == "__main__":
     
     #home dir of this file    
     HOME = os.path.abspath(os.path.dirname(__file__))
-
-    results, analysis = test_sc("/tmp/")
-    mu = results['statistical_moments']['E']['mean']
-    std = results['statistical_moments']['E']['std']
-
-    print('=================================================')    
-    print('Sobol indices:')
-    print(results['sobol_indices']['E'])
-    print('=================================================')    
+    
+    test_sc("/tmp")
+  
+    print('Job submission complete')
