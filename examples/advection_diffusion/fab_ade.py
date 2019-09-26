@@ -104,7 +104,7 @@ std = results['statistical_moments']['u']['std']
 x = np.linspace(0, 1, 301)
 
 fig = plt.figure(figsize=[10, 5])
-ax = fig.add_subplot(121, xlabel='x', ylabel='u',
+ax = fig.add_subplot(121, xlabel='location x', ylabel='velocity u',
                      title=r'code mean +/- standard deviation')
 ax.plot(x, mu, 'b', label='mean')
 ax.plot(x, mu + std, '--r', label='std-dev')
@@ -115,7 +115,7 @@ ax.plot(x, mu - std, '--r')
 #####################################
 
 
-ax = fig.add_subplot(122, xlabel='x', ylabel='u',
+ax = fig.add_subplot(122, xlabel='location x', ylabel='velocity u',
                      title='Surrogate samples')
 
 #generate n_mc samples from the input distributions
@@ -141,7 +141,7 @@ plt.tight_layout()
 fig = plt.figure()
 ax = fig.add_subplot(
     111,
-    xlabel='x',
+    xlabel='location x',
     ylabel='Sobol indices',
     title='spatial dist. Sobol indices, Pe only important in viscous regions')
 

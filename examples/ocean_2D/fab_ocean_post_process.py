@@ -55,8 +55,10 @@ if __name__ == "__main__":
     results, sc_analysis, my_sampler, my_campaign = post_proc(state_file="campaign_state_test.json", work_dir = work_dir)
 
     print('========================================================')
-    print('Sobol indices E:')
-    print(results['sobols']['E_mean'])
+    print('First order Sobol indices Energy:')
+    print(results['sobols_first']['E_mean'])
+    for param in my_sampler.vary.get_keys():
+        print('Parameter', param, 'accounts for', np.around(results['sobols_first']['E_mean'][param], 2)[0]*100, '% of the total variance.')
     print('========================================================')
 
     #################################
@@ -67,7 +69,7 @@ if __name__ == "__main__":
     n_mc = 50000
     
     fig = plt.figure()
-    ax = fig.add_subplot(111, xlabel=r'$E$', yticks = [])
+    ax = fig.add_subplot(111, xlabel=r'$Energy$', yticks = [])
     
     #get the input distributions
     theta = my_sampler.vary.get_values()
