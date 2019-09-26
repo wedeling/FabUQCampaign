@@ -58,7 +58,7 @@ if __name__ == "__main__":
     print('First order Sobol indices Energy:')
     print(results['sobols_first']['E_mean'])
     for param in my_sampler.vary.get_keys():
-        print('Parameter', param, 'accounts for', np.around(results['sobols_first']['E_mean'][param], 2)[0]*100, '% of the total variance.')
+        print('Parameter', param, 'accounts for', np.around(results['sobols_first']['E_mean'][param], 2)[0]*100, '% of the total variance of the energy.')
     print('========================================================')
 
     #################################
