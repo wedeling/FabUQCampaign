@@ -114,7 +114,26 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
      my_campaign.draw_samples()
      my_campaign.populate_runs_dir()
  ```
+
+6. The only part of the code that changes compared to a EasyVVUQ campaign without FabSim is the job execution, and the retrieval of the results. We use FabSim to run the ensemble via:
  
+ ```python
+fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='ocean', machine='localhost')
+ ```
+6. (continued) Here `script_name` refers to the `ocean.template` file. Futhermore, `fab` is a simple FabSim API located in the same directory as the example script. It allows us to run FabSim commands from within a Python environment. Besides submitting the ensemble, `fab` is also used to retrieve the results when the job execution has completed:
+
+```python
+fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
+```
+
+7. Afterwards, post-processing tasks in EasyVVUQ continues in the normal fashion via:
+```python
+    sc_analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
+    my_campaign.apply_analysis(sc_analysis)
+    results = my_campaign.get_last_analysis()
+```
+7. (continued) The `results` dict contains the first 2 statistical moments and Sobol indices for every quantity of interest defined in `output_columns`. If the PCE sampler was used, `SCAnalysis` should be replaced with `PCEAnalysis`.
+
 
 
 Ensure the host is defined in `machines.yml`, and the user login information and `$ocean_exec` in `deploy/machines_user.yml`. For the `eagle` machine, this will look similar to the following:
