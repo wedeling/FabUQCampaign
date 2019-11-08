@@ -134,7 +134,13 @@ fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
 ```
 7. (continued) The `results` dict contains the first 2 statistical moments and Sobol indices for every quantity of interest defined in `output_columns`. If the PCE sampler was used, `SCAnalysis` should be replaced with `PCEAnalysis`.
 
+### Executing an ensemble job on a remote host
 
+To run the example script on a remote host, the `machine` of the remote host must be passed to `fab.run_uq_ensemble`, e.g.:
+
+```python
+ fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='ocean', machine='eagle_vecma')
+```
 
 Ensure the host is defined in `machines.yml`, and the user login information and `$ocean_exec` in `deploy/machines_user.yml`. For the `eagle` machine, this will look similar to the following:
 ```
