@@ -32,18 +32,6 @@ To install all dependencies, first follow the instructions in https://github.com
 
 Here, `<fab_home>` is the same directory as specifed above.
 
-+ To couple this ocean template to FabUQCampaign, the following code is added to `FabUQCampaign.py`:
-
-```py
-@task
-def uq_ensemble_ocean(config="dummy_test",**args):
-    """
-    Submits an ocean_2D ensemble.
-    """
-    uq_ensemble(config, 'ocean', **args)
-```
-
-
 ### Executing an ensemble job on localhost
 In the examples folder the script `examples/ocean_2D/sc/ocean.py` runs an EasyVVUQ Stochastic Collocation (SC) campaign using FabSim3 for a 2D ocean model on a square domain with periodic boundary conditions. Essentially, the governing equations are the Navier-Stokes equations written in terms of the vorticity ![equation](https://latex.codecogs.com/gif.latex?%5Comega) and stream function ![equation](https://latex.codecogs.com/gif.latex?%5CPsi), plus an additional forcing term F:
 
@@ -102,15 +90,15 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
                                     output_columns=output_columns,
                                     header=0)
 
-    collater = uq.collate.AggregateSamples(average=False)
-    my_campaign.set_collater(collater)
+    collater = uq.collate.AggregateSamples()
 ```
 3. (continued) `HOME` is the absolute path to the script file. The app is then added to the EasyVVUQ campaign object via
  ```python
      my_campaign.add_app(name="sc",
                         params=params,
                         encoder=encoder,
-                        decoder=decoder)
+                        decoder=decoder,
+                        collator=collator)
  ```
  
  4. Now we have to select a sampler, in this case we use the SC sampler:
@@ -127,32 +115,7 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
      my_campaign.populate_runs_dir()
  ```
  
-6. We then use FabSim to run the ensemble via:
- 
- ```python
- run_FabUQ_ensemble(my_campaign.campaign_dir)
- ```
-6. (continued) the subroutine `run_FabUQ_campaign` is located in the same file as the example script. It basically executes a single command line instruction:
 
-```python
-def run_FabUQ_ensemble(campaign_dir, machine = 'localhost'):
-    sim_ID = campaign_dir.split('/')[-1]
-    os.system("fabsim " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=ocean")
-```
-7. Afterwards, post-processing tasks in EasyVVUQ can be undertaken via:
-```python
-    sc_analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
-    my_campaign.apply_analysis(sc_analysis)
-    results = my_campaign.get_last_analysis()
-```
-7. (continued) The `results` dict contains the first 2 statistical moments and Sobol indices for every quantity of interest defined in `output_columns`. 
-### Executing an ensemble job on a remote host
-
-To run the example script on a remote host, the `machine_name` of the remote host must be passed to `run_FabUQ_ensemble`, e.g.:
-
-```python
-    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='eagle')
-```
 
 Ensure the host is defined in `machines.yml`, and the user login information and `$ocean_exec` in `deploy/machines_user.yml`. For the `eagle` machine, this will look similar to the following:
 ```
