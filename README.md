@@ -27,17 +27,6 @@ To install all dependencies, first follow the instructions in https://github.com
 
 Here, `<fab_home>` is your FabSim3 home directory.
 
-+ To couple this advection diffusion template to FabUQCampaign, the following code is added to `FabUQCampaign.py`:
-
-```py
-@task
-def uq_ensemble_ade(config="dummy_test",**args):
-    """
-    Submits an advection_diffusion ensemble.
-    """
-    uq_ensemble(config, 'ade', **args)
-```
-
 ### Executing an ensemble job on localhost
 The advection-diffusion equation is given by:
 
