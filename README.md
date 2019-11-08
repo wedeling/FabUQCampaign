@@ -105,15 +105,18 @@ my_campaign.add_app(name="sc",
      my_campaign.populate_runs_dir()
  ```
 
-6. We then use FabSim to run the ensemble via:
+6. The only part of the code that changes compared to a EasyVVUQ campaign without FabSim is the job execution, and the retrieval of the results. We use FabSim to run the ensemble via:
  
  ```python
 fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='ade', machine='localhost')
  ```
-6. (continued) 
+6. (continued) Here `script_name` refers to the `ade.template` file. Futhermore, `fab` is a simple FabSim API located in the same directory as the example script. It allows us to run FabSim commands from within a Python environment. Besides submitting the ensemble, `fab` is also used to retrieve the results when the job execution has completed:
 
+```python
+fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
+```
 
-7. Afterwards, post-processing tasks in EasyVVUQ can be undertaken via:
+7. Afterwards, post-processing tasks in EasyVVUQ continues in the normal fashion via:
 ```python
     sc_analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
     my_campaign.apply_analysis(sc_analysis)
@@ -123,15 +126,15 @@ fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='ade', machine='localh
 
 ### Executing an ensemble job on a remote host
 
-To run the example script on a remote host, the `machine_name` of the remote host must be passed to `run_FabUQ_ensemble`, e.g.:
+To run the example script on a remote host, the `machine` of the remote host must be passed to `fab.run_uq_ensemble`, e.g.:
 
 ```python
-    run_FabUQ_ensemble(my_campaign.campaign_dir, machine='eagle')
+ fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='ade', machine='eagle_vecma')
 ```
 
-Ensure the host is defined in `machines.yml`, and the user login information and `$ade_exec` in `deploy/machines_user.yml`. For the `eagle` machine, this will look similar to the following:
+Ensure the host is defined in `machines.yml`, and the user login information and `$ade_exec` in `deploy/machines_user.yml`. For the `eagle_vecma` machine, this will look similar to the following:
 ```
-eagle:
+eagle_vecma:
  username: "plg<your_username>"
  budget: "vecma2019"
  ade_exec: "/home/plgrid/plg<your_username>/ade_model.py"
