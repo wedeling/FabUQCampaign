@@ -150,3 +150,8 @@ eagle:
  ocean_exec: "/home/plgrid/plg<your_username>/ocean.py"
 ```
 
+To automatically setup the ssh keys, and prevent having to login manually for every random sample, run the following from the command line:
+
+```
+fab eagle_vecma setup_ssh_keys
+```
