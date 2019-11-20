@@ -140,8 +140,8 @@ eagle_vecma:
  ade_exec: "/home/plgrid/plg<your_username>/ade_model.py"
 ```
 
-To automatically setup the ssh keys, and prevent having to login manually for every random sample, use:
+To automatically setup the ssh keys, and prevent having to login manually for every random sample, run the following from the command line:
 
 ```
-fab <machine_name> setup_ssh_keys
+fab eagle_vecma setup_ssh_keys
 ```
