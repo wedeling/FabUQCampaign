@@ -33,7 +33,7 @@ To install all dependencies, first follow the instructions in https://github.com
 Here, `<fab_home>` is the same directory as specifed above.
 
 ### Executing an ensemble job on localhost
-In the examples folder the script `examples/ocean_2D/sc/ocean.py` runs an EasyVVUQ Stochastic Collocation (SC) campaign using FabSim3 for a 2D ocean model on a square domain with periodic boundary conditions. Essentially, the governing equations are the Navier-Stokes equations written in terms of the vorticity ![equation](https://latex.codecogs.com/gif.latex?%5Comega) and stream function ![equation](https://latex.codecogs.com/gif.latex?%5CPsi), plus an additional forcing term F:
+In the examples folder the script `examples/ocean_2D/sc/ocean.py` runs an EasyVVUQ Stochastic Collocation (SC) campaign using FabSim3 for a 2D ocean model on a square domain with periodic boundary conditions. Essentially, the governing equations are the Navier-Stokes equations written in terms of the vorticity ![equation](https://latex.codecogs.com/gif.latex?%5Comega) and stream function ![equation](https://latex.codecogs.com/gif.latex?%5CPsi), plus an additional forcing term F, and normalized with geophysical length and time scales:
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Cpartial%5Comega%7D%7B%5Cpartial%20t%7D%20&plus;%20%5Cfrac%7B%5Cpartial%5CPsi%7D%7B%5Cpartial%20x%7D%5Cfrac%7B%5Cpartial%5Comega%7D%7B%5Cpartial%20y%7D%20-%20%5Cfrac%7B%5Cpartial%5CPsi%7D%7B%5Cpartial%20y%7D%5Cfrac%7B%5Cpartial%5Comega%7D%7B%5Cpartial%20x%7D%20%3D%20%7B%5Ccolor%7BRed%7D%20%5Cnu%7D%5Cnabla%5E2%5Comega%20&plus;%20%7B%5Ccolor%7BRed%7D%5Cmu%7D%5Cleft%28F-%5Comega%5Cright%29)
 
