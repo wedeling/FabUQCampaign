@@ -4,12 +4,14 @@ import easyvvuq as uq
 import matplotlib.pyplot as plt
 import os
 import fabsim3_cmd_api as fab
+import tkinter as tk
+from tkinter import filedialog
 
 # author: Wouter Edeling
 __license__ = "LGPL"
 
 #home directory of user
-home = os.path.expanduser('~')
+#home = os.path.expanduser('~')
 
 ##subroutine which runs the EasyVVUQ ensemble with FabSim's campaign2ensemble 
 #def run_FabUQ_ensemble(campaign_dir, script_name, machine = 'localhost'):
@@ -17,10 +19,10 @@ home = os.path.expanduser('~')
 #    os.system("fabsim " + machine + " run_uq_ensemble:" + sim_ID + ",campaign_dir=" + campaign_dir + ",script_name=" + script_name)
 
 #Create EasyVVUQ Campaign and submit the jobs via FabSim3
-def run_sc_samples(tmpdir):
+def run_sc_samples(work_dir):
     
     # Set up a fresh campaign called "sc"
-    my_campaign = uq.Campaign(name='ocean', work_dir=tmpdir)
+    my_campaign = uq.Campaign(name='ocean', work_dir=work_dir)
 
     # Define parameter space
     params = {
@@ -64,25 +66,30 @@ def run_sc_samples(tmpdir):
         "decay_time_mu": cp.Uniform(85.0, 95.0)
     }
 
-    my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=1)
+    my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=6)
     # Associate the sampler with the campaign
     my_campaign.set_sampler(my_sampler)
-
-    # Will draw all (of the finite set of samples)
-    my_campaign.draw_samples()
-
-    my_campaign.populate_runs_dir()
- 
-    #Run execution using Fabsim 
-    fab.run_uq_ensemble(my_campaign.campaign_dir, 'ocean', machine='localhost')
     
-    #Save the Campaign
-    my_campaign.save_state("campaign_state_test.json")
+#    # Will draw all (of the finite set of samples)
+#    my_campaign.draw_samples()
+#
+#    my_campaign.populate_runs_dir()
+# 
+#    #Run execution using Fabsim 
+#    fab.run_uq_ensemble(my_campaign.campaign_dir, 'ocean', machine='eagle_vecma')
+#    
+#    #Save the Campaign
+#    my_campaign.save_state("campaign_state_256run.json")
     
 if __name__ == "__main__":
     
     #home dir of this file    
     HOME = os.path.abspath(os.path.dirname(__file__))
+    
+    print("Select work directory for EasyVVUQ Campaign files")
+    root = tk.Tk()
+    root.withdraw()
+    work_dir = filedialog.askdirectory()
 
     #perform the EasyVVUQ steps up to sampling
-    run_sc_samples("/tmp")
+    run_sc_samples(work_dir)

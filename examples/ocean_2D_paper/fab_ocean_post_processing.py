@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import os
 import fabsim3_cmd_api as fab
 import pandas as pd
-import vvp
+from sklearn.neighbors.kde import KernelDensity
 from scipy import stats
 
 # author: Wouter Edeling
@@ -58,20 +58,35 @@ def plot_convergence(scores, **kwargs):
     
 def get_kde(X, Npoints = 100):
 
-    kernel = stats.gaussian_kde(X)
-    x = np.linspace(np.min(X), np.max(X), Npoints)
-    pde = kernel.evaluate(x)
-    return x, pde
+ 
+        #    kernel = stats.gaussian_kde(X, bw_method='scott')
+        #    x = np.linspace(np.min(X), np.max(X), Npoints)
+        #    pde = kernel.evaluate(x)
+        #    return x, pde
+        
+        print('Computing kernel-density estimate')
+            
+        X_min = np.min(X)
+        X_max = np.max(X)
+        bandwidth = (X_max-X_min)/30
+        
+        kde = KernelDensity(kernel='gaussian', bandwidth=bandwidth).fit(X.reshape(-1, 1))
+        domain = np.linspace(X_min, X_max, Npoints).reshape(-1, 1)
+        log_dens = kde.score_samples(domain)
+        
+        print('done')
+        
+        return domain, np.exp(log_dens)
     
 def sobol_table(results, param_names, **kwargs):
     
     if 'qoi_cols' in kwargs:
         qoi_cols = kwargs['qoi_cols']
     else:
-        qoi_cols = results['sobol_indices'].keys()
+        qoi_cols = results['sobols'].keys()
 
     for qoi in qoi_cols:
-        sobol_idx = results['sobol_indices'][qoi]
+        sobol_idx = results['sobols'][qoi]
         print('=======================')
         print('Sobol indices', qoi)
         for key in sobol_idx.keys():
@@ -95,11 +110,10 @@ def post_proc(state_file, work_dir):
     print('========================================================')
     
     #get sampler and output columns from my_campaign object
-    my_sampler = my_campaign._active_sampler
+    my_sampler = my_campaign.get_active_sampler()
     output_columns = my_campaign._active_app_decoder.output_columns
     
     #fetch the results from the (remote) host via FabSim3
-    #get_UQ_results(my_campaign.campaign_dir, machine='eagle_vecma')
     fab.get_uq_samples(my_campaign.campaign_dir, machine='eagle_vecma')
 
     #collate output
@@ -123,7 +137,7 @@ if __name__ == "__main__":
 
     work_dir = home + "/VECMA/Campaigns/"
 
-    results, sc_analysis, my_sampler, my_campaign = post_proc(state_file="campaign_state_p6.json", work_dir = work_dir)
+    results, sc_analysis, my_sampler, my_campaign = post_proc(state_file="campaign_state_256run.json", work_dir = work_dir)
     mu_E = results['statistical_moments']['E_mean']['mean']
     std_E = results['statistical_moments']['E_mean']['std']
     mu_Z = results['statistical_moments']['Z_mean']['mean']
@@ -136,42 +150,13 @@ if __name__ == "__main__":
     print('Std E =', std_Z)
     print('========================================================')
     print('Sobol indices E:')
-    print(results['sobol_indices']['E_mean'])
-    print(results['sobol_indices']['E_std'])
+    print(results['sobols']['E_mean'])
+    print(results['sobols']['E_std'])
     print('Sobol indices Z:')
-    print(results['sobol_indices']['Z_mean'])
-    print(results['sobol_indices']['Z_std'])
+    print(results['sobols']['Z_mean'])
+    print(results['sobols']['Z_std'])
     print('========================================================')
-#     
-#
-#
-#    my_campaign_p1 = uq.Campaign(state_file="campaign_state_p1.json", work_dir = work_dir)
-#    my_campaign_p2 = uq.Campaign(state_file="campaign_state_p2.json", work_dir = work_dir)
-#    my_campaign_p3 = uq.Campaign(state_file="campaign_state_p3.json", work_dir = work_dir)
-#    my_campaign_p4 = uq.Campaign(state_file="campaign_state_p4.json", work_dir = work_dir)
-#    my_campaign_p5 = uq.Campaign(state_file="campaign_state_p5.json", work_dir = work_dir)
-#    my_campaign_p6 = uq.Campaign(state_file="campaign_state_p6.json", work_dir = work_dir)
-#    
-#    #make a histrogram from the samples for each EasyVVUQ campaign
-#    vvp.ensemble_vvp([my_campaign_p4.campaign_dir + '/runs', 
-#                      my_campaign_p5.campaign_dir + '/runs',
-#                      my_campaign_p6.campaign_dir + '/runs'], 
-#                      load_uq_csv_output, plt.hist)
-# 
-#    sample_dirs = [my_campaign_p1.campaign_dir,
-#                   my_campaign_p2.campaign_dir,
-#                   my_campaign_p3.campaign_dir, 
-#                   my_campaign_p4.campaign_dir, 
-#                   my_campaign_p5.campaign_dir,
-#                   my_campaign_p6.campaign_dir]
-#    
-#    #print the results for all EasyVVUQ campaigns found in the work directory
-#    vvp.ensemble_vvp(work_dir, load_uq_results, plot_convergence, qoi='Z_mean',
-#                     sample_dirs=sample_dirs)
-#
-#    items = ['Run_' + str(i) for i in range(1, 50)]
-#    vvp.ensemble_vvp(my_campaign_p6.campaign_dir + '/runs', load_uq_csv_output, plot_samples_2D, qoi='E_mean', items=items)
-#
+
     #################################
     # Use SC expansion as surrogate #
     #################################
@@ -180,9 +165,8 @@ if __name__ == "__main__":
     n_mc = 50000
     
     fig = plt.figure()
-    ax = fig.add_subplot(111, xlabel=r'$E$', yticks = [])
+    ax = fig.add_subplot(111, xlabel=r'$E$')
         
-    
     #get the input distributions
     theta = my_sampler.vary.get_values()
     xi = np.zeros([n_mc, 2])
@@ -206,7 +190,7 @@ if __name__ == "__main__":
     #make a list of actual samples
     samples = []
     for i in range(sc_analysis._number_of_samples):
-        samples.append(sc_analysis.samples[Q][i].values)
+        samples.append(sc_analysis.samples[Q][i])
     
     plt.plot(samples, np.zeros(sc_analysis._number_of_samples), 'ro', label=r'$\mathrm{code\;samples}$')
     

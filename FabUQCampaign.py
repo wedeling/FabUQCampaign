@@ -41,19 +41,19 @@ def uq_ensemble(config="dummy_test", script="ERROR: PARAMETER script SHOULD BE D
 
     run_ensemble(config, sweep_dir, **args)
 
-@task
-def uq_ensemble_ocean(config="dummy_test",**args):
-    """
-    Submits an ocean_2D ensemble.
-    """
-    uq_ensemble(config, 'ocean', **args)
+#@task
+#def uq_ensemble_ocean(config="dummy_test",**args):
+#    """
+#    Submits an ocean_2D ensemble.
+#    """
+#    uq_ensemble(config, 'ocean', **args)
 
-@task
-def uq_ensemble_ade(config="dummy_test",**args):
-    """
-    Submits an advection_diffusion ensemble.
-    """
-    uq_ensemble(config, 'ade', **args)
+#@task
+#def uq_ensemble_ade(config="dummy_test",**args):
+#    """
+#    Submits an advection_diffusion ensemble.
+#    """
+#    uq_ensemble(config, 'ade', **args)
 
 @task
 def run_uq_ensemble(config, campaign_dir, script_name, **args):

@@ -1,9 +1,9 @@
 {
-    "db_location": "sqlite:////tmp/EasyVVUQ_Campaign_mg9fz4zttest.db",
+    "db_location": "sqlite:////tmp/ocean13pguccstest.db",
     "db_type": "sql",
     "active_app": "sc",
     "campaign_name": "ocean",
-    "campaign_dir": "EasyVVUQ_Campaign_mg9fz4zt",
+    "campaign_dir": "ocean13pguccs",
     "log": [
         {
             "element": {

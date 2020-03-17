@@ -327,7 +327,7 @@ if state_store == True:
 
 if store == True:
     #output csv file    
-    header = 'E_mean, Z_mean, E_std, Z_std'
+    header = 'E_mean,Z_mean,E_std,Z_std'
     np.savetxt(output_filename, np.array([np.mean(E), np.mean(Z), np.std(E), np.std(Z)]).reshape([1,4]), 
                delimiter=", ", comments='',
                header=header)

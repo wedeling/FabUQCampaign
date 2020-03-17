@@ -44,7 +44,7 @@ encoder = uq.encoders.GenericEncoder(
 decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                 output_columns=output_columns,
                                 header=0)
-collater = uq.collate.AggregateSamples(average=False)
+collater = uq.collate.AggregateSamples()
 
 # Add the SC app (automatically set as current app)
 my_campaign.add_app(name="sc",
@@ -56,7 +56,7 @@ my_campaign.add_app(name="sc",
 # Create the sampler
 vary = {
     "Pe": cp.Uniform(100.0, 200.0),
-    "f": cp.Normal(1.0, 0.05)
+    "f": cp.Uniform(0.95, 1.05)
 }
 
 """
@@ -67,8 +67,9 @@ SPARSE GRID PARAMETERS
   of 1D collocation points per level. Used to make e.g. clenshaw-curtis
   quadrature nested.
 """
-my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=2,
-                                   quadrature_rule="G", sparse=False, growth=False)
+my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=[1,4],
+                                   quadrature_rule="G", 
+                                   sparse=True, growth=False)
 
 # Associate the sampler with the campaign
 my_campaign.set_sampler(my_sampler)
@@ -81,7 +82,7 @@ my_campaign.populate_runs_dir()
 #my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
 #    "sc_model.py ade_in.json"))
 
-fab.run_uq_ensemble(my_campaign.campaign_dir, 'ade', machine='localhost')
+fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='ade', machine='localhost')
 
 fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
 
@@ -148,8 +149,8 @@ ax = fig.add_subplot(
 lbl = ['Pe', 'f', 'Pe-f interaction']
 idx = 0
 
-for S_i in results['sobols_first']['u']:
-    ax.plot(x, results['sobols_first']['u'][S_i], label=lbl[idx])
+for S_i in results['sobols']['u']:
+    ax.plot(x, results['sobols']['u'][S_i], label=lbl[idx])
     idx += 1
 
 leg = plt.legend(loc=0)
