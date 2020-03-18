@@ -124,12 +124,13 @@ def run_campaign(poly_order, work_dir = '/tmp'):
     my_campaign.populate_runs_dir()
     
     # Use this instead to run the samples using EasyVVUQ on the localhost
-    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
-        "sc/sobol_model.py sobol_in.json"))
+    # my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
+    #     "sc/sobol_model.py sobol_in.json"))
     
     #Run execution using Fabsim 
-    # fab.run_uq_ensemble(my_campaign.campaign_dir, 'sobol_test', machine='localhost')
-    
+    fab.run_uq_ensemble(my_campaign.campaign_dir, 'sobol_test', machine='localhost')
+    fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
+
     my_campaign.collate()
     
     # Post-processing analysis
