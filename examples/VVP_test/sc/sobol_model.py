@@ -33,7 +33,7 @@ for i in range(d):
 theta = np.array(theta)
 
 result = sobol_g_func(theta)
-print(result)
+# print(result)
 
 # output csv file
 header = 'f'

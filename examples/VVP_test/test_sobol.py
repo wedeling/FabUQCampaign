@@ -9,13 +9,29 @@ import fabsim3_cmd_api as fab
 from vvp import ensemble_vvp
 import pandas as pd
 
-def sample_test(dirname):
-    
+#The VVP sample_testing_function, just reads the Sobol indices from a file
+def load_sobols(dirname, **kwargs):
+
     df = pd.read_csv(dirname + '/sobols.csv')
     
-    return df
+    return df.to_numpy()[0][1:]
 
-def print_exact_sobols():
+#The VVP agregation_function, compares the sobol indices (as function of 
+#the polynomial order) with the reference values
+def check_convergence(sobols, **kwargs):
+    
+    j = 0
+    for sb in sobols:
+        print('Polynomial order = %d' % kwargs['poly_orders'][j])
+        j += 1
+        for i in range(len(sb)):
+            print('Sobol x' + str(i+1) + ' = %.3f' % sb[i], 
+                  ', exact = %.3f' % ref_sobols[i], 
+                  ', error = %.3f' % np.linalg.norm(sb[i]-ref_sobols[i]))
+        print('=========================================================')
+
+#Compute the analytic sobol indices for the test function of sobol_model.py
+def exact_sobols():
     V_i = np.zeros(d)
 
     for i in range(d):
@@ -25,7 +41,8 @@ def print_exact_sobols():
 
     print('----------------------')
     print('Exact 1st-order Sobol indices: ', V_i / V)
-
+    
+    return V_i/V
 
 # number of unknown variables
 d = 2
@@ -36,10 +53,9 @@ a = [0.0, 1.0]#, 2.0, 4.0, 8.0]
 # author: Wouter Edeling
 __license__ = "LGPL"
 
-# home directory of user
-home = os.path.expanduser('~')
 HOME = os.path.abspath(os.path.dirname(__file__))
 
+#An EasyVVUQ campaign on sobol_model.py. Takes the polynomial order as input
 def run_campaign(poly_order, work_dir = '/tmp'):
     # Set up a fresh campaign called "sc"
     my_campaign = uq.Campaign(name='sc', work_dir=work_dir)
@@ -93,6 +109,7 @@ def run_campaign(poly_order, work_dir = '/tmp'):
       of 1D collocation points per level. Used to make e.g. clenshaw-curtis
       quadrature nested.
     """
+    
     my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=poly_order,
                                        quadrature_rule="G", sparse=False,
                                        growth=False)
@@ -134,11 +151,24 @@ def run_campaign(poly_order, work_dir = '/tmp'):
     sobols = pd.DataFrame(results['sobols_first']['f'])
     sobols.to_csv(results_dir + '/sobols.csv')
 
-    return results   
+    return results, ID   
 
 if __name__ == '__main__':
 
+    items = []
+    
+    #analytic 1st order Sobol indices
+    ref_sobols = exact_sobols()
+
     #perform campaigns, each time refining the polynomial order
-    for p in range(2, 6):
-        results = run_campaign(p)
-    ensemble_vvp('/tmp/sobols', sample_test, print)
+    poly_orders = range(2, 10)
+    for p in poly_orders:
+        results, ID = run_campaign(p)
+        items.append(ID)
+      
+    #Check the convergence of the SC Sobols indices with polynomial refinement.
+    #items (the name of the results directories) must be specified since
+    #the order is important in convergence studies.
+    #poly_orders is passed as a kwarg for check_convergence.
+    ensemble_vvp('/tmp/sobols', load_sobols, check_convergence, items=items,
+                 poly_orders=poly_orders)
