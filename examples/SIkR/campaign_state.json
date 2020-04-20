@@ -1,0 +1,20 @@
+{
+    "db_location": "sqlite:////tmp/sikr6wlbzqh9/campaign.db",
+    "db_type": "sql",
+    "active_app": "sc",
+    "campaign_name": "sikr",
+    "campaign_dir": "sikr6wlbzqh9",
+    "log": [
+        {
+            "element": {
+                "name": "sc_sampler",
+                "version": "0.4",
+                "category": "sampling"
+            },
+            "info": {
+                "num_added": 9,
+                "replicas": 1
+            }
+        }
+    ]
+}

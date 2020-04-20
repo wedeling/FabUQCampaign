@@ -67,9 +67,9 @@ SPARSE GRID PARAMETERS
   of 1D collocation points per level. Used to make e.g. clenshaw-curtis
   quadrature nested.
 """
-my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=[1,4],
+my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=2,
                                    quadrature_rule="G", 
-                                   sparse=True, growth=False)
+                                   sparse=False, growth=False)
 
 # Associate the sampler with the campaign
 my_campaign.set_sampler(my_sampler)
