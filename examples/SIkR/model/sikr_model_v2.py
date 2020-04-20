@@ -22,14 +22,12 @@ json_input = sys.argv[1]
 with open(json_input, "r") as f:
     inputs = json.load(f)
     
-#Define the generation time distribution
-# genWeibShape = 2.826027
-# genWeibScale = 5.665302
 # R0=2
-
 R0 = float(inputs['R0'])
 
 #Define the generation time distribution
+# genWeibShape = 2.826027
+# genWeibScale = 5.665302
 genWeibShape = float(inputs['genWeibShape'])
 genWeibScale = float(inputs['genWeibScale'])
 
@@ -44,7 +42,6 @@ recovered_perc = float(inputs['recovered_perc'])
 
 # gHD = 0.003718003 #10 days on IC
 # gHR = 0.096281997
-
 gIH = float(inputs['gIH'])
 gHD = float(inputs['gHD'])
 gHR = float(inputs['gHR'])
@@ -52,7 +49,6 @@ gHR = float(inputs['gHR'])
 #Define incubation time distribution
 # incMeanLog = 1.644
 # incSdLog = 0.363
-
 incMeanLog = float(inputs['incMeanLog'])
 incSdLog = float(inputs['incSdLog'])
 
