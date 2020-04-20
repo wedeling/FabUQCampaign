@@ -1,9 +1,9 @@
 {
-    "db_location": "sqlite:////tmp/sikr6wlbzqh9/campaign.db",
+    "db_location": "sqlite:////tmp/sikrzcsvy03u/campaign.db",
     "db_type": "sql",
     "active_app": "sc",
     "campaign_name": "sikr",
-    "campaign_dir": "sikr6wlbzqh9",
+    "campaign_dir": "sikrzcsvy03u",
     "log": [
         {
             "element": {

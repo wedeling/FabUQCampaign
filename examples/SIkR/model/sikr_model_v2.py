@@ -22,16 +22,39 @@ json_input = sys.argv[1]
 with open(json_input, "r") as f:
     inputs = json.load(f)
     
-
 #Define the generation time distribution
 # genWeibShape = 2.826027
 # genWeibScale = 5.665302
 # R0=2
 
+R0 = float(inputs['R0'])
+
 #Define the generation time distribution
 genWeibShape = float(inputs['genWeibShape'])
 genWeibScale = float(inputs['genWeibScale'])
-R0 = float(inputs['R0'])
+
+#Percentage of people who have infected and are recovered now.
+recovered_perc = float(inputs['recovered_perc'])
+
+#Define the parameters values of the gammas (\gamma_{H,R} ->gHR) 
+# #These values come from the science paper.
+# gIH = 0.026445154
+# #gHD = 0.001859002 #20 days on IC
+# #gHR = 0.048140998 
+
+# gHD = 0.003718003 #10 days on IC
+# gHR = 0.096281997
+
+gIH = float(inputs['gIH'])
+gHD = float(inputs['gHD'])
+gHR = float(inputs['gHR'])
+
+#Define incubation time distribution
+# incMeanLog = 1.644
+# incSdLog = 0.363
+
+incMeanLog = float(inputs['incMeanLog'])
+incSdLog = float(inputs['incSdLog'])
 
 output_filename = inputs['outfile']
 
@@ -40,7 +63,6 @@ output_filename = inputs['outfile']
 #By the Science paper, someone who is infected will remain infectious for 13 days.
 K=13
 
-
 # The number of deceased patients from 10-04 back to 28-03 is multiplied by 100 
 # to estimate the number of infected patients from 28-03 back to 17-03
 # The number of recovered patients is calculated by summing up the number of deceased
@@ -48,22 +70,24 @@ K=13
 N = 17000000
 # K=13
 Ikt = [ [9800] , [9000],[12200],[13400],[14500],[14200],[14900],[15100],[15900],[15200],[15800],[14700],[11700]]
-R = [ N*0.03 ] #About 3 percent of the people has been infected and is recovered now.
+R = [ N*recovered_perc ] #Percentage of people who have infected and are recovered now.
 H = [1232] #number of tested corona patients on the IC 10-04
 D = [0] #We will look at the number of deceased patients starting the count on zero
 Itotal = [sum([Ikt[i][-1] for i in range(K)])]
 S = [N - Itotal[0] -R[0]-H[0]-D[0]]
 
 
-#We will repeat the initialisation step every run, so this is just to get an overview of the values.
+#We will repeat the initialisation step every run, so this is just to get an 
+#overview of the values.
 
-#Define the parameters values of the gammas (\gamma_{H,R} ->gHR) These values come from the science paper.
-gIH = 0.026445154
-#gHD = 0.001859002 #20 days on IC
-#gHR = 0.048140998 
+# #Define the parameters values of the gammas (\gamma_{H,R} ->gHR) 
+# #These values come from the science paper.
+# gIH = 0.026445154
+# #gHD = 0.001859002 #20 days on IC
+# #gHR = 0.048140998 
 
-gHD = 0.003718003 #10 days on IC
-gHR = 0.096281997
+# gHD = 0.003718003 #10 days on IC
+# gHR = 0.096281997
 
 
 #Set efficacy
@@ -72,9 +96,9 @@ epsT = 0
 
 #BetaTau = [(2*weibull_min(genWeibShape, 0, genWeibScale).pdf(x)) for x in range(K)]
 
-#Define incubation time distribution
-incMeanLog = 1.644
-incSdLog = 0.363
+# #Define incubation time distribution
+# incMeanLog = 1.644
+# incSdLog = 0.363
 #incubTau = [(lognorm.cdf(x,incSdLog,0,math.exp(incMeanLog))) for x in range(0,K+1)]
 
 def incub(tau): #get probability that incubation time is lower than tau
@@ -122,7 +146,7 @@ T = 210 #number of days we want to look ahead.
 
 N = 17000000
 Ikt = [ [9800] , [9000],[12200],[13400],[14500],[14200],[14900],[15100],[15900],[15200],[15800],[14700],[11700]]
-R = [ N*0.03]
+R = [ N*recovered_perc]
 H = [1232] #number of tested corona patients on the IC 10-04
 D = [0]
 Itotal = [sum([Ikt[i][-1] for i in range(K)])]

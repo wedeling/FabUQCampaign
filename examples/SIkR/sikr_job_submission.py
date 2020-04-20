@@ -24,14 +24,44 @@ params = {
         "default": 2.0},
     "genWeibShape": {
         "type": "float",
-        "min": 0.1,
+        "min": 0.0,
         "max": 10.0,
         "default": 2.826027},
     "genWeibScale": {
         "type": "float",
-        "min": 0.1,
+        "min": 0.0,
         "max": 10.0,
         "default": 5.665302},
+    "recovered_perc": {
+        "type": "float",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.03},
+    "gIH": {
+        "type": "float",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.026445154},
+    "gHD": {
+        "type": "float",
+        "min": 0.0,
+        "max": 10.0,
+        "default": 0.003718003},
+    "gHR": {
+        "type": "float",
+        "min": 0.0,
+        "max": 10.0,
+        "default": 0.096281997},    
+    "incMeanLog": {
+        "type": "float",
+        "min": 0.0,
+        "max": 10.0,
+        "default": 1.644},
+    "incSdLog": {
+        "type": "float",
+        "min": 0.0,
+        "max": 10.0,
+        "default": 0.363},
     "out_file": {
         "type": "string",
         "default": "output.csv"}}
