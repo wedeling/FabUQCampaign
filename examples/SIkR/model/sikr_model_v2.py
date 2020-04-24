@@ -100,8 +100,9 @@ epsT = 0
 def incub(tau): #get probability that incubation time is lower than tau
     return lognorm.cdf(tau,incSdLog,0,math.exp(incMeanLog))
 
+WM=weibull_min(genWeibShape, 0, genWeibScale)
 def gener(tau): #probability density of generation time at tau
-    return R0*weibull_min(genWeibShape, 0, genWeibScale).pdf(tau)
+    return R0*WM.pdf(tau)
 
 def f(ht,htp): #Here we mean ht=\hat{\tau} and htp=\hat{\tau}' (p of prime)
     if (htp >= ht): #This just function f as defined above
