@@ -13,7 +13,7 @@ __license__ = "LGPL"
 HOME = os.path.abspath(os.path.dirname(__file__))
 
 # Set up a fresh campaign called "sc"
-my_campaign = uq.Campaign(name='sikr', work_dir='/tmp')
+my_campaign = uq.Campaign(name='sikr', work_dir = '/home/wouter/VECMA/Campaigns')
 
 # Define parameter space
 params = {
@@ -86,24 +86,34 @@ my_campaign.add_app(name="sc",
                     decoder=decoder,
                     collater=collater)    
 
+
 # Create the sampler
 vary = {
-    # "R0": cp.Uniform(1.9, 2.1),
-    "genWeibShape": cp.Normal(2.826027, 0.1),
-    "genWeibScale": cp.Normal(5.665302, 0.1)
+    "R0": cp.Normal(params['R0']['default'], 0.1*params['R0']['default']),
+    "genWeibShape": cp.Normal(params['genWeibShape']['default'], 0.1*params['genWeibShape']['default']),
+    "genWeibScale": cp.Normal(params['genWeibScale']['default'], 0.1*params['genWeibScale']['default']),
+    "incMeanLog": cp.Normal(params['incMeanLog']['default'], 0.1*params['incMeanLog']['default']),
+    "incSdLog": cp.Normal(params['incSdLog']['default'], 0.1*params['incSdLog']['default'])    
 }
 
-my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=2)
+my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=5, 
+                                   sparse=True, quadrature_rule="G",
+                                   growth=True)
+
+print('*****************************************')
+print('Sampling the code', my_sampler._number_of_samples, 'times.')
+print('*****************************************')
+
 # Associate the sampler with the campaign
 my_campaign.set_sampler(my_sampler)
     
-# Will draw all (of the finite set of samples)
-my_campaign.draw_samples()
+# # Will draw all (of the finite set of samples)
+# my_campaign.draw_samples()
 
-my_campaign.populate_runs_dir()
+# my_campaign.populate_runs_dir()
 
-#Run execution using Fabsim 
-fab.run_uq_ensemble(my_campaign.campaign_dir, 'sikr', machine='localhost')
+# #Run execution using Fabsim 
+# fab.run_uq_ensemble(my_campaign.campaign_dir, 'sikr', machine='localhost')
 
-#Save the Campaign
-my_campaign.save_state("campaign_state.json")
+# #Save the Campaign
+# my_campaign.save_state("campaign_state.json")

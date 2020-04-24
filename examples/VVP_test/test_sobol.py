@@ -45,10 +45,10 @@ def exact_sobols():
     return V_i/V
 
 # number of unknown variables
-d = 2
+d = 3
 
 # parameters required by test function
-a = [0.0, 1.0]#, 2.0, 4.0, 8.0]
+a = [0.0, 1.0, 2.0]#, 4.0, 8.0]
 
 # author: Wouter Edeling
 __license__ = "LGPL"
@@ -68,6 +68,26 @@ def run_campaign(poly_order, work_dir = '/tmp'):
             "max": 1.0,
             "default": 0.5},
         "x2": {
+            "type": "float",
+            "min": 0.0,
+            "max": 1.0,
+            "default": 0.5},
+        "x3": {
+            "type": "float",
+            "min": 0.0,
+            "max": 1.0,
+            "default": 0.5},
+        "x4": {
+            "type": "float",
+            "min": 0.0,
+            "max": 1.0,
+            "default": 0.5},
+        "x5": {
+            "type": "float",
+            "min": 0.0,
+            "max": 1.0,
+            "default": 0.5},
+        "x6": {
             "type": "float",
             "min": 0.0,
             "max": 1.0,
@@ -99,7 +119,10 @@ def run_campaign(poly_order, work_dir = '/tmp'):
     # Create the sampler
     vary = {
         "x1": cp.Uniform(0.0, 1.0),
-        "x2": cp.Uniform(0.0, 1.0)}
+        "x2": cp.Uniform(0.0, 1.0),
+        "x3": cp.Uniform(0.0, 1.0),
+        "x4": cp.Uniform(0.0, 1.0),
+        "x5": cp.Uniform(0.0, 1.0)}
     
     """
     SPARSE GRID PARAMETERS
@@ -111,8 +134,8 @@ def run_campaign(poly_order, work_dir = '/tmp'):
     """
     
     my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=poly_order,
-                                       quadrature_rule="G", sparse=False,
-                                       growth=False)
+                                       quadrature_rule="G", sparse=True,
+                                       growth=True)
     
     # Associate the sampler with the campaign
     my_campaign.set_sampler(my_sampler)
@@ -162,7 +185,7 @@ if __name__ == '__main__':
     ref_sobols = exact_sobols()
 
     #perform campaigns, each time refining the polynomial order
-    poly_orders = range(2, 10)
+    poly_orders = range(2, 3)
     for p in poly_orders:
         results, ID = run_campaign(p)
         items.append(ID)

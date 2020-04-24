@@ -56,7 +56,7 @@ my_campaign.add_app(name="sc",
 # Create the sampler
 vary = {
     "Pe": cp.Uniform(100.0, 200.0),
-    "f": cp.Uniform(0.95, 1.05)
+    "f": cp.Uniform(0.9, 1.1)
 }
 
 """
@@ -67,9 +67,15 @@ SPARSE GRID PARAMETERS
   of 1D collocation points per level. Used to make e.g. clenshaw-curtis
   quadrature nested.
 """
-my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=2,
+my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=3,
                                    quadrature_rule="G", 
-                                   sparse=False, growth=False)
+                                   sparse=True, growth=True)
+
+xi_d  = my_sampler.xi_d
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(xi_d[:, 0], xi_d[:,1], 'ro')
 
 # Associate the sampler with the campaign
 my_campaign.set_sampler(my_sampler)
@@ -114,7 +120,6 @@ ax.plot(x, mu - std, '--r')
 #####################################
 # Plot the random surrogate samples #
 #####################################
-
 
 ax = fig.add_subplot(122, xlabel='location x', ylabel='velocity u',
                      title='Surrogate samples')

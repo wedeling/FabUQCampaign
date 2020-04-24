@@ -14,10 +14,10 @@ def sobol_g_func(theta):
 
 
 # parameters required by test function
-a = [0.0, 1.0]#, 2.0, 4.0, 8.0]
+a = [0.0, 1.0, 2.0]#, 4.0, 8.0]
 
 # stocastic dimension of the problem
-d = 2
+d = 3
 
 # the json input file containing the values of the parameters, and the
 # output file

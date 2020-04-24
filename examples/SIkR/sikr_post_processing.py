@@ -17,7 +17,7 @@ __license__ = "LGPL"
 #home dir of this file    
 HOME = os.path.abspath(os.path.dirname(__file__))
 # work_dir = home + "/VECMA/Campaigns/"
-work_dir = '/tmp'
+work_dir = '/home/wouter/VECMA/Campaigns'
 
 #Reload the campaign
 my_campaign = uq.Campaign(state_file = 'campaign_state.json', work_dir = work_dir)
@@ -97,7 +97,7 @@ ax = fig.add_subplot(111, xlabel='time')
     
 #get the input distributions
 theta = my_sampler.vary.get_values()
-xi = np.zeros([n_mc, 2])
+xi = np.zeros([n_mc, 5])
 idx = 0
 
 #draw random sampler from the input distributions
