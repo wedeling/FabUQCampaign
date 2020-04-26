@@ -22,7 +22,6 @@ def run_uq_ensemble(campaign_dir, script_name, machine='localhost', skip = 0, **
     """
     sim_ID = campaign_dir.split('/')[-1]
     arguments = "{},campaign_dir={},script_name={},skip={}".format(sim_ID, campaign_dir, script_name, skip)
-    print(arguments)
     fabsim("run_uq_ensemble", arguments, machine=machine)
     
 def get_uq_samples(campaign_dir, machine = 'localhost'):

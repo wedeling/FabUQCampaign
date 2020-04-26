@@ -5,18 +5,18 @@ import numpy as np
 import json
 import sys
 
-def sobol_g_func(theta):
-    Y = 1.0
-    for i in range(d):
-        Y *= 2.0 * (np.abs(4.0 * theta[i] - 2.0) + a[i]) / (1.0 + a[i])
-    return Y
+# def sobol_g_func(theta):
+#     Y = 1.0
+#     for i in range(d):
+#         Y *= 2.0 * (np.abs(4.0 * theta[i] - 2.0) + a[i]) / (1.0 + a[i])
+#     return Y
 
 def poly_model(theta):
     
     return np.prod(3*theta**2 + 1)/2**d
 
-# parameters required by test function
-a = [0.0, 1.0, 2.0, 4.0, 8.0, 16]
+# parameters required by the Sobol g test function
+# a = [0.0, 1.0, 2.0, 4.0, 8.0, 16]
 
 # stocastic dimension of the problem
 d = 2
@@ -36,8 +36,8 @@ theta = np.array(theta)
 
 print(theta)
 
-result = sobol_g_func(theta)
-# result = poly_model(theta)
+# result = sobol_g_func(theta)
+result = poly_model(theta)
 # print(result)
 
 # output csv file

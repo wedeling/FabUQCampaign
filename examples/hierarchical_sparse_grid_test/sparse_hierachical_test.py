@@ -1,50 +1,14 @@
-# for the Sobol g function, the exact (1st-order)
-# Sobol indices are known analytically
 import matplotlib.pyplot as plt
 import os
 import easyvvuq as uq
 import numpy as np
 import chaospy as cp
 import fabsim3_cmd_api as fab
-from vvp import ensemble_vvp
-import pandas as pd
-
-#The VVP sample_testing_function, just reads the Sobol indices from a file
-def load_sobols(dirname, **kwargs):
-
-    df = pd.read_csv(dirname + '/sobols.csv')
-    
-    return df.to_numpy()[0][1:]
-
-#The VVP agregation_function, compares the sobol indices (as function of 
-#the polynomial order) with the reference values
-def check_convergence(sobols, **kwargs):
-    
-    j = 0
-    for sb in sobols:
-        print('Polynomial order = %d' % kwargs['poly_orders'][j])
-        j += 1
-        for i in range(len(sb)):
-            print('Sobol x' + str(i+1) + ' = %.3f' % sb[i], 
-                  ', exact = %.3f' % ref_sobols[i], 
-                  ', error = %.3f' % np.linalg.norm(sb[i]-ref_sobols[i]))
-        print('=========================================================')
-
-#Compute the analytic sobol indices for the test function of sobol_model.py
-def exact_sobols_g_function():
-    V_i = np.zeros(d)
-
-    for i in range(d):
-        V_i[i] = 1.0 / (3.0 * (1 + a[i])**2)
-
-    V = np.prod(1 + V_i) - 1
-
-    print('----------------------')
-    print('Exact 1st-order Sobol indices: ', V_i / V)
-    
-    return V_i/V
 
 def exact_sobols_poly_model():
+    """
+    Exact Sobol indices for the polynomial test model
+    """
     S_i = np.zeros(d)
 
     for i in range(d):
@@ -52,12 +16,8 @@ def exact_sobols_poly_model():
 
     return S_i
     
-
 # number of unknown variables
 d = 2
-
-# parameters required by Sobol g test function
-a = [0.0, 1.0, 2.0, 4.0, 8.0, 16]
 
 # author: Wouter Edeling
 __license__ = "LGPL"
@@ -133,17 +93,10 @@ def run_campaign(poly_order, work_dir = '/tmp'):
         # "x4": cp.Uniform(0.0, 1.0),
         # "x5": cp.Uniform(0.0, 1.0)}
     
-    """
-    SPARSE GRID PARAMETERS
-    ----------------------
-    - sparse = True: use a Smolyak sparse grid
-    - growth = True: use an exponential rule for the growth of the number
-      of 1D collocation points per level. Used to make e.g. clenshaw-curtis
-      quadrature nested.
-    """
-    
+    #To use 'next_level_sparse_grid' below, we must select a nested 
+    #sparse grid here
     my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=poly_order,
-                                       quadrature_rule="G", sparse=False,
+                                       quadrature_rule="C", sparse=True,
                                        growth=True)
     
     # Associate the sampler with the campaign
@@ -160,7 +113,8 @@ def run_campaign(poly_order, work_dir = '/tmp'):
     #     "sc/sobol_model.py sobol_in.json"))
     
     #Run execution using Fabsim 
-    fab.run_uq_ensemble(my_campaign.campaign_dir, 'sobol_test', machine='localhost')
+    fab.run_uq_ensemble(my_campaign.campaign_dir, 'hier_sparse_test', 
+                        machine='localhost')
     fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
     # Use this instead to run the samples using EasyVVUQ on the localhost
     # my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
@@ -172,44 +126,40 @@ def run_campaign(poly_order, work_dir = '/tmp'):
     analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
     
     my_campaign.apply_analysis(analysis)
+    results = my_campaign.get_last_analysis()
+ 
+    #update the sparse grid to the next level
+    my_sampler.next_level_sparse_grid()
+    #get the number number from the previous grid
+    number_of_old_runs = my_sampler.count
     
+    #draw the new samples
+    my_campaign.draw_samples()
+    my_campaign.populate_runs_dir()
+    
+    #run ensemble with fabsim, this time 'skip' must be set equal
+    #to the number of old samples, which prevents a re-execution of the 
+    # samples of the previous sparse grid
+    fab.run_uq_ensemble(my_campaign.campaign_dir, 'hier_sparse_test', 
+                        machine='localhost', skip=number_of_old_runs)
+    fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost') 
+    # my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
+    #     "./sc/sobol_model.py sobol_in.json"))
+    
+    my_campaign.collate()
+    my_campaign.apply_analysis(analysis)
     results = my_campaign.get_last_analysis()
     
-    my_campaign.save_state('campaign_state.json')
-
-    #the unique ID of this Campaign
-    ID = my_campaign.campaign_dir.split('/')[-1]
-   
-    #store the sobol indices of each campaign to the same results directory
-    results_dir = work_dir + '/sobols/' + ID
-    if os.path.exists(results_dir) == False:
-        os.makedirs(results_dir)
- 
-    #store the 1st order sobols indices to a CSV file
-    sobols = pd.DataFrame(results['sobols_first']['f'])
-    sobols.to_csv(results_dir + '/sobols.csv')
-
-    return my_campaign, my_sampler, results, ID   
+    #check the computed Sobol indices against the analytical result
+    for i in range(ref_sobols.size):
+        print('Exact Sobol indices order %d = %.4f' %(i+1, ref_sobols[i]))
+    print('Computed Sobol indices', results['sobols']['f'])
+    
+    return my_campaign, my_sampler, results
 
 if __name__ == '__main__':
 
-    items = []
-    
     #analytic 1st order Sobol indices
-    ref_sobols = exact_sobols_g_function()
+    ref_sobols = exact_sobols_poly_model()
 
-    #perform campaigns, each time refining the polynomial order
-    poly_orders = range(2, 4)
-    for p in poly_orders:
-        my_campaign, my_sampler, results, ID = run_campaign(p)
-        items.append(ID)
-      
-    print('Ref sobols', ref_sobols)
-    print(results['sobols']['f'])
-      
-    #Check the convergence of the SC Sobols indices with polynomial refinement.
-    #items (the name of the results directories) must be specified since
-    #the order is important in convergence studies.
-    #poly_orders is passed as a kwarg for check_convergence.
-    ensemble_vvp('/tmp/sobols', load_sobols, check_convergence, items=items,
-                  poly_orders=poly_orders)
+    my_campaign, my_sampler, results = run_campaign(poly_order = 2)

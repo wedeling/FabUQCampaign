@@ -68,7 +68,7 @@ SPARSE GRID PARAMETERS
   quadrature nested.
 """
 my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=3,
-                                   quadrature_rule="G", 
+                                   quadrature_rule="C", 
                                    sparse=True, growth=True)
 
 xi_d  = my_sampler.xi_d

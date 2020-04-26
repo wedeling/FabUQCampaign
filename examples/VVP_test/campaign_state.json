@@ -1,0 +1,38 @@
+{
+    "db_location": "sqlite:////tmp/scpk893o49/campaign.db",
+    "db_type": "sql",
+    "active_app": "sc",
+    "campaign_name": "sc",
+    "campaign_dir": "scpk893o49",
+    "log": [
+        {
+            "element": {
+                "name": "sc_sampler",
+                "version": "0.4",
+                "category": "sampling"
+            },
+            "info": {
+                "num_added": 16,
+                "replicas": 1
+            }
+        },
+        {
+            "element": {
+                "name": "aggregate_samples",
+                "version": "0.1",
+                "category": "collation"
+            },
+            "info": {
+                "num_collated": 16
+            }
+        },
+        {
+            "element": {
+                "name": "SC_Analysis",
+                "version": "0.3",
+                "category": "analysis"
+            },
+            "info": null
+        }
+    ]
+}
