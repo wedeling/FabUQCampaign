@@ -16,12 +16,12 @@ def fabsim(command, arguments, machine = 'localhost'):
     print('Executing', "fabsim {} {}:{}".format(machine, command, arguments))
     os.system("fabsim {} {}:{}".format(machine, command, arguments))
 
-def run_uq_ensemble(campaign_dir, script_name, machine='localhost'):
+def run_uq_ensemble(campaign_dir, script_name, machine='localhost', skip = 0, **args):
     """
     Launches a UQ ensemble.
     """
     sim_ID = campaign_dir.split('/')[-1]
-    arguments = "{},campaign_dir={},script_name={}".format(sim_ID, campaign_dir, script_name)
+    arguments = "{},campaign_dir={},script_name={},skip={}".format(sim_ID, campaign_dir, script_name, skip)
     fabsim("run_uq_ensemble", arguments, machine=machine)
     
 def get_uq_samples(campaign_dir, machine = 'localhost'):

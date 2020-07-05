@@ -90,15 +90,19 @@ my_campaign.add_app(name="sc",
 # Create the sampler
 vary = {
     "R0": cp.Normal(params['R0']['default'], 0.1*params['R0']['default']),
-    "genWeibShape": cp.Normal(params['genWeibShape']['default'], 0.1*params['genWeibShape']['default']),
-    "genWeibScale": cp.Normal(params['genWeibScale']['default'], 0.1*params['genWeibScale']['default']),
-    "incMeanLog": cp.Normal(params['incMeanLog']['default'], 0.1*params['incMeanLog']['default']),
-    "incSdLog": cp.Normal(params['incSdLog']['default'], 0.1*params['incSdLog']['default'])    
+    # "genWeibShape": cp.Normal(params['genWeibShape']['default'], 0.1*params['genWeibShape']['default']),
+    # "genWeibScale": cp.Normal(params['genWeibScale']['default'], 0.1*params['genWeibScale']['default']),
+    # "incMeanLog": cp.Normal(params['incMeanLog']['default'], 0.1*params['incMeanLog']['default']),
+    # "incSdLog": cp.Normal(params['incSdLog']['default'], 0.1*params['incSdLog']['default'])
+    "gIH": cp.Normal(params['gIH']['default'], 0.1*params['gIH']['default']),
+    "gHD": cp.Normal(params['gHD']['default'], 0.1*params['gHD']['default']),
+    "gHR": cp.Normal(params['gHR']['default'], 0.1*params['gHR']['default']),
+    "recovered_perc": cp.Normal(params['recovered_perc']['default'], 0.1*params['recovered_perc']['default'])   
 }
 
-my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=5, 
+my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=2, 
                                    sparse=True, quadrature_rule="G",
-                                   growth=True)
+                                   growth=False)
 
 print('*****************************************')
 print('Sampling the code', my_sampler._number_of_samples, 'times.')
@@ -108,12 +112,12 @@ print('*****************************************')
 my_campaign.set_sampler(my_sampler)
     
 # # Will draw all (of the finite set of samples)
-# my_campaign.draw_samples()
+my_campaign.draw_samples()
 
-# my_campaign.populate_runs_dir()
+my_campaign.populate_runs_dir()
 
-# #Run execution using Fabsim 
-# fab.run_uq_ensemble(my_campaign.campaign_dir, 'sikr', machine='localhost')
+#Run execution using Fabsim 
+fab.run_uq_ensemble(my_campaign.campaign_dir, 'sikr', machine='localhost')
 
-# #Save the Campaign
-# my_campaign.save_state("campaign_state.json")
+#Save the Campaign
+my_campaign.save_state("campaign_state.json")

@@ -67,30 +67,24 @@ SPARSE GRID PARAMETERS
   of 1D collocation points per level. Used to make e.g. clenshaw-curtis
   quadrature nested.
 """
-my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=3,
+my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=1,
                                    quadrature_rule="C", 
-                                   sparse=True, growth=True)
-xi_d  = my_sampler.xi_d
-
-fig = plt.figure()
-ax = fig.add_subplot(111)
-ax.plot(xi_d[:, 0], xi_d[:,1], 'ro')
+                                   sparse=True, growth=True,
+                                   midpoint_level1 = True,
+                                   dimension_adaptive=True)
 
 # Associate the sampler with the campaign
 my_campaign.set_sampler(my_sampler)
 
 # Will draw all (of the finite set of samples)
-count = my_sampler.count
 my_campaign.draw_samples()
 my_campaign.populate_runs_dir()
 
-##   Use this instead to run the samples using EasyVVUQ on the localhost
-#my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
-#    "sc_model.py ade_in.json"))
-
-fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='ade', machine='localhost',
-                    skip = count)
-fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
+#   Use this instead to run the samples using EasyVVUQ on the localhost
+my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
+    "./sc/ade_model.py ade_in.json"))
+# fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='ade', machine='localhost')
+# fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
 
 my_campaign.collate()
 data_frame = my_campaign.get_collation_result()
@@ -100,7 +94,28 @@ analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
 
 my_campaign.apply_analysis(analysis)
 
+number_of_refinements = 9
+budget = 1000
+
+for i in range(number_of_refinements):
+    skip = my_sampler.count
+    my_sampler.look_ahead(analysis.l_norm)
+
+    my_campaign.draw_samples()
+    my_campaign.populate_runs_dir()
+    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
+        "./sc/ade_model.py ade_in.json"))
+    # fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='ade', 
+    #                     machine='localhost', skip = skip)
+    # fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
+    my_campaign.collate()
+    data_frame = my_campaign.get_collation_result()
+    analysis.adapt_dimension('u', data_frame)
+    my_campaign.apply_analysis(analysis)
+
 results = my_campaign.get_last_analysis()
+
+analysis.plot_grid()
 
 ###################################
 # Plot the moments and SC samples #
@@ -117,6 +132,8 @@ ax = fig.add_subplot(121, xlabel='location x', ylabel='velocity u',
 ax.plot(x, mu, 'b', label='mean')
 ax.plot(x, mu + std, '--r', label='std-dev')
 ax.plot(x, mu - std, '--r')
+samples = analysis.get_sample_array('u')
+ax.plot(x, samples.T, 'b')
 
 #####################################
 # Plot the random surrogate samples #
@@ -137,7 +154,6 @@ for dist in my_sampler.vary.get_values():
 print('Evaluating surrogate model', n_mc, 'times')
 for i in range(n_mc):
     ax.plot(x, analysis.surrogate('u', xi_mc[i]), 'g')
-    ax.plot(x, analysis.surrogate('u', xi_mc[i], recursive=True), 'ro')
 print('done')
 
 plt.tight_layout()

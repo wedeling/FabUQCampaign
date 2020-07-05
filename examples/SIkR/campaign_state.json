@@ -1,9 +1,9 @@
 {
-    "db_location": "sqlite:////home/wouter/VECMA/Campaigns/sikryiscx81v/campaign.db",
+    "db_location": "sqlite:////home/wouter/VECMA/Campaigns/sikrga7bview/campaign.db",
     "db_type": "sql",
     "active_app": "sc",
     "campaign_name": "sikr",
-    "campaign_dir": "sikryiscx81v",
+    "campaign_dir": "sikrga7bview",
     "log": [
         {
             "element": {
@@ -12,7 +12,7 @@
                 "category": "sampling"
             },
             "info": {
-                "num_added": 1024,
+                "num_added": 272,
                 "replicas": 1
             }
         }

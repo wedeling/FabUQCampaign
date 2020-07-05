@@ -54,7 +54,7 @@ def exact_sobols_poly_model():
     
 
 # number of unknown variables
-d = 2
+d = 5
 
 # parameters required by Sobol g test function
 a = [0.0, 1.0, 2.0, 4.0, 8.0, 16]
@@ -128,10 +128,10 @@ def run_campaign(poly_order, work_dir = '/tmp'):
     # Create the sampler
     vary = {
         "x1": cp.Uniform(0.0, 1.0),
-        "x2": cp.Uniform(0.0, 1.0)}
-        # "x3": cp.Uniform(0.0, 1.0),
-        # "x4": cp.Uniform(0.0, 1.0),
-        # "x5": cp.Uniform(0.0, 1.0)}
+        "x2": cp.Uniform(0.0, 1.0),
+        "x3": cp.Uniform(0.0, 1.0),
+        "x4": cp.Uniform(0.0, 1.0),
+        "x5": cp.Uniform(0.0, 1.0)}
     
     """
     SPARSE GRID PARAMETERS
@@ -143,7 +143,7 @@ def run_campaign(poly_order, work_dir = '/tmp'):
     """
     
     my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=poly_order,
-                                       quadrature_rule="G", sparse=False,
+                                       quadrature_rule="C", sparse=True,
                                        growth=True)
     
     # Associate the sampler with the campaign
@@ -188,6 +188,9 @@ def run_campaign(poly_order, work_dir = '/tmp'):
     #store the 1st order sobols indices to a CSV file
     sobols = pd.DataFrame(results['sobols_first']['f'])
     sobols.to_csv(results_dir + '/sobols.csv')
+    
+    mu, D, S_u = analysis.get_pce_analysis('f')
+    print(S_u)
 
     return my_campaign, my_sampler, results, ID   
 
@@ -199,7 +202,7 @@ if __name__ == '__main__':
     ref_sobols = exact_sobols_g_function()
 
     #perform campaigns, each time refining the polynomial order
-    poly_orders = range(2, 4)
+    poly_orders = range(4, 5)
     for p in poly_orders:
         my_campaign, my_sampler, results, ID = run_campaign(p)
         items.append(ID)
