@@ -2,7 +2,7 @@ import chaospy as cp
 import numpy as np
 import easyvvuq as uq
 import os
-import fabsim3_cmd_api as fab
+# import fabsim3_cmd_api as fab
 import matplotlib.pyplot as plt
 
 plt.close('all')
