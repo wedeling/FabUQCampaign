@@ -16,11 +16,11 @@ HOME = os.path.abspath(os.path.dirname(__file__))
 my_campaign = uq.Campaign(name='sc', work_dir='/tmp')
 
 #number of uncertain parameters
-d = 2
+d = 5
 
 # Define parameter space
 params = {}
-for i in range(20):
+for i in range(45):
     params["x%d" % (i + 1)] = {"type": "float",
                                "min": 0.0,
                                "max": 1.0,
@@ -32,7 +32,7 @@ output_columns = ["f"]
 
 # Create an encoder, decoder and collation element
 encoder = uq.encoders.GenericEncoder(
-    template_fname=HOME + '/sc/sobol.template',
+    template_fname=HOME + '/sc/poly.template',
     delimiter='$',
     target_filename='poly_in.json')
 decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
@@ -57,7 +57,6 @@ for i in range(d):
 #=================================
 #sparse = use a sparse grid (required)
 #growth = use a nested quadrature rule (not required)
-#midpoint_level1 = use a single collocation point in the 1st iteration (not required)
 #dimension_adaptive = use a dimension adaptive sampler (required)
 my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=1,
                                    quadrature_rule="C",
@@ -72,11 +71,11 @@ my_campaign.draw_samples()
 my_campaign.populate_runs_dir()
 
 ##   Use this instead to run the samples using EasyVVUQ on the localhost
-# my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
-#     "./sc/poly_model.py poly_in.json"))
-fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='poly_model', 
-                    machine='localhost')
-fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
+my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
+    "./sc/poly_model.py poly_in.json"))
+# fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='poly_model', 
+#                     machine='localhost')
+# fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
 
 my_campaign.collate()
 data_frame = my_campaign.get_collation_result()
@@ -86,29 +85,29 @@ analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
 my_campaign.apply_analysis(analysis)
 
 # how many adaptation to make
-number_of_adaptations = 6
+number_of_adaptations = 7
 for i in range(number_of_adaptations):
     #required parameter in the case of a Fabsim run
     skip = my_sampler.count
 
+    print('Adaptation %d' % (i+1))
     #look-ahead step (compute the code at admissible forward points)
     my_sampler.look_ahead(analysis.l_norm)
-    # my_sampler.next_level_sparse_grid()
 
     #proceed as usual
     my_campaign.draw_samples()
     my_campaign.populate_runs_dir()
-    # my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
-    #     "./sc/poly_model.py poly_in.json"))
-    fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='poly_model',
-                        machine='localhost', skip = skip)
-    fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
+    my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
+        "./sc/poly_model.py poly_in.json"))
+    # fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='poly_model',
+    #                     machine='localhost', skip = skip)
+    # fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
     my_campaign.collate()
-    
+
     #compute the error at all admissible points, select direction with
     #highest error and add that direction to the grid
     data_frame = my_campaign.get_collation_result()
-    analysis.adapt_dimension('f', data_frame)
+    analysis.adapt_dimension('f', data_frame, interp_based_error=True)
 
 #proceed as usual with analysis
 my_campaign.apply_analysis(analysis)
@@ -117,7 +116,7 @@ results = my_campaign.get_last_analysis()
 #some post-processing
 
 #analytic mean and standard deviation
-a = np.array([1/(2**i) for i in range(d)])
+a = np.array([1/(2*(i+1)) for i in range(d)])
 ref_mean = np.prod(a+1)/2**d
 ref_std = np.sqrt(np.prod(9*a[0:d]**2/5 + 2*a[0:d] + 1)/2**(2*d) - ref_mean**2)
 
@@ -127,10 +126,12 @@ print("--------------------------------------")
 print("Analytic mean = %.4e" % ref_mean)
 print("Computed mean = %.4e" % results['statistical_moments']['f']['mean'])
 print("--------------------------------------")
-print("Analytic standard deiation = %.4e" % ref_std)
-print("Computed standard deiation = %.4e" % results['statistical_moments']['f']['std'])
+print("Analytic standard deviation = %.4e" % ref_std)
+print("Computed standard deviation = %.4e" % results['statistical_moments']['f']['std'])
 print("--------------------------------------")
 print("First order Sobol indices =", results['sobols_first']['f'])
 print("--------------------------------------")
 
 analysis.plot_grid()
+
+analysis.adaptation_table()

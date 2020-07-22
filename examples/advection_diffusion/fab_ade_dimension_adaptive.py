@@ -94,7 +94,7 @@ analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
 
 my_campaign.apply_analysis(analysis)
 
-number_of_refinements = 9
+number_of_refinements = 8
 budget = 1000
 
 for i in range(number_of_refinements):
@@ -181,4 +181,10 @@ leg.set_draggable(True)
 
 plt.tight_layout()
 
+#############################
+# Uncertainty blowup number #
+#############################
+
+blowup = analysis.get_uncertainty_blowup(output_columns[0])
+    
 plt.show()
