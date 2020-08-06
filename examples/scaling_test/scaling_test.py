@@ -15,10 +15,10 @@ def run_campaign(poly_order, d, quad_rule, growth=False):
     for i in range(d):
         vary["x%d" % (i + 1)] = cp.Uniform(0.0, 1.0)
 
-    #Dense, full tensor product grid 
-    dense_sampler = uq.sampling.PCESampler(vary=vary, polynomial_order=poly_order,
-                                        rule=quad_rule, sparse=False,
-                                        growth=growth)
+    # #Dense, full tensor product grid 
+    # dense_sampler = uq.sampling.PCESampler(vary=vary, polynomial_order=poly_order,
+    #                                     rule=quad_rule, sparse=False,
+    #                                     growth=growth)
 
     #Sparse grid
     sparse_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=poly_order,
@@ -29,7 +29,7 @@ def run_campaign(poly_order, d, quad_rule, growth=False):
     print('Number of variables = %d' % d)
     print('poly_order = %d' % poly_order)
     print('1D quadrature rule = %s' % quad_rule)
-    print('Number of samples on dense grid = %d' % dense_sampler._number_of_samples)
+    # print('Number of samples on dense grid = %d' % dense_sampler._number_of_samples)
     print('Number of samples on sparse grid = %d' % sparse_sampler._number_of_samples)
 
 if __name__ == '__main__':
@@ -38,4 +38,4 @@ if __name__ == '__main__':
     #d = number of uncertain parameters
     #quad_rule: which 1D quadrature rule is used to build the d-dimensional grid
     #           (e.g. "G", "clenshaw_curtis", "fejer", "leja", "newton_cotes")
-    run_campaign(poly_order = 3, d = 7, quad_rule = "G")
+    run_campaign(poly_order = 3, d = 16, quad_rule = "leja", growth=True)

@@ -42,39 +42,87 @@ def uq_ensemble(config="dummy_test", script="ERROR: PARAMETER script SHOULD BE D
     run_ensemble(config, sweep_dir, **args)
 
 @task
-def run_uq_ensemble(config, campaign_dir, script_name, skip=0, **args):
+def run_uq_ensemble(config, campaign_dir, script, skip=0, **args):
     """
     Generic subsmission of samples
     """
-
-    campaign2ensemble(config, campaign_dir=campaign_dir)
-    #here should be an option to remove certain runs from the sweep dir
-    if int(skip) > 0:
-        path_to_config = find_config_file_path(config)
-        sweep_dir = path_to_config + "/SWEEP"
-        for i in range(int(skip)):
-            os.system('rm -r %s/Run_%s' %(sweep_dir, i+1))
-    uq_ensemble(config, script_name)
-
+    campaign2ensemble(config, campaign_dir=campaign_dir, skip=skip)
+    uq_ensemble(config, script)
 
 @task
-def get_uq_samples(config, campaign_dir, **args):
+def get_uq_samples(config, campaign_dir, skip=0, **args):
     """
     Fetches sample output from host, and copies results to EasyVVUQ work directory
     """
     
-    fetch_results()
+    # fetch_results()
 
     #loop through all result dirs to find result dir of sim_ID
     found = False
     dirs = os.listdir(env.local_results)
     for dir_i in dirs:
-        if config in dir_i:
+        #We are assuming here that the name of the directory with the runs dirs
+        #STARTS with the config name. e.g. <config_name>_eagle_vecma_28 and
+        #not PJ_header_<config_name>_eagle_vecma_28
+        if config == dir_i[0:len(config)]:
             found = True
             break
 
     if found:
-        print('Copying results from', env.local_results + '/' + dir_i + 'to' + campaign_dir)
-        ensemble2campaign(env.local_results + '/' + dir_i, campaign_dir, **args)
+        results_dir = os.path.join(env.local_results, dir_i)
+        print('Copying results from %s to %s' % (results_dir, campaign_dir))
+        ensemble2campaign(results_dir, campaign_dir, skip=skip, **args)
+
     else:
         print('Campaign dir not found')
+
+
+@task
+def verify_last_ensemble(config, 
+                         campaign_dir,
+                         target_filename, **args):
+    """
+    Verify if last EasyVVUQ ensemble produced all required output files
+    """
+    #if filename contained '=', replace it back
+    target_filename = target_filename.replace('replace_equal', '=')
+    #config and sweep directory
+    path_to_config = find_config_file_path(config)
+    sweep_dir = path_to_config + "/SWEEP"
+
+    #loop through all result dirs to find result dir of sim_ID
+    found = False
+    dirs = os.listdir(env.local_results)
+    for dir_i in dirs:
+        #We are assuming here that the name of the directory with the runs dirs
+        #STARTS with the config name. e.g. <config_name>_eagle_vecma_28 and
+        #not PJ_header_<config_name>_eagle_vecma_28
+        if config == dir_i[0:len(config)]:
+            found = True
+            break    
+
+    #directory where FabSim3 copies results to from the remote machine
+    results_dir = os.path.join(env.local_results, dir_i)
+
+    #all runs in the sweep directory = last ensemble
+    run_dirs = os.listdir(sweep_dir)
+    all_good = True
+    for run_dir in run_dirs:
+        #if in one of the runs dirs the target output file is not found
+        target = os.path.join(results_dir, 'RUNS', run_dir, target_filename)
+        if not os.path.exists(target):
+            print("Output for %s not found in %s" % (run_dir, target,))
+            all_good = False
+
+    #something went wrong
+    if not all_good:
+        print('Not all output files were found for last ensemble')
+        # local("fab {} {}:{},script={}".format("eagle_vecma", "CovidSim_ensemble", config, "CovidSim"))
+    #all output files are present
+    else:
+        print('Last ensemble executed correctly.')
+
+    #write a flag to campaign_dir/check.dat
+    fp = open(os.path.join(campaign_dir, 'check.dat'), 'w')
+    fp.write('%d' % all_good)
+    fp.close()

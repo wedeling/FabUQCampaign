@@ -1,0 +1,6 @@
+cd $job_results
+$run_prefix
+
+/usr/bin/env > env.log
+
+python3 $ohagan_exec model_in.json

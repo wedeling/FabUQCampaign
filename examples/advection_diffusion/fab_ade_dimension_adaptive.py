@@ -149,12 +149,14 @@ idx = 0
 for dist in my_sampler.vary.get_values():
     xi_mc[:, idx] = dist.sample(n_mc)
     idx += 1
-    
+xi_mc = analysis.xi_d
+
 # evaluate the surrogate at these values
 print('Evaluating surrogate model', n_mc, 'times')
-for i in range(n_mc):
+for i in range(xi_mc.shape[0]):
     ax.plot(x, analysis.surrogate('u', xi_mc[i]), 'g')
 print('done')
+ax.plot(x, samples.T, 'ro')
 
 plt.tight_layout()
 

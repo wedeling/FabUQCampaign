@@ -85,7 +85,7 @@ analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
 my_campaign.apply_analysis(analysis)
 
 # how many adaptation to make
-number_of_adaptations = 7
+number_of_adaptations = 2
 for i in range(number_of_adaptations):
     #required parameter in the case of a Fabsim run
     skip = my_sampler.count
@@ -107,7 +107,7 @@ for i in range(number_of_adaptations):
     #compute the error at all admissible points, select direction with
     #highest error and add that direction to the grid
     data_frame = my_campaign.get_collation_result()
-    analysis.adapt_dimension('f', data_frame, interp_based_error=True)
+    analysis.adapt_dimension('f', data_frame, method='var')
 
 #proceed as usual with analysis
 my_campaign.apply_analysis(analysis)
@@ -133,5 +133,5 @@ print("First order Sobol indices =", results['sobols_first']['f'])
 print("--------------------------------------")
 
 analysis.plot_grid()
-
+analysis.plot_stat_convergence()
 analysis.adaptation_table()

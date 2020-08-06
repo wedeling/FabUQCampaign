@@ -1,0 +1,80 @@
+{
+    "db_location": "sqlite:////tmp/adaptive_testgc75ajp1/campaign.db",
+    "db_type": "sql",
+    "active_app": "sc",
+    "campaign_name": "adaptive_test",
+    "campaign_dir": "adaptive_testgc75ajp1",
+    "log": [
+        {
+            "element": {
+                "name": "sc_sampler",
+                "version": "0.5",
+                "category": "sampling"
+            },
+            "info": {
+                "num_added": 1,
+                "replicas": 1
+            }
+        },
+        {
+            "element": {
+                "name": "aggregate_samples",
+                "version": "0.1",
+                "category": "collation"
+            },
+            "info": {
+                "num_collated": 1
+            }
+        },
+        {
+            "element": {
+                "name": "SC_Analysis",
+                "version": "0.6",
+                "category": "analysis"
+            },
+            "info": null
+        },
+        {
+            "element": {
+                "name": "sc_sampler",
+                "version": "0.5",
+                "category": "sampling"
+            },
+            "info": {
+                "num_added": 15,
+                "replicas": 1
+            }
+        },
+        {
+            "element": {
+                "name": "aggregate_samples",
+                "version": "0.1",
+                "category": "collation"
+            },
+            "info": {
+                "num_collated": 15
+            }
+        },
+        {
+            "element": {
+                "name": "sc_sampler",
+                "version": "0.5",
+                "category": "sampling"
+            },
+            "info": {
+                "num_added": 1,
+                "replicas": 1
+            }
+        },
+        {
+            "element": {
+                "name": "aggregate_samples",
+                "version": "0.1",
+                "category": "collation"
+            },
+            "info": {
+                "num_collated": 1
+            }
+        }
+    ]
+}
