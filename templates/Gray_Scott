@@ -1,0 +1,6 @@
+cd $job_results
+$run_prefix
+
+/usr/bin/env > env.log
+
+python3 $gray_scott_exec gray_scott_in.json

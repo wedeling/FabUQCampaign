@@ -1,0 +1,30 @@
+{
+    "db_location": "sqlite:////tmp/virsim_FC3a6inmid/campaign.db",
+    "db_type": "sql",
+    "active_app": "sc",
+    "campaign_name": "virsim_FC",
+    "campaign_dir": "virsim_FC3a6inmid",
+    "log": [
+        {
+            "element": {
+                "name": "QMC_sampler",
+                "version": "0.2",
+                "category": "sampling"
+            },
+            "info": {
+                "num_added": 10,
+                "replicas": 1
+            }
+        },
+        {
+            "element": {
+                "name": "aggregate_samples",
+                "version": "0.1",
+                "category": "collation"
+            },
+            "info": {
+                "num_collated": 10
+            }
+        }
+    ]
+}

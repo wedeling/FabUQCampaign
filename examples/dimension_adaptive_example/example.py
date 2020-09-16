@@ -26,7 +26,7 @@ work_dir = '/tmp'
 output_columns = ["f"]
 
 #start a new adaptive campaign or not
-init = True
+init = False
 
 if init:
     
@@ -62,7 +62,7 @@ if init:
     vary = {}
     for i in range(d):
         vary["x%d" % (i + 1)] = cp.Normal(0, 1)
-    
+
     #=================================
     #create dimension-adaptive sampler
     #=================================
@@ -70,7 +70,7 @@ if init:
     #growth = use a nested quadrature rule (not required)
     #dimension_adaptive = use a dimension adaptive sampler (required)
     sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=1,
-                                    quadrature_rule="leja",
+                                    quadrature_rule="C",
                                     sparse=True, growth=True,
                                     dimension_adaptive=True)
     
@@ -128,7 +128,7 @@ else:
     analysis = uq.analysis.SCAnalysis(sampler=sampler, qoi_cols=output_columns)
     analysis.load_state("covid_analysis_state" + ID + ".pickle")
 
-max_samples = 50
+max_samples = 1000
 n_iter = 0
 
 while sampler._number_of_samples < max_samples:
@@ -176,7 +176,7 @@ while sampler._number_of_samples < max_samples:
     #compute the error at all admissible points, select direction with
     #highest error and add that direction to the grid
     data_frame = campaign.get_collation_result()
-    analysis.adapt_dimension('f', data_frame, method='surplus')
+    analysis.adapt_dimension('f', data_frame, method='surplus_quad')
 
     #save everything
     campaign.save_state("covid_easyvvuq_state" + ID + ".json")

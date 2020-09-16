@@ -1,0 +1,30 @@
+{
+    "db_location": "sqlite:////tmp/scr_qsvqjo/campaign.db",
+    "db_type": "sql",
+    "active_app": "sc",
+    "campaign_name": "sc",
+    "campaign_dir": "scr_qsvqjo",
+    "log": [
+        {
+            "element": {
+                "name": "QMC_sampler",
+                "version": "0.2",
+                "category": "sampling"
+            },
+            "info": {
+                "num_added": 40,
+                "replicas": 1
+            }
+        },
+        {
+            "element": {
+                "name": "aggregate_samples",
+                "version": "0.1",
+                "category": "collation"
+            },
+            "info": {
+                "num_collated": 40
+            }
+        }
+    ]
+}

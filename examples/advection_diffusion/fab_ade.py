@@ -67,14 +67,9 @@ SPARSE GRID PARAMETERS
   of 1D collocation points per level. Used to make e.g. clenshaw-curtis
   quadrature nested.
 """
-my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=3,
+my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=2,
                                    quadrature_rule="C", 
                                    sparse=True, growth=True)
-xi_d  = my_sampler.xi_d
-
-fig = plt.figure()
-ax = fig.add_subplot(111)
-ax.plot(xi_d[:, 0], xi_d[:,1], 'ro')
 
 # Associate the sampler with the campaign
 my_campaign.set_sampler(my_sampler)
@@ -87,11 +82,20 @@ my_campaign.populate_runs_dir()
 ##   Use this instead to run the samples using EasyVVUQ on the localhost
 #my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
 #    "sc_model.py ade_in.json"))
+# run the UQ ensemble
+fab.run_uq_ensemble('ade', my_campaign.campaign_dir, script='ade',
+                    machine='localhost', PilotJob = False)
+#wait for job to complete
+fab.wait(machine='localhost')
 
-fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='ade', machine='localhost',
-                    skip = count)
-fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
-
+#wait for jobs to complete and check if all output files are retrieved 
+#from the remote machine
+fab.verify('ade', my_campaign.campaign_dir, 
+           my_campaign._active_app_decoder.target_filename, 
+           machine='localhost', PilotJob=False)
+#copy the samples back to EasyVVUQ dir
+fab.get_uq_samples('ade', my_campaign.campaign_dir, my_sampler.n_samples,
+                   skip=0, machine='localhost')
 my_campaign.collate()
 data_frame = my_campaign.get_collation_result()
 
@@ -122,25 +126,25 @@ ax.plot(x, mu - std, '--r')
 # Plot the random surrogate samples #
 #####################################
 
-ax = fig.add_subplot(122, xlabel='location x', ylabel='velocity u',
-                     title='Surrogate samples')
+# ax = fig.add_subplot(122, xlabel='location x', ylabel='velocity u',
+#                      title='Surrogate samples')
 
-#generate n_mc samples from the input distributions
-n_mc = 20
-xi_mc = np.zeros([20,2])
-idx = 0
-for dist in my_sampler.vary.get_values():
-    xi_mc[:, idx] = dist.sample(n_mc)
-    idx += 1
+# #generate n_mc samples from the input distributions
+# n_mc = 20
+# xi_mc = np.zeros([20,2])
+# idx = 0
+# for dist in my_sampler.vary.get_values():
+#     xi_mc[:, idx] = dist.sample(n_mc)
+#     idx += 1
     
-# evaluate the surrogate at these values
-print('Evaluating surrogate model', n_mc, 'times')
-for i in range(n_mc):
-    ax.plot(x, analysis.surrogate('u', xi_mc[i]), 'g')
-    ax.plot(x, analysis.surrogate('u', xi_mc[i], recursive=True), 'ro')
-print('done')
+# # evaluate the surrogate at these values
+# print('Evaluating surrogate model', n_mc, 'times')
+# for i in range(n_mc):
+#     ax.plot(x, analysis.surrogate('u', xi_mc[i]), 'g')
+#     ax.plot(x, analysis.surrogate('u', xi_mc[i], recursive=True), 'ro')
+# print('done')
 
-plt.tight_layout()
+# plt.tight_layout()
 
 #######################
 # Plot Sobol indices #
@@ -156,8 +160,8 @@ ax = fig.add_subplot(
 lbl = ['Pe', 'f', 'Pe-f interaction']
 idx = 0
 
-for S_i in results['sobols']['u']:
-    ax.plot(x, results['sobols']['u'][S_i], label=lbl[idx])
+for S_i in results['sobols_first']['u']:
+    ax.plot(x, results['sobols_first']['u'][S_i], label=lbl[idx])
     idx += 1
 
 leg = plt.legend(loc=0)
