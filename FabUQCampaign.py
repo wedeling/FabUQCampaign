@@ -26,19 +26,19 @@ def run_UQ_sample(config,**args):
     update_environment(args)
     with_config(config)
     execute(put_configs,config)
-    job(dict(script='run_UQ_sample', job_wall_time='0:15:0', memory='2G'),args)
+    job(dict(script='run_UQ_sample', job_wall_time='0:15:0', memory='2G'), args)
 
 @task
 def uq_ensemble(config="dummy_test", script="ERROR: PARAMETER script SHOULD BE DEFINED FOR TASK UQ_ENSEMBLE",**args):
     """
     Submits an ensemble of EasyVVUQ jobs.
-    One job is run for each file in <config_file_directory>/dummy_test/SWEEP.
     """
-    
+
     path_to_config = find_config_file_path(config)
     sweep_dir = path_to_config + "/SWEEP"
+    # required by qcg-pj to distribute threads correctly
+    env.task_model = 'threads'
     env.script = script
-
     run_ensemble(config, sweep_dir, **args)
 
 @task
@@ -47,7 +47,7 @@ def run_uq_ensemble(config, campaign_dir, script, skip=0, **args):
     Generic subsmission of samples
     """
     campaign2ensemble(config, campaign_dir=campaign_dir, skip=skip)
-    uq_ensemble(config, script)
+    uq_ensemble(config, script, **args)
 
 @task
 def get_uq_samples(config, campaign_dir, skip=0, **args):
@@ -64,6 +64,7 @@ def get_uq_samples(config, campaign_dir, skip=0, **args):
         #We are assuming here that the name of the directory with the runs dirs
         #STARTS with the config name. e.g. <config_name>_eagle_vecma_28 and
         #not PJ_header_<config_name>_eagle_vecma_28
+        print(dir_i)
         if config == dir_i[0:len(config)]:
             found = True
             break
