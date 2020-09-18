@@ -126,7 +126,7 @@ vary = {
     # "intervention_effect_var_inv": cp.Gamma(shape=2,scale=.05)
 }
 
-sampler = uq.sampling.QMCSampler(vary, n_mc_samples=5)
+sampler = uq.sampling.QMCSampler(vary, n_mc_samples=20)
 
 # Associate the sampler with the campaign
 campaign.set_sampler(sampler)
@@ -139,14 +139,13 @@ fab.run_uq_ensemble(config, campaign.campaign_dir, script=script,
                     machine=machine, PilotJob = True)
 
 #wait for job to complete
-fab.wait(machine=machine)
+# fab.wait(machine=machine)
 
 #wait for jobs to complete and check if all output files are retrieved 
 #from the remote machine
-# fab.wait(machine=machine)
-# fab.verify(config, campaign.campaign_dir, 
-#            campaign._active_app_decoder.target_filename, 
-#            machine=machine, PilotJob=True)
+fab.verify(config, campaign.campaign_dir, 
+            campaign._active_app_decoder.target_filename, 
+            machine=machine, PilotJob=True)
 
 #run the UQ ensemble
 fab.get_uq_samples(config, campaign.campaign_dir, sampler._n_samples,
