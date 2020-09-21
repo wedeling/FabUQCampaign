@@ -3,4 +3,4 @@ $run_prefix
 
 /usr/bin/env > env.log
 
-Rscript $virsim_FC_exec corona_in.json > output.txt
+Rscript $virsim_FC_exec corona_in.json
