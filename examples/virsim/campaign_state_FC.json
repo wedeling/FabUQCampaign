@@ -1,9 +1,9 @@
 {
-    "db_location": "sqlite:////tmp/virsim_FC3a6inmid/campaign.db",
+    "db_location": "sqlite:////tmp/virsim_FC4qcww8vd/campaign.db",
     "db_type": "sql",
     "active_app": "sc",
     "campaign_name": "virsim_FC",
-    "campaign_dir": "virsim_FC3a6inmid",
+    "campaign_dir": "virsim_FC4qcww8vd",
     "log": [
         {
             "element": {
