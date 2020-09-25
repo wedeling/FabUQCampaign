@@ -139,6 +139,9 @@ campaign.set_sampler(sampler)
 campaign.draw_samples()
 campaign.populate_runs_dir()
 
+#Save the Campaign
+campaign.save_state("campaign_state_IL.json")
+
 # run the UQ ensemble
 fab.run_uq_ensemble(config, campaign.campaign_dir, script=script,
                     machine=machine, PilotJob = True)
@@ -157,8 +160,8 @@ fab.get_uq_samples(config, campaign.campaign_dir, sampler._n_samples,
                    skip=0, machine='eagle_vecma')
 campaign.collate()
 
-#Save the Campaign
-campaign.save_state("campaign_state_IL.json")
+# #Save the Campaign
+# campaign.save_state("campaign_state_IL.json")
 
 print('Job submission complete')
 

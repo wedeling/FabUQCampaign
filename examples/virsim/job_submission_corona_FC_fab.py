@@ -155,8 +155,8 @@ fab.get_uq_samples(config, campaign.campaign_dir, sampler._n_samples,
                    skip=0, machine='eagle_vecma')
 campaign.collate()
 
-#Save the Campaign
-campaign.save_state("campaign_state_FC.json")
+# #Save the Campaign
+# campaign.save_state("campaign_state_FC.json")
 
 print('Job submission complete')
 
