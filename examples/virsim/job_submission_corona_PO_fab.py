@@ -148,19 +148,21 @@ fab.run_uq_ensemble(config, campaign.campaign_dir, script=script,
 #wait for job to complete
 # fab.wait(machine=machine)
 
-#wait for jobs to complete and check if all output files are retrieved 
-#from the remote machine
-fab.verify(config, campaign.campaign_dir, 
-            campaign._active_app_decoder.target_filename, 
-            machine=machine, PilotJob=True)
+# #wait for jobs to complete and check if all output files are retrieved 
+# #from the remote machine
+# fab.verify(config, campaign.campaign_dir, 
+#             campaign._active_app_decoder.target_filename, 
+#             machine=machine, PilotJob=True)
 
-#run the UQ ensemble
-fab.get_uq_samples(config, campaign.campaign_dir, sampler._n_samples,
-                   skip=0, machine='eagle_vecma')
-campaign.collate()
+# #run the UQ ensemble
+# fab.get_uq_samples(config, campaign.campaign_dir, sampler._n_samples,
+#                    skip=0, machine='eagle_vecma')
+# campaign.collate()
 
 # #Save the Campaign
 # campaign.save_state("campaign_state_PO.json")
+
+print('Job submission complete')
 
 # # collate output
 # # get full dataset of data
@@ -173,7 +175,5 @@ campaign.collate()
 
 # results = campaign.get_last_analysis()
 # print(results)
-
-print('Job submission complete')
 
 ### END OF CODE ###
