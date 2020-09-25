@@ -9,7 +9,7 @@ import easyvvuq as uq
 import os, subprocess
 import fabsim3_cmd_api as fab
 
-config = 'virsim'
+config = 'virsim_PO'
 script = 'virsim_PO'
 machine = 'eagle_vecma'
 workdir = '/home/federica/Desktop/VirsimCampaigns'#'/tmp'
