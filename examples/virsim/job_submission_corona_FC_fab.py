@@ -134,6 +134,9 @@ campaign.set_sampler(sampler)
 campaign.draw_samples()
 campaign.populate_runs_dir()
 
+#Save the Campaign
+campaign.save_state("campaign_state_FC.json")
+
 # run the UQ ensemble
 fab.run_uq_ensemble(config, campaign.campaign_dir, script=script,
                     machine=machine, PilotJob = True)
