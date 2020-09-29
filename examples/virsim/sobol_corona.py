@@ -33,8 +33,14 @@ print('========================================================')
 
 # get sampler and output columns from my_campaign object
 sampler = campaign._active_sampler
+# print(type(sampler._samples))
+# print(sampler._samples.shape)
 
 output_columns = campaign._active_app_decoder.output_columns
+
+fab.verify(config, campaign.campaign_dir, 
+            campaign._active_app_decoder.target_filename, 
+            machine=machine, PilotJob=True)
 
 fab.get_uq_samples(config, campaign.campaign_dir, sampler._n_samples,
                    skip=0, machine='eagle_vecma')
