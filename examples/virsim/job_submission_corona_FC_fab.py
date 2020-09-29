@@ -126,7 +126,7 @@ vary = {
     # "intervention_effect_var_inv": cp.Gamma(shape=2,scale=.05)
 }
 
-sampler = uq.sampling.QMCSampler(vary, n_mc_samples=1000)
+sampler = uq.sampling.MCSampler(vary, n_mc_samples=1000)
 
 # Associate the sampler with the campaign
 campaign.set_sampler(sampler)
