@@ -99,16 +99,16 @@ for param in params:
     print('Sobol index for IC_ex_max = ', sobols['IC_ex_max'][param][200])
 
 f = plt.figure('Sobol_IC_max', figsize=[12, 6])
-ax_ICp_max = f.add_subplot(121, title = 'IC_prev_avg_max')
+ax_ICp_max = f.add_subplot(121, title = 'Maximum of patients in IC')
 ax_ICp_max.set_ylim([-.1, 1.1])
 
-ax_ICe_max = f.add_subplot(122, title = 'IC_ex_max')
+ax_ICe_max = f.add_subplot(122, title = 'IC patient-days in excess')
 ax_ICe_max.set_ylim([-.1, 1.1])
 
 ax_ICp_max.errorbar(np.arange(0, len(params), 1), sobol_idx_ICp, yerr=yerr_ICp, \
-    fmt='o', elinewidth=2, color='teal')
+    fmt='o', elinewidth=2, color='forestgreen')
 ax_ICe_max.errorbar(np.arange(0, len(params), 1), sobol_idx_ICe, yerr=yerr_ICe, \
-    fmt='o', elinewidth=2, color='teal')
+    fmt='o', elinewidth=2, color='forestgreen')
 
 ax_ICp_max.set_xticks(np.arange(0, len(params), 1))
 ax_ICp_max.set_xticklabels(params, rotation=45)
