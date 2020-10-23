@@ -129,7 +129,7 @@ vary = {
 
 #sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=3, 
 #                                   quadrature_rule='G', sparse=False)
-sampler = uq.sampling.MCSampler(vary=vary, n_mc_samples=1000)
+sampler = uq.sampling.MCSampler(vary=vary, n_mc_samples=2000)
 
 # Associate the sampler with the campaign
 campaign.set_sampler(sampler)
