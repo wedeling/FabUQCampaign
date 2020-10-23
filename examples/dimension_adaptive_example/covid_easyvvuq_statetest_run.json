@@ -1,9 +1,9 @@
 {
-    "db_location": "sqlite:////tmp/adaptive_test4flolloc/campaign.db",
+    "db_location": "sqlite:////tmp/adaptive_testt_264xtj/campaign.db",
     "db_type": "sql",
     "active_app": "sc",
     "campaign_name": "adaptive_test",
-    "campaign_dir": "adaptive_test4flolloc",
+    "campaign_dir": "adaptive_testt_264xtj",
     "log": [
         {
             "element": {
@@ -116,6 +116,48 @@
             },
             "info": {
                 "num_collated": 4
+            }
+        },
+        {
+            "element": {
+                "name": "sc_sampler",
+                "version": "0.5",
+                "category": "sampling"
+            },
+            "info": {
+                "num_added": 8,
+                "replicas": 1
+            }
+        },
+        {
+            "element": {
+                "name": "aggregate_samples",
+                "version": "0.1",
+                "category": "collation"
+            },
+            "info": {
+                "num_collated": 8
+            }
+        },
+        {
+            "element": {
+                "name": "sc_sampler",
+                "version": "0.5",
+                "category": "sampling"
+            },
+            "info": {
+                "num_added": 16,
+                "replicas": 1
+            }
+        },
+        {
+            "element": {
+                "name": "aggregate_samples",
+                "version": "0.1",
+                "category": "collation"
+            },
+            "info": {
+                "num_collated": 16
             }
         }
     ]

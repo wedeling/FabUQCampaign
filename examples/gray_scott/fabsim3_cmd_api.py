@@ -163,9 +163,10 @@ def verify_last_ensemble(config, campaign_dir, target_filename, machine):
     target_filename = target_filename.replace('=', 'replace_equal')
 
     #Run FabSim3 verify_last_ensemble command
-    arguments = "{},campaign_dir={},target_filename={}".format(config, 
-                                                               campaign_dir, 
-                                                               target_filename)
+    arguments = "{},campaign_dir={},target_filename={},machine={}".format(config, 
+                                                                   campaign_dir, 
+                                                                   target_filename,
+                                                                   machine)
 
     fabsim("verify_last_ensemble", arguments, machine='localhost')
     #FabSim3 verify_last_ensemble command writes a flag to the check.dat file
