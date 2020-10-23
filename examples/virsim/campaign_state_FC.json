@@ -1,9 +1,9 @@
 {
-    "db_location": "sqlite:////tmp/virsim_FC3a6inmid/campaign.db",
+    "db_location": "sqlite:////home/wouter/VECMA/Campaigns/virsim_FCs8cx4gp6/campaign.db",
     "db_type": "sql",
     "active_app": "sc",
     "campaign_name": "virsim_FC",
-    "campaign_dir": "virsim_FC3a6inmid",
+    "campaign_dir": "virsim_FCs8cx4gp6",
     "log": [
         {
             "element": {
@@ -12,7 +12,7 @@
                 "category": "sampling"
             },
             "info": {
-                "num_added": 10,
+                "num_added": 2500,
                 "replicas": 1
             }
         },
@@ -23,7 +23,7 @@
                 "category": "collation"
             },
             "info": {
-                "num_collated": 10
+                "num_collated": 2500
             }
         }
     ]

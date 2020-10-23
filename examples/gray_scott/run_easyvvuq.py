@@ -6,8 +6,8 @@ import fabsim3_cmd_api as fab
 import matplotlib.pyplot as plt
 
 machine = 'eagle_vecma'
-config='gray_scott'
-work_dir = '/home/wouter/VECMA/Campaigns'
+config='gray_scott_muscle'
+work_dir = '/tmp'
 
 plt.close('all')
 
@@ -36,11 +36,11 @@ output_columns = ["Q1", "Q2", "Q3", "Q4", "Q1_HF", "Q2_HF", "Q3_HF", "Q4_HF"]
 encoder = uq.encoders.GenericEncoder(
     template_fname=HOME + '/gray_scott.template',
     delimiter='$',
-    target_filename='gray_scott_in.json')
+    target_filename='reduced.ymmsl')
 decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                 output_columns=output_columns,
                                 header=0)
-collater = uq.collate.AggregateHDF5()
+collater = uq.collate.AggregateSamples()
 
 # Add the SC app (automatically set as current app)
 campaign.add_app(name="gray_scott",
@@ -55,7 +55,7 @@ vary = {
     "kill": cp.Uniform(0.05, 0.055)
 }
 
-sampler = uq.sampling.RandomSampler(vary, max_num=100)
+sampler = uq.sampling.RandomSampler(vary, max_num=1)
 
 # Associate the sampler with the campaign
 campaign.set_sampler(sampler)
@@ -65,8 +65,9 @@ campaign.draw_samples()
 campaign.populate_runs_dir()
 
 # run the UQ ensemble
-fab.run_uq_ensemble(config, campaign.campaign_dir, script='Gray_Scott',
-                    machine=machine, PilotJob = False)
+fab.run_uq_ensemble(config, campaign.campaign_dir, script='Gray_Scott_muscle',
+                    machine="localhost", PilotJob = False)
+
 #wait for job to complete
 fab.wait(machine=machine)
 
@@ -78,7 +79,7 @@ fab.verify(config, campaign.campaign_dir,
 
 #run the UQ ensemble
 fab.get_uq_samples(config, campaign.campaign_dir, sampler.max_num,
-                   skip=0, machine='eagle_vecma')
+                   skip=0, machine='localhost')
 campaign.collate()
 
 campaign.save_state("easyvvuq_state.json")

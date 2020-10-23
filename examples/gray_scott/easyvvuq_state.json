@@ -1,9 +1,9 @@
 {
-    "db_location": "sqlite:////home/wouter/VECMA/Campaigns/gray_scottmgp2jtqw/campaign.db",
+    "db_location": "sqlite:////tmp/gray_scottr4_7pi0x/campaign.db",
     "db_type": "sql",
     "active_app": "gray_scott",
     "campaign_name": "gray_scott",
-    "campaign_dir": "gray_scottmgp2jtqw",
+    "campaign_dir": "gray_scottr4_7pi0x",
     "log": [
         {
             "element": {
@@ -12,18 +12,18 @@
                 "category": "sampling"
             },
             "info": {
-                "num_added": 100,
+                "num_added": 1,
                 "replicas": 1
             }
         },
         {
             "element": {
-                "name": "aggregate_hdf5",
+                "name": "aggregate_samples",
                 "version": "0.1",
                 "category": "collation"
             },
             "info": {
-                "num_collated": 100
+                "num_collated": 0
             }
         }
     ]

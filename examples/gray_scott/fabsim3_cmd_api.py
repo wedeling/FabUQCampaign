@@ -139,7 +139,7 @@ def verify_last_ensemble(config, campaign_dir, target_filename, machine):
     - config (string): the config ID, i.e. the name in <fab_fome>/config_files/<config>
     - campaign_dir (string): the EasyVVUQ work directory
     - target_filename (string): the name of the filename to check the existence of.
-      (strored in campaign._active_decoder.target_filename)
+      (stored in campaign._active_decoder.target_filename)
     - machine (string): the name of the remote machine as indicated in
       machines_user.yml
 
@@ -295,7 +295,7 @@ def get_uq_samples(config, campaign_dir, number_of_samples, skip=0, machine = 'l
     Retrieves results from UQ ensemble
     """
     # sim_ID = campaign_dir.split('/')[-1]
-    arguments = "{},campaign_dir={},skip={}".format(config, campaign_dir, skip)
+    arguments = "{},campaign_dir={},skip={},machine={}".format(config, campaign_dir, skip, machine)
     fabsim("get_uq_samples", arguments, machine=machine)
     
     #If the same FabSim3 config name was used before, the statement above

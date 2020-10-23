@@ -147,7 +147,7 @@ fab.verify(config, campaign.campaign_dir,
             campaign._active_app_decoder.target_filename, 
             machine=machine, PilotJob=True)
 
-#run the UQ ensemble
+#copy UQ ensemble from Fabsim result dir to EasyVVUQ campaign dir
 fab.get_uq_samples(config, campaign.campaign_dir, sampler._n_samples,
                    skip=0, machine='eagle_vecma')
 campaign.collate()

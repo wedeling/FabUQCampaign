@@ -56,7 +56,6 @@ def get_uq_samples(config, campaign_dir, skip=0, **args):
     """
     
     # fetch_results()
-
     #loop through all result dirs to find result dir of sim_ID
     found = False
     dirs = os.listdir(env.local_results)
@@ -64,8 +63,10 @@ def get_uq_samples(config, campaign_dir, skip=0, **args):
         #We are assuming here that the name of the directory with the runs dirs
         #STARTS with the config name. e.g. <config_name>_eagle_vecma_28 and
         #not PJ_header_<config_name>_eagle_vecma_28
-        print(dir_i)
-        if config == dir_i[0:len(config)]:
+        config_i = dir_i.split('_' + args['machine'])[0]
+        print(config_i)
+        # if config == dir_i[0:len(config)]:
+        if config == config_i:
             found = True
             break
 
@@ -75,7 +76,7 @@ def get_uq_samples(config, campaign_dir, skip=0, **args):
         ensemble2campaign(results_dir, campaign_dir, skip=skip, **args)
 
     else:
-        print('Campaign dir not found')
+        print('Config not found in FabSim3 results directory')
 
 
 @task

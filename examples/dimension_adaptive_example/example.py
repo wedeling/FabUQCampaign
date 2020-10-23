@@ -26,7 +26,7 @@ work_dir = '/tmp'
 output_columns = ["f"]
 
 #start a new adaptive campaign or not
-init = False
+init = True
 
 if init:
     
@@ -176,7 +176,7 @@ while sampler._number_of_samples < max_samples:
     #compute the error at all admissible points, select direction with
     #highest error and add that direction to the grid
     data_frame = campaign.get_collation_result()
-    analysis.adapt_dimension('f', data_frame, method='surplus_quad')
+    analysis.adapt_dimension('f', data_frame, method='var')
 
     #save everything
     campaign.save_state("covid_easyvvuq_state" + ID + ".json")

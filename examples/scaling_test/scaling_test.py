@@ -38,4 +38,4 @@ if __name__ == '__main__':
     #d = number of uncertain parameters
     #quad_rule: which 1D quadrature rule is used to build the d-dimensional grid
     #           (e.g. "G", "clenshaw_curtis", "fejer", "leja", "newton_cotes")
-    run_campaign(poly_order = 3, d = 16, quad_rule = "leja", growth=True)
+    run_campaign(poly_order = 2, d = 8, quad_rule = "C", growth=True)
