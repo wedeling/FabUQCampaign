@@ -62,9 +62,9 @@ qmc_analysis = uq.analysis.QMCAnalysis(sampler=sampler, qoi_cols=output_columns)
 
 #manually execute analyse, such that we can supply output_index=-1, only using the last entry
 #of the 551 points as QoI
-qmc_analysis.analyse(data, output_index=-1)
+results = qmc_analysis.analyse(data, output_index=-1)
 
-results = campaign.get_last_analysis()
+# results = campaign.get_last_analysis()
 #print(results)
 
 """
@@ -89,28 +89,28 @@ yerr_ICe = np.zeros((2,len(params)), dtype='float')
 idx = 0
 for param in params: 
     #
-    sobol_idx = sobols['IC_prev_avg_max'][param][200]
+    sobol_idx = sobols['IC_prev_avg_max'][param]
     sobol_idx_ICp[idx] = sobol_idx
-    low = results['conf_sobols_first']['IC_prev_avg_max'][param]['low'][200]
-    high = results['conf_sobols_first']['IC_prev_avg_max'][param]['high'][200]
+    low = results['conf_sobols_first']['IC_prev_avg_max'][param]['low']
+    high = results['conf_sobols_first']['IC_prev_avg_max'][param]['high']
     yerr_ICp[:,idx] = [sobol_idx-low, high-sobol_idx]
     #
-    sobol_idx = sobols['IC_ex_max'][param][200]
+    sobol_idx = sobols['IC_ex_max'][param]
     sobol_idx_ICe[idx] = sobol_idx
-    low = results['conf_sobols_first']['IC_ex_max'][param]['low'][200]
-    high = results['conf_sobols_first']['IC_ex_max'][param]['high'][200]
+    low = results['conf_sobols_first']['IC_ex_max'][param]['low']
+    high = results['conf_sobols_first']['IC_ex_max'][param]['high']
     yerr_ICe[:,idx] = [sobol_idx-low, high-sobol_idx]
     #
     idx += 1
     # print values to terminal
     print('Param = ',param)
-    print('Sobol index for IC_prev_avg_max = ', sobols['IC_prev_avg_max'][param][200])
-    print('95% CI lower bound = ', results['conf_sobols_first']['IC_prev_avg_max'][param]['low'][200])
-    print('95% CI upper bound = ', results['conf_sobols_first']['IC_prev_avg_max'][param]['high'][200])
+    print('Sobol index for IC_prev_avg_max = ', sobols['IC_prev_avg_max'][param])
+    print('95% CI lower bound = ', results['conf_sobols_first']['IC_prev_avg_max'][param]['low'])
+    print('95% CI upper bound = ', results['conf_sobols_first']['IC_prev_avg_max'][param]['high'])
 
-    print('Sobol index for IC_ex_max = ', sobols['IC_ex_max'][param][200])
-    print('95% CI lower bound = ', results['conf_sobols_first']['IC_ex_max'][param]['low'][200])
-    print('95% CI upper bound = ', results['conf_sobols_first']['IC_ex_max'][param]['high'][200])
+    print('Sobol index for IC_ex_max = ', sobols['IC_ex_max'][param])
+    print('95% CI lower bound = ', results['conf_sobols_first']['IC_ex_max'][param]['low'])
+    print('95% CI upper bound = ', results['conf_sobols_first']['IC_ex_max'][param]['high'])
 
 f = plt.figure('Sobol_IC_max', figsize=[12, 6])
 ax_ICp_max = f.add_subplot(121, title = 'Maximum of patients in IC')
