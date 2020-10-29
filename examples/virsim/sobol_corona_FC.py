@@ -5,6 +5,7 @@ __license__= "LGPL"
 """
 
 import numpy as np
+import pandas as pd
 import easyvvuq as uq
 import os
 import matplotlib.pyplot as plt
@@ -26,7 +27,7 @@ workdir = '/home/federica/Desktop/VirsimCampaigns'#'/tmp'
 HOME = os.path.abspath(os.path.dirname(__file__))
 
 # Reload the campaign
-campaign = uq.Campaign(state_file = "campaign_state_FC.json", work_dir = workdir)
+campaign = uq.Campaign(state_file = "campaign_state_FC_nmc2k.json", work_dir = workdir)
 print('========================================================')
 print('Reloaded campaign', campaign.campaign_dir.split('/')[-1])
 print('========================================================')
@@ -36,24 +37,32 @@ sampler = campaign._active_sampler
 # print(type(sampler._samples))
 # print(sampler._samples.shape)
 
-output_columns = campaign._active_app_decoder.output_columns
+# output_columns = campaign._active_app_decoder.output_columns
 
-fab.verify(config, campaign.campaign_dir, 
-            campaign._active_app_decoder.target_filename, 
-            machine=machine, PilotJob=True)
+#Manually specify a subset of the output QoIs, is faster
+output_columns = ["IC_prev_avg_max", "IC_ex_max"]
 
-fab.get_uq_samples(config, campaign.campaign_dir, sampler._n_samples,
-                   skip=0, machine='eagle_vecma')
+# fab.verify(config, campaign.campaign_dir, 
+#             campaign._active_app_decoder.target_filename, 
+#             machine=machine, PilotJob=True)
+
+# fab.get_uq_samples(config, campaign.campaign_dir, sampler._n_samples,
+#                     skip=0, machine='eagle_vecma')
 
 # collate output
 campaign.collate()
 # get full dataset of data
 data = campaign.get_collation_result()
-#print(data)
+# print(data)
 
 # Post-processing analysis
 qmc_analysis = uq.analysis.QMCAnalysis(sampler=sampler, qoi_cols=output_columns)
-campaign.apply_analysis(qmc_analysis)
+
+# campaign.apply_analysis(qmc_analysis)
+
+#manually execute analyse, such that we can supply output_index=-1, only using the last entry
+#of the 551 points as QoI
+qmc_analysis.analyse(data, output_index=-1)
 
 results = campaign.get_last_analysis()
 #print(results)
@@ -120,4 +129,4 @@ f.savefig('figures/Sobol_IC_max_FC.png')
 
 plt.show()
 
-### END OF CODE ###
+# ### END OF CODE ###
