@@ -77,7 +77,7 @@ sobols = results['sobols_first']
 params = list(sampler.vary.get_keys())
 #print(params)
 
-time = np.arange(0, 550+1, 1)
+#time = np.arange(0, 550+1, 1)
 
 ######################################################################
 sobol_idx_ICp = np.zeros((len(params)), dtype='float')
@@ -105,7 +105,12 @@ for param in params:
     # print values to terminal
     print('Param = ',param)
     print('Sobol index for IC_prev_avg_max = ', sobols['IC_prev_avg_max'][param][200])
+    print('95% CI lower bound = ', results['conf_sobols_first']['IC_prev_avg_max'][param]['low'][200])
+    print('95% CI upper bound = ', results['conf_sobols_first']['IC_prev_avg_max'][param]['high'][200])
+
     print('Sobol index for IC_ex_max = ', sobols['IC_ex_max'][param][200])
+    print('95% CI lower bound = ', results['conf_sobols_first']['IC_ex_max'][param]['low'][200])
+    print('95% CI upper bound = ', results['conf_sobols_first']['IC_ex_max'][param]['high'][200])
 
 f = plt.figure('Sobol_IC_max', figsize=[12, 6])
 ax_ICp_max = f.add_subplot(121, title = 'Maximum of patients in IC')

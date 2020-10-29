@@ -73,7 +73,7 @@ def solve(Pe, f, nel):
     K[0, 0] = 1.0
     K[nel, nel] = 1.0
 
-    return np.linalg.solve(K, F)
+    return np.linalg.solve(K, F)  * (np.random.randn(nel + 1)*0.1 + 1)
 
 # Finite element linear shape functions and their derivatives
 def der_shape(h, Q):

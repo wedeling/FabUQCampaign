@@ -97,7 +97,7 @@ params = {
         "default": "output.csv"}}
     
 output_filename = params["out_file"]["default"]
-output_columns = ["S","E","I","R","IC_inc","IC_prev","IC_prev_avg","IC_prev_avg_max","IC_ex","IC_ex_max"]
+output_columns = ["IC_prev_avg_max","IC_ex_max"]
 
 encoder = uq.encoders.GenericEncoder(
     template_fname= HOME + '/corona.template',
@@ -106,7 +106,8 @@ encoder = uq.encoders.GenericEncoder(
 decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                 output_columns=output_columns,
                                 header=0)
-collater = uq.collate.AggregateSamples(average=False)
+# collater = uq.collate.AggregateSamples(average=False)
+collater = uq.collate.AggregateHDF5()
 
 # Add the SC app (automatically set as current app)
 campaign.add_app(name="sc",

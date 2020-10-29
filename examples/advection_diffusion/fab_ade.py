@@ -94,7 +94,7 @@ fab.verify('ade', my_campaign.campaign_dir,
            my_campaign._active_app_decoder.target_filename, 
            machine='localhost', PilotJob=False)
 #copy the samples back to EasyVVUQ dir
-fab.get_uq_samples('ade', my_campaign.campaign_dir, my_sampler.n_samples,
+fab.get_uq_samples('ade', my_campaign.campaign_dir, my_sampler._number_of_samples,
                    skip=0, machine='localhost')
 my_campaign.collate()
 data_frame = my_campaign.get_collation_result()
@@ -168,5 +168,26 @@ leg = plt.legend(loc=0)
 leg.set_draggable(True)
 
 plt.tight_layout()
+
+import pandas as pd
+#get the EasyVVUQ data frame
+df = my_campaign.get_collation_result()
+data = []
+#loop over all qois
+samples = {k: [] for k in output_columns}
+for run_id in df.run_id.unique():
+    for k in output_columns:
+        #compute the mean instead of the full value
+        values = data_frame.loc[data_frame['run_id'] == run_id][k].values.mean()
+        #use run_id as a key
+        data.append({'run_id': run_id, k: values})
+#turn list into dataframe
+averged_df = pd.DataFrame(data)
+#apply analysis on averged samples
+results = analysis.analyse(data_frame=averged_df)
+
+_, _, _, sobols = analysis.get_pce_sobol_indices('u', typ='all')
+for key in sobols.keys():
+    print('param', key, 'sobol=', sobols[key])
 
 plt.show()
