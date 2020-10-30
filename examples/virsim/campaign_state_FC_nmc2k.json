@@ -1,0 +1,20 @@
+{
+    "db_location": "sqlite:////home/federica/Desktop/VirsimCampaigns/virsim_FCn5r0lkca/campaign.db",
+    "db_type": "sql",
+    "active_app": "sc",
+    "campaign_name": "virsim_FC",
+    "campaign_dir": "virsim_FCn5r0lkca",
+    "log": [
+        {
+            "element": {
+                "name": "mc_sampler",
+                "version": "0.1",
+                "category": "sampling"
+            },
+            "info": {
+                "num_added": 10000,
+                "replicas": 1
+            }
+        }
+    ]
+}

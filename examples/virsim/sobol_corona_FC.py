@@ -5,6 +5,7 @@ __license__= "LGPL"
 """
 
 import numpy as np
+import pandas as pd
 import easyvvuq as uq
 import os
 import matplotlib.pyplot as plt
@@ -26,7 +27,7 @@ workdir = '/home/federica/Desktop/VirsimCampaigns'#'/tmp'
 HOME = os.path.abspath(os.path.dirname(__file__))
 
 # Reload the campaign
-campaign = uq.Campaign(state_file = "campaign_state_FC.json", work_dir = workdir)
+campaign = uq.Campaign(state_file = "campaign_state_FC_nmc2k.json", work_dir = workdir)
 print('========================================================')
 print('Reloaded campaign', campaign.campaign_dir.split('/')[-1])
 print('========================================================')
@@ -36,28 +37,34 @@ sampler = campaign._active_sampler
 # print(type(sampler._samples))
 # print(sampler._samples.shape)
 
-output_columns = campaign._active_app_decoder.output_columns
+# output_columns = campaign._active_app_decoder.output_columns
 
-fab.verify(config, campaign.campaign_dir, 
-            campaign._active_app_decoder.target_filename, 
-            machine=machine, PilotJob=True)
+#Manually specify a subset of the output QoIs, is faster
+output_columns = ["IC_prev_avg_max", "IC_ex_max"]
 
-# fab.fetch_results(machine=machine)
+# fab.verify(config, campaign.campaign_dir, 
+#             campaign._active_app_decoder.target_filename, 
+#             machine=machine, PilotJob=True)
 
-fab.get_uq_samples(config, campaign.campaign_dir, sampler.n_samples(),
-                   skip=0, machine=machine)
+# fab.get_uq_samples(config, campaign.campaign_dir, sampler._n_samples,
+#                     skip=0, machine='eagle_vecma')
 
 # collate output
 campaign.collate()
 # get full dataset of data
 data = campaign.get_collation_result()
-#print(data)
+# print(data)
 
 # Post-processing analysis
 qmc_analysis = uq.analysis.QMCAnalysis(sampler=sampler, qoi_cols=output_columns)
-campaign.apply_analysis(qmc_analysis)
 
-results = campaign.get_last_analysis()
+# campaign.apply_analysis(qmc_analysis)
+
+#manually execute analyse, such that we can supply output_index=-1, only using the last entry
+#of the 551 points as QoI
+results = qmc_analysis.analyse(data, output_index=-1)
+
+# results = campaign.get_last_analysis()
 #print(results)
 
 """
@@ -82,28 +89,28 @@ yerr_ICe = np.zeros((2,len(params)), dtype='float')
 idx = 0
 for param in params: 
     #
-    sobol_idx = sobols['IC_prev_avg_max'][param][200]
+    sobol_idx = sobols['IC_prev_avg_max'][param]
     sobol_idx_ICp[idx] = sobol_idx
-    low = results['conf_sobols_first']['IC_prev_avg_max'][param]['low'][200]
-    high = results['conf_sobols_first']['IC_prev_avg_max'][param]['high'][200]
+    low = results['conf_sobols_first']['IC_prev_avg_max'][param]['low']
+    high = results['conf_sobols_first']['IC_prev_avg_max'][param]['high']
     yerr_ICp[:,idx] = [sobol_idx-low, high-sobol_idx]
     #
-    sobol_idx = sobols['IC_ex_max'][param][200]
+    sobol_idx = sobols['IC_ex_max'][param]
     sobol_idx_ICe[idx] = sobol_idx
-    low = results['conf_sobols_first']['IC_ex_max'][param]['low'][200]
-    high = results['conf_sobols_first']['IC_ex_max'][param]['high'][200]
+    low = results['conf_sobols_first']['IC_ex_max'][param]['low']
+    high = results['conf_sobols_first']['IC_ex_max'][param]['high']
     yerr_ICe[:,idx] = [sobol_idx-low, high-sobol_idx]
     #
     idx += 1
     # print values to terminal
     print('Param = ',param)
-    print('Sobol index for IC_prev_avg_max = ', sobols['IC_prev_avg_max'][param][200])
-    print('95% CI lower bound = ', results['conf_sobols_first']['IC_prev_avg_max'][param]['low'][200])
-    print('95% CI upper bound = ', results['conf_sobols_first']['IC_prev_avg_max'][param]['high'][200])
+    print('Sobol index for IC_prev_avg_max = ', sobols['IC_prev_avg_max'][param])
+    print('95% CI lower bound = ', results['conf_sobols_first']['IC_prev_avg_max'][param]['low'])
+    print('95% CI upper bound = ', results['conf_sobols_first']['IC_prev_avg_max'][param]['high'])
 
-    print('Sobol index for IC_ex_max = ', sobols['IC_ex_max'][param][200])
-    print('95% CI lower bound = ', results['conf_sobols_first']['IC_ex_max'][param]['low'][200])
-    print('95% CI upper bound = ', results['conf_sobols_first']['IC_ex_max'][param]['high'][200])
+    print('Sobol index for IC_ex_max = ', sobols['IC_ex_max'][param])
+    print('95% CI lower bound = ', results['conf_sobols_first']['IC_ex_max'][param]['low'])
+    print('95% CI upper bound = ', results['conf_sobols_first']['IC_ex_max'][param]['high'])
 
 f = plt.figure('Sobol_IC_max', figsize=[12, 6])
 ax_ICp_max = f.add_subplot(121, title = 'Maximum of patients in IC')
@@ -127,4 +134,4 @@ f.savefig('figures/Sobol_IC_max_FC.png')
 
 plt.show()
 
-### END OF CODE ###
+# ### END OF CODE ###
