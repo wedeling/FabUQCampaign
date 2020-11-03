@@ -40,14 +40,14 @@ sampler = campaign._active_sampler
 
 output_columns = campaign._active_app_decoder.output_columns
 
-#fab.verify(config, campaign.campaign_dir, 
-#            campaign._active_app_decoder.target_filename, 
-#            machine=machine, PJ=True)
+fab.verify(config, campaign.campaign_dir, 
+            campaign._active_app_decoder.target_filename, 
+            machine=machine, PJ=True)
 
 # fab.fetch_results(machine=machine)
 
-#fab.get_uq_samples(config, campaign.campaign_dir, sampler.n_samples(),
-#                   skip=0, machine=machine)
+fab.get_uq_samples(config, campaign.campaign_dir, sampler.n_samples(),
+                   skip=0, machine=machine)
 
 # collate output
 campaign.collate()
@@ -116,9 +116,9 @@ ax_ICe_max = f.add_subplot(122, title = 'IC_ex_max')
 ax_ICe_max.set_ylim([-.1, 1.1])
 
 ax_ICp_max.errorbar(np.arange(0, len(params), 1), sobol_idx_ICp, yerr=yerr_ICp, \
-    fmt='o', elinewidth=2, color='teal')
+    fmt='o', elinewidth=2, color='forestgreen')
 ax_ICe_max.errorbar(np.arange(0, len(params), 1), sobol_idx_ICe, yerr=yerr_ICe, \
-    fmt='o', elinewidth=2, color='teal')
+    fmt='o', elinewidth=2, color='forestgreen')
 
 ax_ICp_max.set_xticks(np.arange(0, len(params), 1))
 ax_ICp_max.set_xticklabels(params, rotation=45)

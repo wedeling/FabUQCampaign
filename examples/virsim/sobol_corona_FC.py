@@ -5,9 +5,11 @@ __license__= "LGPL"
 """
 
 import numpy as np
-import pandas as pd
+#import pandas as pd
 import easyvvuq as uq
 import os
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 20})
 plt.rcParams['figure.figsize'] = 8,6
@@ -21,13 +23,13 @@ import fabsim3_cmd_api as fab
 config = 'virsim'
 script = 'virsim_FC'
 machine = 'eagle_vecma'
-workdir = '/home/federica/Desktop/VirsimCampaigns'#'/tmp'
+workdir = '/ufs/federica/Desktop/VirsimCampaigns'#'/tmp'
 
 # home directory of this file    
 HOME = os.path.abspath(os.path.dirname(__file__))
 
 # Reload the campaign
-campaign = uq.Campaign(state_file = "campaign_state_FC_nmc2k.json", work_dir = workdir)
+campaign = uq.Campaign(state_file = "campaign_state_FC.json", work_dir = workdir)
 print('========================================================')
 print('Reloaded campaign', campaign.campaign_dir.split('/')[-1])
 print('========================================================')
@@ -42,12 +44,12 @@ sampler = campaign._active_sampler
 #Manually specify a subset of the output QoIs, is faster
 output_columns = ["IC_prev_avg_max", "IC_ex_max"]
 
-# fab.verify(config, campaign.campaign_dir, 
-#             campaign._active_app_decoder.target_filename, 
-#             machine=machine, PilotJob=True)
+fab.verify(config, campaign.campaign_dir, 
+            campaign._active_app_decoder.target_filename, 
+            machine=machine, PJ=True)
 
-# fab.get_uq_samples(config, campaign.campaign_dir, sampler._n_samples,
-#                     skip=0, machine='eagle_vecma')
+fab.get_uq_samples(config, campaign.campaign_dir, sampler._n_samples,
+                    skip=0, machine='eagle_vecma')
 
 # collate output
 campaign.collate()
@@ -57,7 +59,6 @@ data = campaign.get_collation_result()
 
 # Post-processing analysis
 qmc_analysis = uq.analysis.QMCAnalysis(sampler=sampler, qoi_cols=output_columns)
-
 # campaign.apply_analysis(qmc_analysis)
 
 #manually execute analyse, such that we can supply output_index=-1, only using the last entry
@@ -112,7 +113,7 @@ for param in params:
     print('95% CI lower bound = ', results['conf_sobols_first']['IC_ex_max'][param]['low'])
     print('95% CI upper bound = ', results['conf_sobols_first']['IC_ex_max'][param]['high'])
 
-f = plt.figure('Sobol_IC_max', figsize=[12, 6])
+f = plt.figure('Sobol_IC_max', figsize=[12,7])
 ax_ICp_max = f.add_subplot(121, title = 'Maximum of patients in IC')
 ax_ICp_max.set_ylim([-.1, 1.1])
 
