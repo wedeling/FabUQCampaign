@@ -10,8 +10,6 @@ To install all dependencies, first follow the instructions in https://github.com
 
 + The `FabUQCampaign` directory contains all files listed below. This directory is located at `<fab_home>/plugins/FabUQCampaign`, where `<fab_home>` is your FabSim3 home directory.
 
-+ `FabUQCampaign/FabUQCampaign.py`: contains the `run_UQ_sample` subroutine in which the job properties are specified, e.g. number of cores, memory, wall-time limit etc.
-
 + `FabUQCampaign/examples/ocean_2D/*`: an example script, applying EasyVVUQ to a 2D ocean model. See the Detailed Example section below.
 
 + `FabUQCampaign/templates/ocean`: contains the command-line instruction to draw a single EasyVVUQ sample of the ocean model.
@@ -64,11 +62,11 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
             "type": "str",
             "default": "output.csv"}}
 ```
-2. (continued): the `params` dict corresponds to the template file `examples/ocean_2D/sc/ocean.template`, which defines the input of a single model run. The content of this file is as follows:
+2. The `params` dict corresponds to the template file `examples/ocean_2D/sc/ocean.template`, which defines the input of a single model run. The content of this file is as follows:
 ```
 {"outfile": "$out_file", "decay_time_nu": "$decay_time_nu", "decay_time_mu": "$decay_time_mu"}
 ```
-2. (continued): Select which paramaters of `params` are assigned a Chaospy input distribution, and add these paramaters to the `vary` dict, e.g.:
+Select which paramaters of `params` are assigned a Chaospy input distribution, and add these paramaters to the `vary` dict, e.g.:
 
 ```python
     vary = {
@@ -76,8 +74,7 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
         "decay_time_mu": cp.Normal(90.0, 1.0)
     }
 ```
-
-2. (continued) Here, the mean values are the decay times in days.
+Here, the mean values are the decay times in days.
 
 3. Create an encoder, decoder and collation element. The encoder links the template file to EasyVVUQ and defines the name of the input file (`ocean_in.json`). The model `examples/ocean_2D/sc/ocean.py` writes the total energy (`E`) to a simple `.csv` file, hence we select the `SimpleCSV` decoder, where in this case we have a single output column:
 ```python
@@ -92,7 +89,7 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
 
     collater = uq.collate.AggregateSamples()
 ```
-3. (continued) `HOME` is the absolute path to the script file. The app is then added to the EasyVVUQ campaign object via
+`HOME` is the absolute path to the script file. The app is then added to the EasyVVUQ campaign object via
  ```python
      my_campaign.add_app(name="sc",
                         params=params,
@@ -107,7 +104,7 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
      my_campaign.set_sampler(my_sampler)
  ```
  
- 4. (continued) If left unspecified, the polynomial order of the SC expansion will be set to 4. 
+ If left unspecified, the polynomial order of the SC expansion will be set to 4. 
  
  5. The following commands ensure that we draw all samples, and create the ensemble run directories which will be used in FabSim's `campaign2ensemble` subroutine:
  ```python 
@@ -118,12 +115,16 @@ The first steps are exactly the same as for an EasyVVUQ campaign that does not u
 6. The only part of the code that changes compared to a EasyVVUQ campaign without FabSim is the job execution, and the retrieval of the results. We use FabSim to run the ensemble via:
  
  ```python
-fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='ocean', machine='localhost')
+    fab.run_uq_ensemble('ocean', my_campaign.campaign_dir, script='ocean', machine='localhost') 
  ```
-6. (continued) Here `script_name` refers to the `ocean.template` file. Futhermore, `fab` is a simple FabSim API located in the same directory as the example script. It allows us to run FabSim commands from within a Python environment. Besides submitting the ensemble, `fab` is also used to retrieve the results when the job execution has completed:
+Here `script` refers to the `ocean.template` file. Futhermore, `fab` is a simple FabSim API located in the same directory as the example script. It allows us to run FabSim commands from within a Python environment. Besides submitting the ensemble, `fab` is also used to retrieve the results when the job execution has completed:
 
 ```python
-fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
+    #copy the samples back to EasyVVUQ dir
+    fab.fetch_results()
+
+    #copy the results back to the EasyVVUQ Campaign directory
+    fab.get_uq_samples('ocean', my_campaign.campaign_dir, my_sampler._number_of_samples)
 ```
 
 7. Afterwards, post-processing tasks in EasyVVUQ continues in the normal fashion via:
@@ -132,7 +133,7 @@ fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
     my_campaign.apply_analysis(sc_analysis)
     results = my_campaign.get_last_analysis()
 ```
-7. (continued) The `results` dict contains the first 2 statistical moments and Sobol indices for every quantity of interest defined in `output_columns`. If the PCE sampler was used, `SCAnalysis` should be replaced with `PCEAnalysis`.
+The `results` dict contains the first 2 statistical moments and Sobol indices for every quantity of interest defined in `output_columns`. If the PCE sampler was used, `SCAnalysis` should be replaced with `PCEAnalysis`.
 
 ### Executing an ensemble job on a remote host
 
