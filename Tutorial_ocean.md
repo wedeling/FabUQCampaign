@@ -117,7 +117,7 @@ Here, the mean values are the decay times in days.
  ```python
     fab.run_uq_ensemble('ocean', my_campaign.campaign_dir, script='ocean', machine='localhost') 
  ```
-Here `script` refers to the `ocean.template` file. Futhermore, `fab` is a simple FabSim API located in the same directory as the example script. It allows us to run FabSim commands from within a Python environment. Besides submitting the ensemble, `fab` is also used to retrieve the results when the job execution has completed:
+Here `script` refers to the `templates/ocean` file. Futhermore, `fab` is a simple FabSim API located in the same directory as the example script. It allows us to run FabSim commands from within a Python environment. Besides submitting the ensemble, `fab` is also used to retrieve the results when the job execution has completed:
 
 ```python
     #copy the samples back to EasyVVUQ dir
