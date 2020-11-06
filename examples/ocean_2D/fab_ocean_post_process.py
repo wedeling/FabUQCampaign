@@ -26,10 +26,12 @@ def post_proc(state_file, work_dir):
     #get sampler and output columns from my_campaign object
     my_sampler = my_campaign._active_sampler
     output_columns = my_campaign._active_app_decoder.output_columns
-    
-    #fetch the results from the (remote) host via FabSim3
-    #get_UQ_results(my_campaign.campaign_dir, machine='eagle_vecma')
-    fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
+
+    #copy the samples back to EasyVVUQ dir
+    fab.fetch_results()
+
+    #copy the results back to the EasyVVUQ Campaign directory
+    fab.get_uq_samples('ocean', my_campaign.campaign_dir, my_sampler._number_of_samples)
 
     #collate output
     my_campaign.collate()
@@ -38,10 +40,6 @@ def post_proc(state_file, work_dir):
     sc_analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
     my_campaign.apply_analysis(sc_analysis)
     results = my_campaign.get_last_analysis()
-    results['n_samples'] = sc_analysis._number_of_samples
-    
-#    #store data
-#    store_uq_results(my_campaign.campaign_dir, results)
 
     return results, sc_analysis, my_sampler, my_campaign
 

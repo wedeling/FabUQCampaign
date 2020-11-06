@@ -75,8 +75,8 @@ def test_sc(tmpdir):
     my_campaign.populate_runs_dir()
  
     #Run execution using Fabsim 
-    fab.run_uq_ensemble(my_campaign.campaign_dir, 'ocean', machine='localhost')
-
+    fab.run_uq_ensemble('ocean', my_campaign.campaign_dir, script='ocean',
+                        machine='localhost')
     #Save the Campaign
     my_campaign.save_state("campaign_state_test.json")
  

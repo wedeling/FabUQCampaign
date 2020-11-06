@@ -1,4 +1,0 @@
-{"outfile": "$out_file", "R0": "$R0", "genWeibShape": "$genWeibShape", 
- "genWeibScale": "$genWeibScale", "recovered_perc": "$recovered_perc",
- "gIH": "$gIH", "gHD": "$gHD", "gHR": "$gHR",
- "incMeanLog": "$incMeanLog", "incSdLog": "$incSdLog"}
