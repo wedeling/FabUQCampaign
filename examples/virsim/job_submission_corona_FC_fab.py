@@ -12,7 +12,7 @@ import fabsim3_cmd_api as fab
 config = 'virsim'
 script = 'virsim_FC'
 machine = 'eagle_vecma'
-workdir = '/home/federica/Desktop/VirsimCampaigns'#'/tmp'
+workdir = '/ufs/federica/Desktop/VirsimCampaigns'#'/tmp'
 
 #home dir of this file    
 HOME = os.path.abspath(os.path.dirname(__file__))
@@ -127,7 +127,7 @@ vary = {
     # "intervention_effect_var_inv": cp.Gamma(shape=2,scale=.05)
 }
 
-sampler = uq.sampling.MCSampler(vary, n_mc_samples=2000)
+sampler = uq.sampling.MCSampler(vary, n_mc_samples=20)
 
 # Associate the sampler with the campaign
 campaign.set_sampler(sampler)
@@ -140,7 +140,7 @@ campaign.save_state("campaign_state_FC.json")
 
 # run the UQ ensemble
 fab.run_uq_ensemble(config, campaign.campaign_dir, script=script,
-                    machine=machine, PilotJob = True, cores=4)
+                    machine=machine, PJ=True)
 
 #wait for job to complete
 # fab.wait(machine=machine)
