@@ -1,0 +1,38 @@
+{
+    "db_location": "sqlite:////tmp/sc2p6eewz3/campaign.db",
+    "db_type": "sql",
+    "active_app": "sc",
+    "campaign_name": "sc",
+    "campaign_dir": "sc2p6eewz3",
+    "log": [
+        {
+            "element": {
+                "name": "mc_sampler",
+                "version": "0.1",
+                "category": "sampling"
+            },
+            "info": {
+                "num_added": 175,
+                "replicas": 1
+            }
+        },
+        {
+            "element": {
+                "name": "aggregate_samples",
+                "version": "0.1",
+                "category": "collation"
+            },
+            "info": {
+                "num_collated": 175
+            }
+        },
+        {
+            "element": {
+                "name": "QMC_Analysis",
+                "version": "0.2",
+                "category": "analysis"
+            },
+            "info": null
+        }
+    ]
+}

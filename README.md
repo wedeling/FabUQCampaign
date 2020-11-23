@@ -10,8 +10,6 @@ To install all dependencies, first follow the instructions in https://github.com
 
 + The `FabUQCampaign` directory contains all files listed below. This directory is located at `<fab_home>/plugins/FabUQCampaign`, where `<fab_home>` is your FabSim3 home directory.
 
-+ `FabUQCampaign/FabUQCampaign.py`: contains the `run_UQ_sample` subroutine in which the job properties are specified, e.g. number of cores, memory, wall-time limit etc.
-
 + `FabUQCampaign/examples/advection_diffusion/*`: an example script, applying EasyVVUQ to a 1D advection diffusion equation. See the Detailed Example section below.
 
 + `FabUQCampaign/templates/ade`: contains the command-line instruction to draw a single EasyVVUQ sample of the advection diffusion equation.
@@ -108,12 +106,17 @@ my_campaign.add_app(name="sc",
 6. The only part of the code that changes compared to a EasyVVUQ campaign without FabSim is the job execution, and the retrieval of the results. We use FabSim to run the ensemble via:
  
  ```python
-fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='ade', machine='localhost')
+ fab.run_uq_ensemble('ade', my_campaign.campaign_dir, script='ade')
  ```
-6. (continued) Here `script_name` refers to the `ade.template` file. Futhermore, `fab` is a simple FabSim API located in the same directory as the example script. It allows us to run FabSim commands from within a Python environment. Besides submitting the ensemble, `fab` is also used to retrieve the results when the job execution has completed:
+6. (continued) Here `script` refers to the `templates/ade` file. Futhermore, `fab` is a simple FabSim API located in the same directory as the example script. It allows us to run FabSim commands from within a Python environment. Besides submitting the ensemble, `fab` is also used to retrieve the results when the job execution has completed:
 
 ```python
-fab.get_uq_samples(my_campaign.campaign_dir, machine='localhost')
+#fetch the results from the (remote) machine
+fab.fetch_results()
+
+#copy the samples back to EasyVVUQ dir
+fab.get_uq_samples('ade', my_campaign.campaign_dir, my_sampler._number_of_samples,
+                   machine='localhost')
 ```
 
 7. Afterwards, post-processing tasks in EasyVVUQ continues in the normal fashion via:

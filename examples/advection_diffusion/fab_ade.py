@@ -82,22 +82,27 @@ my_campaign.populate_runs_dir()
 ##   Use this instead to run the samples using EasyVVUQ on the localhost
 #my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
 #    "sc_model.py ade_in.json"))
-# run the UQ ensemble
-fab.run_uq_ensemble('ade', my_campaign.campaign_dir, script='ade',
-                    machine='localhost', PilotJob = False)
-#wait for job to complete
-fab.wait(machine='localhost')
 
-#wait for jobs to complete and check if all output files are retrieved 
-#from the remote machine
-fab.verify('ade', my_campaign.campaign_dir, 
-           my_campaign._active_app_decoder.target_filename, 
-           machine='localhost', PilotJob=False)
+# run the UQ ensemble
+fab.run_uq_ensemble('ade', my_campaign.campaign_dir, script='ade')
+
+# #wait for job to complete
+# fab.wait(machine='localhost')
+
+# #wait for jobs to complete and check if all output files are retrieved 
+# #from the remote machine
+# fab.verify('ade', my_campaign.campaign_dir, 
+#            my_campaign._active_app_decoder.target_filename, 
+#            machine='localhost')
+
+#fetch the results from the (remote) machine
+fab.fetch_results()
+
 #copy the samples back to EasyVVUQ dir
 fab.get_uq_samples('ade', my_campaign.campaign_dir, my_sampler._number_of_samples,
-                   skip=0, machine='localhost')
+                   machine='localhost')
+
 my_campaign.collate()
-data_frame = my_campaign.get_collation_result()
 
 # Post-processing analysis
 analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
@@ -126,25 +131,25 @@ ax.plot(x, mu - std, '--r')
 # Plot the random surrogate samples #
 #####################################
 
-# ax = fig.add_subplot(122, xlabel='location x', ylabel='velocity u',
-#                      title='Surrogate samples')
+ax = fig.add_subplot(122, xlabel='location x', ylabel='velocity u',
+                      title='Surrogate samples')
 
-# #generate n_mc samples from the input distributions
-# n_mc = 20
-# xi_mc = np.zeros([20,2])
-# idx = 0
-# for dist in my_sampler.vary.get_values():
-#     xi_mc[:, idx] = dist.sample(n_mc)
-#     idx += 1
+#generate n_mc samples from the input distributions
+n_mc = 20
+xi_mc = np.zeros([20,2])
+idx = 0
+for dist in my_sampler.vary.get_values():
+    xi_mc[:, idx] = dist.sample(n_mc)
+    idx += 1
     
-# # evaluate the surrogate at these values
-# print('Evaluating surrogate model', n_mc, 'times')
-# for i in range(n_mc):
-#     ax.plot(x, analysis.surrogate('u', xi_mc[i]), 'g')
-#     ax.plot(x, analysis.surrogate('u', xi_mc[i], recursive=True), 'ro')
-# print('done')
+# evaluate the surrogate at these values
+print('Evaluating surrogate model', n_mc, 'times')
+for i in range(n_mc):
+    ax.plot(x, analysis.surrogate('u', xi_mc[i]), 'g')
+    ax.plot(x, analysis.surrogate('u', xi_mc[i], recursive=True), 'ro')
+print('done')
 
-# plt.tight_layout()
+plt.tight_layout()
 
 #######################
 # Plot Sobol indices #
@@ -166,28 +171,5 @@ for S_i in results['sobols_first']['u']:
 
 leg = plt.legend(loc=0)
 leg.set_draggable(True)
-
-plt.tight_layout()
-
-import pandas as pd
-#get the EasyVVUQ data frame
-df = my_campaign.get_collation_result()
-data = []
-#loop over all qois
-samples = {k: [] for k in output_columns}
-for run_id in df.run_id.unique():
-    for k in output_columns:
-        #compute the mean instead of the full value
-        values = data_frame.loc[data_frame['run_id'] == run_id][k].values.mean()
-        #use run_id as a key
-        data.append({'run_id': run_id, k: values})
-#turn list into dataframe
-averged_df = pd.DataFrame(data)
-#apply analysis on averged samples
-results = analysis.analyse(data_frame=averged_df)
-
-_, _, _, sobols = analysis.get_pce_sobol_indices('u', typ='all')
-for key in sobols.keys():
-    print('param', key, 'sobol=', sobols[key])
 
 plt.show()
