@@ -12,7 +12,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 20})
-plt.rcParams['figure.figsize'] = 8,6
+plt.rcParams['figure.figsize'] = 8,5
 import fabsim3_cmd_api as fab
 """
 *****************
