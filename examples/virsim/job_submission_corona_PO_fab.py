@@ -144,7 +144,7 @@ campaign.save_state("campaign_state_PO.json")
 
 # run the UQ ensemble
 fab.run_uq_ensemble(config, campaign.campaign_dir, script=script,
-                    machine=machine, PJ = True)
+                    machine=machine, PJ=True)
 
 #wait for job to complete
 # fab.wait(machine=machine)
