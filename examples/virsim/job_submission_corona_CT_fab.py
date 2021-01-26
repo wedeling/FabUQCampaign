@@ -134,7 +134,7 @@ campaign.draw_samples()
 campaign.populate_runs_dir()
 
 #Save the Campaign
-campaign.save_state("campaign_state_CT_MC2k_newdistr.json")
+campaign.save_state("campaign_state_CT.json")
 
 # run the UQ ensemble
 fab.run_uq_ensemble(config, campaign.campaign_dir, script=script,
