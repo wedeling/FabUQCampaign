@@ -8,6 +8,7 @@ import numpy as np
 import easyvvuq as uq
 import os
 import matplotlib.pyplot as plt
+import pandas as pd
 from matplotlib.ticker import ScalarFormatter, NullFormatter
 plt.rcParams.update({'font.size': 18, 'legend.fontsize': 15})
 plt.rcParams['figure.figsize'] = 12,9
@@ -38,21 +39,21 @@ FC_campaign.collate()
 FC_data = FC_campaign.get_collation_result()
 #print(FC_data.columns)
 
-# Reload the CT campaign without biology
-CT_campaign = uq.Campaign(state_file = "campaign_state_CT_nobio.json", work_dir = workdir)
-print('========================================================')
-print('Reloaded campaign', CT_campaign.campaign_dir.split('/')[-1])
-print('========================================================')
+# # Reload the CT campaign without biology
+# CT_campaign = uq.Campaign(state_file = "campaign_state_CT_nobio.json", work_dir = workdir)
+# print('========================================================')
+# print('Reloaded campaign', CT_campaign.campaign_dir.split('/')[-1])
+# print('========================================================')
 
-# get sampler and output columns from my_campaign object
-CT_sampler = CT_campaign._active_sampler
-#output_columns = my_campaign._active_app_decoder.output_columns
+# # get sampler and output columns from my_campaign object
+# CT_sampler = CT_campaign._active_sampler
+# #output_columns = my_campaign._active_app_decoder.output_columns
 
-# collate output
-CT_campaign.collate()
-# get full dataset of data
-CT_data = CT_campaign.get_collation_result()
-#print(CT_data.columns)
+# # collate output
+# CT_campaign.collate()
+# # get full dataset of data
+# CT_data = CT_campaign.get_collation_result()
+# #print(CT_data.columns)
 
 # Reload the IL campaign without biology
 IL_campaign = uq.Campaign(state_file = "campaign_state_IL_nobio.json", work_dir = workdir)
@@ -104,21 +105,21 @@ FC_bio_campaign.collate()
 FC_bio_data = FC_bio_campaign.get_collation_result()
 #print(FC_bio_data.columns)
 
-# Reload the CT campaign with biology
-CT_bio_campaign = uq.Campaign(state_file = "campaign_state_CT_bio.json", work_dir = workdir)
-print('========================================================')
-print('Reloaded campaign', CT_bio_campaign.campaign_dir.split('/')[-1])
-print('========================================================')
+# # Reload the CT campaign with biology
+# CT_bio_campaign = uq.Campaign(state_file = "campaign_state_CT_bio.json", work_dir = workdir)
+# print('========================================================')
+# print('Reloaded campaign', CT_bio_campaign.campaign_dir.split('/')[-1])
+# print('========================================================')
 
-# get sampler and output columns from my_campaign object
-CT_bio_sampler = CT_bio_campaign._active_sampler
-#output_columns = my_campaign._active_app_decoder.output_columns
+# # get sampler and output columns from my_campaign object
+# CT_bio_sampler = CT_bio_campaign._active_sampler
+# #output_columns = my_campaign._active_app_decoder.output_columns
 
-# collate output
-CT_bio_campaign.collate()
-# get full dataset of data
-CT_bio_data = CT_bio_campaign.get_collation_result()
-#print(CT_bio_data.columns)
+# # collate output
+# CT_bio_campaign.collate()
+# # get full dataset of data
+# CT_bio_data = CT_bio_campaign.get_collation_result()
+# #print(CT_bio_data.columns)
 
 # Reload the IL campaign with biology
 IL_bio_campaign = uq.Campaign(state_file = "campaign_state_IL_bio.json", work_dir = workdir)
@@ -153,6 +154,23 @@ PO_bio_data = PO_bio_campaign.get_collation_result()
 #print(PO_bio_data.columns)
 
 #####################################################################################################
+# CT data with modified input distributions
+df = pd.read_csv('QoIs_CT_newdistr.csv')
+print(df.columns)
+
+CT_IC_prev_avg_max = df.IC_prev_avg_max
+CT_IC_prev_avg_max = CT_IC_prev_avg_max.to_numpy()
+
+CT_IC_ex_max = df.IC_ex_max
+CT_IC_ex_max = CT_IC_ex_max.to_numpy()
+
+CT_IC_prev_avg_max_bio = df.IC_prev_avg_max_bio
+CT_IC_prev_avg_max_bio = CT_IC_prev_avg_max_bio.to_numpy()
+
+CT_IC_ex_max_bio = df.IC_ex_max_bio
+CT_IC_ex_max_bio = CT_IC_ex_max_bio.to_numpy()
+
+#####################################################################################################
 
 """
 *************************
@@ -171,8 +189,8 @@ eps_DKW = np.sqrt( np.log(2/alpha_DKW) / (2*n_runs) )
 FC_IC_prev_avg_max = np.zeros(n_runs,dtype='float')
 FC_IC_ex_max = np.zeros(n_runs,dtype='float')
 
-CT_IC_prev_avg_max = np.zeros(n_runs,dtype='float')
-CT_IC_ex_max = np.zeros(n_runs,dtype='float')
+# CT_IC_prev_avg_max = np.zeros(n_runs,dtype='float')
+# CT_IC_ex_max = np.zeros(n_runs,dtype='float')
 
 IL_IC_prev_avg_max = np.zeros(n_runs,dtype='float')
 IL_IC_ex_max = np.zeros(n_runs,dtype='float')
@@ -184,8 +202,8 @@ PO_IC_ex_max = np.zeros(n_runs,dtype='float')
 FC_IC_prev_avg_max_bio = np.zeros(n_runs,dtype='float')
 FC_IC_ex_max_bio = np.zeros(n_runs,dtype='float')
 
-CT_IC_prev_avg_max_bio = np.zeros(n_runs,dtype='float')
-CT_IC_ex_max_bio = np.zeros(n_runs,dtype='float')
+# CT_IC_prev_avg_max_bio = np.zeros(n_runs,dtype='float')
+# CT_IC_ex_max_bio = np.zeros(n_runs,dtype='float')
 
 IL_IC_prev_avg_max_bio = np.zeros(n_runs,dtype='float')
 IL_IC_ex_max_bio = np.zeros(n_runs,dtype='float')
@@ -198,9 +216,9 @@ for i in range(n_runs):
     # FC
     FC_IC_prev_avg_max[i] = FC_data.IC_prev_avg_max[i*L]
     FC_IC_ex_max[i] = FC_data.IC_ex_max[i*L]
-    # CT
-    CT_IC_prev_avg_max[i] = CT_data.IC_prev_avg_max[i*L]
-    CT_IC_ex_max[i] = CT_data.IC_ex_max[i*L]
+    # # CT
+    # CT_IC_prev_avg_max[i] = CT_data.IC_prev_avg_max[i*L]
+    # CT_IC_ex_max[i] = CT_data.IC_ex_max[i*L]
     # IL
     IL_IC_prev_avg_max[i] = IL_data.IC_prev_avg_max[i*L]
     IL_IC_ex_max[i] = IL_data.IC_ex_max[i*L]
@@ -212,9 +230,9 @@ for i in range(n_runs):
     # FC
     FC_IC_prev_avg_max_bio[i] = FC_bio_data.IC_prev_avg_max[i*L]
     FC_IC_ex_max_bio[i] = FC_bio_data.IC_ex_max[i*L]
-    # CT
-    CT_IC_prev_avg_max_bio[i] = CT_bio_data.IC_prev_avg_max[i*L]
-    CT_IC_ex_max_bio[i] = CT_bio_data.IC_ex_max[i*L]
+    # # CT
+    # CT_IC_prev_avg_max_bio[i] = CT_bio_data.IC_prev_avg_max[i*L]
+    # CT_IC_ex_max_bio[i] = CT_bio_data.IC_ex_max[i*L]
     # IL
     IL_IC_prev_avg_max_bio[i] = IL_bio_data.IC_prev_avg_max[i*L]
     IL_IC_ex_max_bio[i] = IL_bio_data.IC_ex_max[i*L]
@@ -225,8 +243,8 @@ for i in range(n_runs):
 FC_IC_prev_avg_max.sort()
 FC_IC_ex_max.sort()
 
-CT_IC_prev_avg_max.sort()
-CT_IC_ex_max.sort()
+# CT_IC_prev_avg_max.sort()
+# CT_IC_ex_max.sort()
 
 IL_IC_prev_avg_max.sort()
 IL_IC_ex_max.sort()
@@ -237,8 +255,8 @@ PO_IC_ex_max.sort()
 FC_IC_prev_avg_max_bio.sort()
 FC_IC_ex_max_bio.sort()
 
-CT_IC_prev_avg_max_bio.sort()
-CT_IC_ex_max_bio.sort()
+# CT_IC_prev_avg_max_bio.sort()
+# CT_IC_ex_max_bio.sort()
 
 IL_IC_prev_avg_max_bio.sort()
 IL_IC_ex_max_bio.sort()
@@ -376,7 +394,7 @@ ax_e.set_yticks([0, 0.5, 1])
 # ax_p.legend(loc='upper center')
 plt.tight_layout()
 # f.savefig('figures/cdfs.png')
-f.savefig('figures/cdfs.eps')
+f.savefig('figures/cdfs_updated.eps')
 
 plt.show()
 
