@@ -29,41 +29,29 @@ print('========================================================')
 print('Reloaded campaign', FC_campaign.campaign_dir.split('/')[-1])
 print('========================================================')
 
-# get sampler and output columns from my_campaign object
-FC_sampler = FC_campaign._active_sampler
-#output_columns = my_campaign._active_app_decoder.output_columns
-
 # collate output
 FC_campaign.collate()
 # get full dataset of data
 FC_data = FC_campaign.get_collation_result()
 #print(FC_data.columns)
 
-# # Reload the CT campaign without biology
-# CT_campaign = uq.Campaign(state_file = "campaign_state_CT_nobio.json", work_dir = workdir)
-# print('========================================================')
-# print('Reloaded campaign', CT_campaign.campaign_dir.split('/')[-1])
-# print('========================================================')
+# Reload the CT campaign without biology
+CT_campaign = uq.Campaign(state_file = "campaign_state_CT_nobio.json", work_dir = workdir)
+print('========================================================')
+print('Reloaded campaign', CT_campaign.campaign_dir.split('/')[-1])
+print('========================================================')
 
-# # get sampler and output columns from my_campaign object
-# CT_sampler = CT_campaign._active_sampler
-# #output_columns = my_campaign._active_app_decoder.output_columns
-
-# # collate output
-# CT_campaign.collate()
-# # get full dataset of data
-# CT_data = CT_campaign.get_collation_result()
-# #print(CT_data.columns)
+# collate output
+CT_campaign.collate()
+# get full dataset of data
+CT_data = CT_campaign.get_collation_result()
+#print(CT_data.columns)
 
 # Reload the IL campaign without biology
 IL_campaign = uq.Campaign(state_file = "campaign_state_IL_nobio.json", work_dir = workdir)
 print('========================================================')
 print('Reloaded campaign', IL_campaign.campaign_dir.split('/')[-1])
 print('========================================================')
-
-# get sampler and output columns from my_campaign object
-IL_sampler = IL_campaign._active_sampler
-#output_columns = my_campaign._active_app_decoder.output_columns
 
 # collate output
 IL_campaign.collate()
@@ -76,10 +64,6 @@ PO_campaign = uq.Campaign(state_file = "campaign_state_PO_nobio.json", work_dir 
 print('========================================================')
 print('Reloaded campaign', PO_campaign.campaign_dir.split('/')[-1])
 print('========================================================')
-
-# get sampler and output columns from my_campaign object
-PO_sampler = PO_campaign._active_sampler
-#output_columns = my_campaign._active_app_decoder.output_columns
 
 # collate output
 PO_campaign.collate()
@@ -95,31 +79,23 @@ print('========================================================')
 print('Reloaded campaign', FC_bio_campaign.campaign_dir.split('/')[-1])
 print('========================================================')
 
-# get sampler and output columns from my_campaign object
-FC_bio_sampler = FC_bio_campaign._active_sampler
-#output_columns = my_campaign._active_app_decoder.output_columns
-
 # collate output
 FC_bio_campaign.collate()
 # get full dataset of data
 FC_bio_data = FC_bio_campaign.get_collation_result()
 #print(FC_bio_data.columns)
 
-# # Reload the CT campaign with biology
-# CT_bio_campaign = uq.Campaign(state_file = "campaign_state_CT_bio.json", work_dir = workdir)
-# print('========================================================')
-# print('Reloaded campaign', CT_bio_campaign.campaign_dir.split('/')[-1])
-# print('========================================================')
+# Reload the CT campaign with biology
+CT_bio_campaign = uq.Campaign(state_file = "campaign_state_CT_bio.json", work_dir = workdir)
+print('========================================================')
+print('Reloaded campaign', CT_bio_campaign.campaign_dir.split('/')[-1])
+print('========================================================')
 
-# # get sampler and output columns from my_campaign object
-# CT_bio_sampler = CT_bio_campaign._active_sampler
-# #output_columns = my_campaign._active_app_decoder.output_columns
-
-# # collate output
-# CT_bio_campaign.collate()
-# # get full dataset of data
-# CT_bio_data = CT_bio_campaign.get_collation_result()
-# #print(CT_bio_data.columns)
+# collate output
+CT_bio_campaign.collate()
+# get full dataset of data
+CT_bio_data = CT_bio_campaign.get_collation_result()
+#print(CT_bio_data.columns)
 
 # Reload the IL campaign with biology
 IL_bio_campaign = uq.Campaign(state_file = "campaign_state_IL_bio.json", work_dir = workdir)
@@ -152,23 +128,6 @@ PO_bio_campaign.collate()
 # get full dataset of data
 PO_bio_data = PO_bio_campaign.get_collation_result()
 #print(PO_bio_data.columns)
-
-#####################################################################################################
-# CT data with modified input distributions
-df = pd.read_csv('QoIs_CT_newdistr.csv')
-print(df.columns)
-
-CT_IC_prev_avg_max = df.IC_prev_avg_max
-CT_IC_prev_avg_max = CT_IC_prev_avg_max.to_numpy()
-
-CT_IC_ex_max = df.IC_ex_max
-CT_IC_ex_max = CT_IC_ex_max.to_numpy()
-
-CT_IC_prev_avg_max_bio = df.IC_prev_avg_max_bio
-CT_IC_prev_avg_max_bio = CT_IC_prev_avg_max_bio.to_numpy()
-
-CT_IC_ex_max_bio = df.IC_ex_max_bio
-CT_IC_ex_max_bio = CT_IC_ex_max_bio.to_numpy()
 
 #####################################################################################################
 
