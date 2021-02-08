@@ -28,7 +28,7 @@ workdir = '/export/scratch1/federica/VirsimCampaigns'
 HOME = os.path.abspath(os.path.dirname(__file__))
 
 # Reload the campaign
-campaign = uq.Campaign(state_file = "campaign_state_IL.json", work_dir = workdir)
+campaign = uq.Campaign(state_file = "campaign_state_IL_nobio_MC2k.json", work_dir = workdir)
 print('========================================================')
 print('Reloaded campaign', campaign.campaign_dir.split('/')[-1])
 print('========================================================')
@@ -40,14 +40,14 @@ sampler = campaign._active_sampler
 
 output_columns = campaign._active_app_decoder.output_columns
 
-fab.verify(config, campaign.campaign_dir, 
-            campaign._active_app_decoder.target_filename, 
-            machine=machine, PJ=True)
+#fab.verify(config, campaign.campaign_dir, 
+#            campaign._active_app_decoder.target_filename, 
+#            machine=machine, PJ=True)
 
 # fab.fetch_results(machine=machine)
 
-fab.get_uq_samples(config, campaign.campaign_dir, sampler.n_samples(),
-                   skip=0, machine=machine)
+#fab.get_uq_samples(config, campaign.campaign_dir, sampler.n_samples(),
+#                   skip=0, machine=machine)
 
 # collate output
 campaign.collate()
@@ -95,6 +95,12 @@ for param in params:
     print('95% CI lower bound = ', low)
     print('95% CI upper bound = ', high)
 
+    sobol_tot = results.sobols_total('IC_prev_avg_max',param)
+    CI_tot = results._get_sobols_total_conf('IC_prev_avg_max',param)
+
+    print('Total Sobol index for IC_prev_avg_max = ', sobol_tot)
+    print('95% CI = ', CI_tot)
+
     #
     sobol_idx = results.sobols_first('IC_ex_max',param)
     sobol_idx_ICe[idx] = sobol_idx
@@ -107,6 +113,12 @@ for param in params:
     print('Sobol index for IC_ex_max = ', sobol_idx)
     print('95% CI lower bound = ', low)
     print('95% CI upper bound = ', high)
+
+    sobol_tot = results.sobols_total('IC_ex_max',param)
+    CI_tot = results._get_sobols_total_conf('IC_ex_max',param)
+
+    print('Total Sobol index for IC_ex_max = ', sobol_tot)
+    print('95% CI = ', CI_tot)
 
 f = plt.figure('Sobol_IC_max', figsize=[12,7])
 ax_ICp_max = f.add_subplot(121, title = 'IC_prev_avg_max')
