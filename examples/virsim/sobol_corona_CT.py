@@ -96,7 +96,6 @@ idx = 0
 for param in params: 
     # print values to terminal 
     print(bcolors.OKBLUE + 'Param = ' + param + bcolors.ENDC)
-    #print('Param = ', param)
     #
     sobol_idx = results.sobols_first('IC_prev_avg_max',param) 
     sobol_idx_ICp[idx] = sobol_idx
