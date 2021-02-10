@@ -151,7 +151,7 @@ ax.set_yticks(np.arange(0, len(labels), 1))
 ax.set_yticklabels(labels)
 
 plt.tight_layout()
-f.savefig('figures/Sobol_IC_max_IL.png')
+f.savefig('figures/Sobol_IL.pdf')
 
 plt.show()
 

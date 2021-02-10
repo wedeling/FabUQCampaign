@@ -153,7 +153,7 @@ ax.set_yticks(np.arange(0, len(params), 1))
 ax.set_yticklabels(params)
 
 plt.tight_layout()
-f.savefig('figures/Sobol_IC_max_FC.png')
+f.savefig('figures/Sobol_FC.pdf')
 
 plt.show()
 
