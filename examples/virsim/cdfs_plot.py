@@ -294,7 +294,8 @@ leg.get_frame().set_facecolor('none')
 # plt.legend(frameon=False)
 plt.tight_layout()
 
-ax_p = f.add_subplot(223, xlabel='Maximum of patients in IC', ylabel='Without biological \n uncertainties \n \n Probability')
+ax_p = f.add_subplot(223, xlabel='Maximum of patients in IC \n per million capita', \
+    ylabel='Without biological \n uncertainties \n \n Probability')
 # without biology
 ax_p.step(FC_IC_prev_avg_max,p,lw=2,color='orchid',label='FC')
 ax_p.step(FC_IC_prev_avg_max,p+eps_DKW,lw=1,color='plum',ls='--')
@@ -322,7 +323,7 @@ ax_p.get_xaxis().set_minor_formatter(NullFormatter())
 ax_p.set_xticks([1e1, 1e2, 1e3])
 ax_p.set_yticks([0, 0.5, 1])
 
-ax_e = f.add_subplot(224, xlabel='IC patient-days in excess')
+ax_e = f.add_subplot(224, xlabel='IC patient-days in excess \n per million capita')
 # without biology
 ax_e.step(FC_IC_ex_max,p,lw=2,color='orchid')
 ax_e.step(FC_IC_ex_max,p+eps_DKW,lw=1,color='plum',ls='--')
@@ -352,8 +353,8 @@ ax_e.set_yticks([0, 0.5, 1])
 
 # ax_p.legend(loc='upper center')
 plt.tight_layout()
-# f.savefig('figures/cdfs.png')
-f.savefig('figures/cdfs_updated.eps')
+
+f.savefig('figures/cdfs.pdf')
 
 plt.show()
 
