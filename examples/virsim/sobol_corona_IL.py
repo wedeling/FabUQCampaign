@@ -144,7 +144,7 @@ ax_ICp_max.set_xlim([-.1, 1.1])
 ax_ICp_max.barh(np.arange(0, len(params), 1), sobol_idx_ICp, xerr=yerr_ICp, linewidth=2, \
     color=['mediumaquamarine','lightskyblue','lightskyblue','lightskyblue', 'lightsalmon'], \
     ecolor=['lightseagreen','cornflowerblue','cornflowerblue','cornflowerblue','salmon'], \
-    height=0.4)
+    height=0.6)
 # ax_ICe_max.errorbar(np.arange(0, len(params), 1), sobol_idx_ICe, yerr=yerr_ICe, \
 #     fmt='o', elinewidth=2, color='forestgreen')
 
