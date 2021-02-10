@@ -86,10 +86,10 @@ params = list(sampler.vary.get_keys())
 
 ######################################################################
 sobol_idx_ICp = np.zeros((len(params)), dtype='float')
-yerr_ICp = np.zeros((2,len(params)), dtype='float')
+err_ICp = np.zeros((2,len(params)), dtype='float')
 
 sobol_idx_ICe = np.zeros((len(params)), dtype='float')
-yerr_ICe = np.zeros((2,len(params)), dtype='float')
+err_ICe = np.zeros((2,len(params)), dtype='float')
 
 idx = 0
 for param in params: 
@@ -100,7 +100,7 @@ for param in params:
     sobol_idx_ICp[idx] = sobol_idx
     low = results._get_sobols_first_conf('IC_prev_avg_max',param)[0]
     high = results._get_sobols_first_conf('IC_prev_avg_max',param)[1]
-    yerr_ICp[:,idx] = [sobol_idx-low, high-sobol_idx]
+    err_ICp[:,idx] = [sobol_idx-low, high-sobol_idx]
 
     print('Sobol index for IC_prev_avg_max = ', sobol_idx)
     print('95% CI lower bound = ', low)
@@ -117,7 +117,7 @@ for param in params:
     sobol_idx_ICe[idx] = sobol_idx
     low = results._get_sobols_first_conf('IC_ex_max',param)[0]
     high = results._get_sobols_first_conf('IC_ex_max',param)[1]
-    yerr_ICe[:,idx] = [sobol_idx-low, high-sobol_idx]
+    err_ICe[:,idx] = [sobol_idx-low, high-sobol_idx]
     #
     idx += 1
 
@@ -131,33 +131,27 @@ for param in params:
     print('Total Sobol index for IC_ex_max = ', sobol_tot)
     print('95% CI = ', CI_tot)
 
+"""
+* Plot * 
+"""
 f = plt.figure('Sobol_IC_max', figsize=[8,5])
-ax_ICp_max = f.add_subplot(111, title = 'IL')
-ax_ICp_max.invert_yaxis()
-ax_ICp_max.set_xlim([-.1, 1.1])
+ax = f.add_subplot(111, title = 'IL')
+ax.invert_yaxis()
+ax.set_xlim([-.1, 1.1])
 
-# ax_ICe_max = f.add_subplot(122, title = 'IC_ex_max')
-# ax_ICe_max.set_ylim([-.1, 1.1])
-
-# ax_ICp_max.errorbar(np.arange(0, len(params), 1), sobol_idx_ICp, yerr=yerr_ICp, \
-#     fmt='o', elinewidth=2, color='forestgreen')
-ax_ICp_max.barh(np.arange(0, len(params), 1), sobol_idx_ICp, xerr=yerr_ICp, linewidth=2, \
+ax.barh(np.arange(0, len(params), 1), sobol_idx_ICp, xerr=err_ICp, linewidth=2, \
     color=['mediumaquamarine','lightskyblue','lightskyblue','lightskyblue', 'lightsalmon'], \
     ecolor=['lightseagreen','cornflowerblue','cornflowerblue','cornflowerblue','salmon'], \
     height=0.6)
-# ax_ICe_max.errorbar(np.arange(0, len(params), 1), sobol_idx_ICe, yerr=yerr_ICe, \
-#     fmt='o', elinewidth=2, color='forestgreen')
 
 labels = ['seed', 'lock_effect', 'lock_length', 'lift_length', 'uptake']
 
-ax_ICp_max.set_xticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
-ax_ICp_max.set_yticks(np.arange(0, len(labels), 1))
-ax_ICp_max.set_yticklabels(labels)
-# ax_ICe_max.set_xticks(np.arange(0, len(labels), 1))
-# ax_ICe_max.set_xticklabels(labels, rotation=45)
-#
+ax.set_xticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
+ax.set_yticks(np.arange(0, len(labels), 1))
+ax.set_yticklabels(labels)
+
 plt.tight_layout()
-f.savefig('figures/Sobol_IC_max_IL_barh.png')
+f.savefig('figures/Sobol_IC_max_IL.png')
 
 plt.show()
 
