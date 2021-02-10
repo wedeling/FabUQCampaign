@@ -131,9 +131,10 @@ for param in params:
     print('Total Sobol index for IC_ex_max = ', sobol_tot)
     print('95% CI = ', CI_tot)
 
-f = plt.figure('Sobol_IC_max', figsize=[7,7])
+f = plt.figure('Sobol_IC_max', figsize=[8,5])
 ax_ICp_max = f.add_subplot(111, title = 'IL')
-ax_ICp_max.set_ylim([-.1, 1.1])
+ax_ICp_max.invert_yaxis()
+ax_ICp_max.set_xlim([-.1, 1.1])
 
 # ax_ICe_max = f.add_subplot(122, title = 'IC_ex_max')
 # ax_ICe_max.set_ylim([-.1, 1.1])
@@ -149,7 +150,7 @@ ax_ICp_max.barh(np.arange(0, len(params), 1), sobol_idx_ICp, xerr=yerr_ICp, line
 
 labels = ['seed', 'lock_effect', 'lock_length', 'lift_length', 'uptake']
 
-ax_ICp_max.set_xticks([0.0, 0.5, 1.0])
+ax_ICp_max.set_xticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
 ax_ICp_max.set_yticks(np.arange(0, len(labels), 1))
 ax_ICp_max.set_yticklabels(labels)
 # ax_ICe_max.set_xticks(np.arange(0, len(labels), 1))
