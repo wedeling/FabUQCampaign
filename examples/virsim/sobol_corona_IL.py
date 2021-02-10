@@ -138,20 +138,23 @@ ax_ICp_max.set_ylim([-.1, 1.1])
 # ax_ICe_max = f.add_subplot(122, title = 'IC_ex_max')
 # ax_ICe_max.set_ylim([-.1, 1.1])
 
-ax_ICp_max.errorbar(np.arange(0, len(params), 1), sobol_idx_ICp, yerr=yerr_ICp, \
-    fmt='o', elinewidth=2, color='forestgreen')
+# ax_ICp_max.errorbar(np.arange(0, len(params), 1), sobol_idx_ICp, yerr=yerr_ICp, \
+#     fmt='o', elinewidth=2, color='forestgreen')
+ax_ICp_max.barh(np.arange(0, len(params), 1), sobol_idx_ICp, xerr=yerr_ICp, linewidth=2, \
+    color=['mediumaquamarine','lightskyblue','lightskyblue','lightskyblue', 'lightsalmon'], \
+    ecolor=['lightseagreen','cornflowerblue','cornflowerblue','cornflowerblue','salmon'])
 # ax_ICe_max.errorbar(np.arange(0, len(params), 1), sobol_idx_ICe, yerr=yerr_ICe, \
 #     fmt='o', elinewidth=2, color='forestgreen')
 
 labels = ['seed', 'lock_effect', 'lock_length', 'lift_length', 'uptake']
 
-ax_ICp_max.set_xticks(np.arange(0, len(labels), 1))
-ax_ICp_max.set_xticklabels(labels, rotation=45)
+ax_ICp_max.set_yticks(np.arange(0, len(labels), 1))
+ax_ICp_max.set_yticklabels(labels)
 # ax_ICe_max.set_xticks(np.arange(0, len(labels), 1))
 # ax_ICe_max.set_xticklabels(labels, rotation=45)
 #
 plt.tight_layout()
-f.savefig('figures/Sobol_IC_max_IL.png')
+f.savefig('figures/Sobol_IC_max_IL_barh.png')
 
 plt.show()
 
