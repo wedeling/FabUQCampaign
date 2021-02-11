@@ -75,25 +75,26 @@ for i in range(n_runs2plot):
 	ax0.plot(time, IC_prev_PO[:,i], lw=2)
 	ax1.plot(time, IC_prev_avg_PO[:,i], lw=2)
 	ax2.plot(time, IC_ex_PO[:,i], lw=2)
-	# add circles to indicate QoIs
-	# circle_qoi1 = plt.Circle((14+np.argmax(IC_prev_avg_PO[~np.isnan(IC_prev_avg_PO[:,i]),i]), \ # first 14 components of the array are nan
-	# 	np.max(IC_prev_avg_PO[~np.isnan(IC_prev_avg_PO[:,i]),i])), \
-	# 	radius=10, color='black', lw=2, fill=False)
-	# ax1.add_artist(circle_qoi1)
-	# circle_qoi2 = Ellipse((L, np.max(IC_ex_PO[:,i])), \
-	# 	width=20, height=1000, color='black', lw=2, fill=False)
-	# ax2.add_artist(circle_qoi2)
+	add circles to indicate QoIs
+	# first (and last) 14 components of the array are nan
+	circle_qoi1 = plt.Circle((14+np.argmax(IC_prev_avg_PO[~np.isnan(IC_prev_avg_PO[:,i]),i]), \
+		np.max(IC_prev_avg_PO[~np.isnan(IC_prev_avg_PO[:,i]),i])), \
+		radius=10, color='black', lw=2, fill=False)
+	ax1.add_artist(circle_qoi1)
+	circle_qoi2 = Ellipse((L, np.max(IC_ex_PO[:,i])), \
+		width=20, height=1000, color='black', lw=2, fill=False)
+	ax2.add_artist(circle_qoi2)
 
-	# indicate the QoIs with an arrow
-	ax1.arrow(x=14+np.argmax(IC_prev_avg_PO[~np.isnan(IC_prev_avg_PO[:,i]),i])+30, \
-		y=np.max(IC_prev_avg_PO[~np.isnan(IC_prev_avg_PO[:,i]),i])+30, dx=-20, dy=-20, lw=2, \
-		head_width=6, shape='full')
-	if i<=1:
-		ax2.arrow(x=L-30, y=np.max(IC_ex_PO[:,i])+900, dx=20, dy=-600, lw=2, \
-			head_width=6, shape='full')		
-	else:
-		ax2.arrow(x=L-30, y=np.max(IC_ex_PO[:,i])-900, dx=20, dy=600, lw=2, \
-			head_width=6, shape='full')
+	# # indicate the QoIs with an arrow
+	# ax1.arrow(x=14+np.argmax(IC_prev_avg_PO[~np.isnan(IC_prev_avg_PO[:,i]),i])+30, \
+	# 	y=np.max(IC_prev_avg_PO[~np.isnan(IC_prev_avg_PO[:,i]),i])+30, dx=-20, dy=-20, lw=2, \
+	# 	head_width=6, shape='full')
+	# if i<=1:
+	# 	ax2.arrow(x=L-30, y=np.max(IC_ex_PO[:,i])+900, dx=20, dy=-600, lw=2, \
+	# 		head_width=6, shape='full')		
+	# else:
+	# 	ax2.arrow(x=L-30, y=np.max(IC_ex_PO[:,i])-900, dx=20, dy=600, lw=2, \
+	# 		head_width=6, shape='full')
 
 ax0.hlines(y=IC_capacity, xmin=0, xmax=L, lw=2, ls=':', color='black')
 ax1.hlines(y=IC_capacity, xmin=0, xmax=L, lw=2, ls=':', color='black')
@@ -106,7 +107,6 @@ ax1.set_yticks([0, 200, 400])
 ax2.set_yticks([0, 10000, 20000])
 
 plt.tight_layout()
-# fig.savefig('figures/QoIs.png')
 fig.savefig('figures/QoIs.pdf')
 
 plt.show()
