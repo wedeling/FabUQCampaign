@@ -144,7 +144,7 @@ ax.barh(np.arange(0, len(params), 1), sobol_idx_ICp, xerr=err_ICp, linewidth=2, 
     ecolor=['lightseagreen','salmon','cornflowerblue','salmon'], \
     height=0.6)
 
-labels = ['seed', 'pl_intervention_effect_high', 'intervention_lift_interval', 'uptake']
+labels = ['seed', 'pl_intervention_effect_hi', 'intervention_lift_interval', 'uptake']
 
 ax.set_xticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
 ax.set_yticks(np.arange(0, len(labels), 1))
