@@ -75,7 +75,7 @@ for i in range(n_runs2plot):
 	ax0.plot(time, IC_prev_PO[:,i], lw=2)
 	ax1.plot(time, IC_prev_avg_PO[:,i], lw=2)
 	ax2.plot(time, IC_ex_PO[:,i], lw=2)
-	add circles to indicate QoIs
+	# add circles to indicate QoIs
 	# first (and last) 14 components of the array are nan
 	circle_qoi1 = plt.Circle((14+np.argmax(IC_prev_avg_PO[~np.isnan(IC_prev_avg_PO[:,i]),i]), \
 		np.max(IC_prev_avg_PO[~np.isnan(IC_prev_avg_PO[:,i]),i])), \
