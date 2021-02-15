@@ -18,7 +18,7 @@ plt.rcParams['figure.figsize'] = 12,7
 * Load data *
 *************
 """
-workdir = '/home/federica/Desktop/VirsimCampaigns'#'/tmp'
+workdir = '/export/scratch1/federica/VirsimCampaigns'
 
 # home directory of this file    
 HOME = os.path.abspath(os.path.dirname(__file__))
@@ -122,17 +122,17 @@ CT_params = list(CT_sampler.vary.get_keys())
 IL_params = list(IL_sampler.vary.get_keys())
 PO_params = list(PO_sampler.vary.get_keys())
 
-FC_sobol_idx_ICp = np.zeros((len(params)), dtype='float')
-FC_err_ICp = np.zeros((2,len(params)), dtype='float')
+FC_sobol_idx_ICp = np.zeros((len(FC_params)), dtype='float')
+FC_err_ICp = np.zeros((2,len(FC_params)), dtype='float')
 
-CT_sobol_idx_ICp = np.zeros((len(params)), dtype='float')
-CT_err_ICp = np.zeros((2,len(params)), dtype='float')
+CT_sobol_idx_ICp = np.zeros((len(CT_params)), dtype='float')
+CT_err_ICp = np.zeros((2,len(CT_params)), dtype='float')
 
-IL_sobol_idx_ICp = np.zeros((len(params)), dtype='float')
-IL_err_ICp = np.zeros((2,len(params)), dtype='float')
+IL_sobol_idx_ICp = np.zeros((len(IL_params)), dtype='float')
+IL_err_ICp = np.zeros((2,len(IL_params)), dtype='float')
 
-PO_sobol_idx_ICp = np.zeros((len(params)), dtype='float')
-PO_err_ICp = np.zeros((2,len(params)), dtype='float')
+PO_sobol_idx_ICp = np.zeros((len(PO_params)), dtype='float')
+PO_err_ICp = np.zeros((2,len(PO_params)), dtype='float')
 
 idx = 0
 for param in FC_params: 
