@@ -187,7 +187,7 @@ ax_FC = f.add_subplot(221, title = 'FC')
 ax_FC.invert_yaxis()
 ax_FC.set_xlim([-.1, 1.1])
 
-ax_FC.barh(np.arange(0, len(FC_params), 1), FC_sobol_idx_ICp, xerr=FC_err_ICp, linewidth=2, \
+ax_FC.barh(np.arange(0, len(FC_params), 1), FC_sobol_idx_ICp, xerr=FC_err_ICp, linewidth=4, \
     color=['mediumaquamarine','lightsalmon','lightskyblue'], \
     ecolor=['lightseagreen','salmon','cornflowerblue'], \
     height=0.6)
@@ -200,7 +200,7 @@ ax_CT = f.add_subplot(222, title = 'CT')
 ax_CT.invert_yaxis()
 ax_CT.set_xlim([-.1, 1.1])
 
-ax_CT.barh(np.arange(0, len(CT_params), 1), CT_sobol_idx_ICp, xerr=CT_err_ICp, linewidth=2, \
+ax_CT.barh(np.arange(0, len(CT_params), 1), CT_sobol_idx_ICp, xerr=CT_err_ICp, linewidth=4, \
     color=['mediumaquamarine','lightskyblue','lightsalmon','lightskyblue'], \
     ecolor=['lightseagreen','cornflowerblue','salmon', 'cornflowerblue'], \
     height=0.6)
@@ -213,7 +213,7 @@ ax_IL = f.add_subplot(223, title = 'IL')
 ax_IL.invert_yaxis()
 ax_IL.set_xlim([-.1, 1.1])
 
-ax_IL.barh(np.arange(0, len(IL_params), 1), IL_sobol_idx_ICp, xerr=IL_err_ICp, linewidth=2, \
+ax_IL.barh(np.arange(0, len(IL_params), 1), IL_sobol_idx_ICp, xerr=IL_err_ICp, linewidth=4, \
     color=['mediumaquamarine','lightskyblue','lightskyblue','lightskyblue', 'lightsalmon'], \
     ecolor=['lightseagreen','cornflowerblue','cornflowerblue','cornflowerblue','salmon'], \
     height=0.6)
@@ -228,7 +228,7 @@ ax_PO = f.add_subplot(224, title = 'PO')
 ax_PO.invert_yaxis()
 ax_PO.set_xlim([-.1, 1.1])
 
-ax_PO.barh(np.arange(0, len(PO_params), 1), PO_sobol_idx_ICp, xerr=PO_err_ICp, linewidth=2, \
+ax_PO.barh(np.arange(0, len(PO_params), 1), PO_sobol_idx_ICp, xerr=PO_err_ICp, linewidth=4, \
     color=['mediumaquamarine','lightsalmon','lightskyblue','lightsalmon'], \
     ecolor=['lightseagreen','salmon','cornflowerblue','salmon'], \
     height=0.6)
