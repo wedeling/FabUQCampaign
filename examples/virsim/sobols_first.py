@@ -112,9 +112,9 @@ PO_campaign.apply_analysis(PO_qmc_analysis)
 PO_results = PO_campaign.get_last_analysis()
 
 """
-***********************
-* TOTAL SOBOL INDICES *
-***********************
+***************************
+* SOBOL 1st ORDER INDICES *
+***************************
 """
 #first order Sobol indices and parameter names
 FC_params = list(FC_sampler.vary.get_keys())
@@ -137,10 +137,10 @@ PO_err_ICp = np.zeros((2,len(PO_params)), dtype='float')
 idx = 0
 for param in FC_params: 
     #
-    sobol_idx = FC_results.sobols_total('IC_prev_avg_max',param) 
+    sobol_idx = FC_results.sobols_first('IC_prev_avg_max',param) 
     FC_sobol_idx_ICp[idx] = sobol_idx
-    low = FC_results._get_sobols_total_conf('IC_prev_avg_max',param)[0] 
-    high = FC_results._get_sobols_total_conf('IC_prev_avg_max',param)[1] 
+    low = FC_results._get_sobols_first_conf('IC_prev_avg_max',param)[0] 
+    high = FC_results._get_sobols_first_conf('IC_prev_avg_max',param)[1] 
     FC_err_ICp[:,idx] = [sobol_idx-low, high-sobol_idx]
     #
     idx += 1
@@ -148,10 +148,10 @@ for param in FC_params:
 idx = 0
 for param in CT_params: 
     #
-    sobol_idx = CT_results.sobols_total('IC_prev_avg_max',param) 
+    sobol_idx = CT_results.sobols_first('IC_prev_avg_max',param) 
     CT_sobol_idx_ICp[idx] = sobol_idx
-    low = CT_results._get_sobols_total_conf('IC_prev_avg_max',param)[0] 
-    high = CT_results._get_sobols_total_conf('IC_prev_avg_max',param)[1] 
+    low = CT_results._get_sobols_first_conf('IC_prev_avg_max',param)[0] 
+    high = CT_results._get_sobols_first_conf('IC_prev_avg_max',param)[1] 
     CT_err_ICp[:,idx] = [sobol_idx-low, high-sobol_idx]
     #
     idx += 1
@@ -159,10 +159,10 @@ for param in CT_params:
 idx = 0
 for param in IL_params: 
     #
-    sobol_idx = IL_results.sobols_total('IC_prev_avg_max',param) 
+    sobol_idx = IL_results.sobols_first('IC_prev_avg_max',param) 
     IL_sobol_idx_ICp[idx] = sobol_idx
-    low = IL_results._get_sobols_total_conf('IC_prev_avg_max',param)[0] 
-    high = IL_results._get_sobols_total_conf('IC_prev_avg_max',param)[1] 
+    low = IL_results._get_sobols_first_conf('IC_prev_avg_max',param)[0] 
+    high = IL_results._get_sobols_first_conf('IC_prev_avg_max',param)[1] 
     IL_err_ICp[:,idx] = [sobol_idx-low, high-sobol_idx]
     #
     idx += 1
@@ -170,10 +170,10 @@ for param in IL_params:
 idx = 0
 for param in PO_params: 
     #
-    sobol_idx = PO_results.sobols_total('IC_prev_avg_max',param) 
+    sobol_idx = PO_results.sobols_first('IC_prev_avg_max',param) 
     PO_sobol_idx_ICp[idx] = sobol_idx
-    low = PO_results._get_sobols_total_conf('IC_prev_avg_max',param)[0] 
-    high = PO_results._get_sobols_total_conf('IC_prev_avg_max',param)[1] 
+    low = PO_results._get_sobols_first_conf('IC_prev_avg_max',param)[0] 
+    high = PO_results._get_sobols_first_conf('IC_prev_avg_max',param)[1] 
     PO_err_ICp[:,idx] = [sobol_idx-low, high-sobol_idx]
     #
     idx += 1
@@ -240,6 +240,6 @@ ax_PO.set_yticks(np.arange(0, len(PO_labels), 1))
 ax_PO.set_yticklabels(PO_labels)
 
 plt.tight_layout()
-f.savefig('figures/Sobols_total.pdf')
+f.savefig('figures/Sobols_first.pdf')
 
 plt.show()
