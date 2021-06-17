@@ -23,7 +23,7 @@ campaign = uq.Campaign(name='virsim_FC', work_dir=workdir)
 # Define parameter space
 params = {
     "seed": {
-        "type": "float",
+        "type": "integer",
         "min": 0,
         "max": 2**31,
         "default": 12345},
@@ -80,7 +80,7 @@ params = {
     "duration_infectiousness": {
         "type": "float",
         "min": 0.0,
-        "max": 10.0,
+        "max": 20.0,
         "default": 5.0},
     "shape_exposed_time": {
         "type": "float",
@@ -117,13 +117,13 @@ vary = {
     "seed": cp.DiscreteUniform(2**14, 2**16),
     "intervention_effect": cp.Beta(alpha=38, beta=70),
     "uptake": cp.Beta(alpha=16, beta=2),
-    # "Rzero": cp.Gamma(shape=100,scale=.025),
-    # "duration_infectiousness": cp.Gamma(shape=25,scale=.2), 
-    # "shape_exposed_time": cp.Gamma(shape=17.5,scale=1),
-    # "intervention_effect_var_inv": cp.Gamma(shape=2,scale=.05)
+    "Rzero": cp.Gamma(shape=100,scale=.025),
+    "duration_infectiousness": cp.Gamma(shape=25,scale=.2), 
+    "shape_exposed_time": cp.Gamma(shape=17.5,scale=1),
+    "intervention_effect_var_inv": cp.Gamma(shape=2,scale=.05)
 }
 
-sampler = uq.sampling.MCSampler(vary, n_mc_samples=2000)
+sampler = uq.sampling.RandomSampler(vary, max_num=2000)
 
 # Associate the sampler with the campaign
 campaign.set_sampler(sampler)
@@ -132,7 +132,7 @@ campaign.draw_samples()
 campaign.populate_runs_dir()
 
 #Save the Campaign
-campaign.save_state("campaign_state_FC.json")
+campaign.save_state("campaign_state_FC_bio_cdf_2k.json")
 
 # run the UQ ensemble
 fab.run_uq_ensemble(config, campaign.campaign_dir, script=script,
