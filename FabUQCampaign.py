@@ -4,7 +4,7 @@
 # Please refer to LICENSE for detailed information regarding the licensing.
 #
 
-from base.fab import *
+from fabsim.base.fab import *
 import os
 
 # Add local script, blackbox and template path.
@@ -34,6 +34,7 @@ def uq_ensemble(config="dummy_test", script="ERROR: PARAMETER script SHOULD BE D
     Submits an ensemble of EasyVVUQ jobs.
     """
 
+    with_config(config)
     path_to_config = find_config_file_path(config)
     sweep_dir = path_to_config + "/SWEEP"
     # required by qcg-pj to distribute threads correctly
@@ -46,6 +47,7 @@ def run_uq_ensemble(config, campaign_dir, script, skip=0, **args):
     """
     Generic subsmission of samples
     """
+    with_config(config)
     campaign2ensemble(config, campaign_dir=campaign_dir, skip=skip)
     uq_ensemble(config, script, **args)
 
@@ -113,11 +115,13 @@ def verify_last_ensemble(config,
         #all runs in the sweep directory = last ensemble
         run_dirs = os.listdir(sweep_dir)
         all_good = True
+        missing_outputs = []
         for run_dir in run_dirs:
             #if in one of the runs dirs the target output file is not found
             target = os.path.join(results_dir, 'RUNS', run_dir, target_filename)
             if not os.path.exists(target):
                 print("Output for %s not found in %s" % (run_dir, target,))
+                missing_outputs.append(target)
                 all_good = False
     
         #something went wrong
@@ -132,5 +136,46 @@ def verify_last_ensemble(config,
         fp = open(os.path.join(campaign_dir, 'check.dat'), 'w')
         fp.write('%d' % all_good)
         fp.close()
+        
+        #write missing output files to campaign_dir/missed_targets.dat
+        fp = open(os.path.join(campaign_dir, 'missed_targets.dat'), 'w')
+        for target in missing_outputs:
+            fp.write('%s\n' % target)
+        fp.close()       
+        
     else:
         print('Config not found in FabSim3 results directory')
+        
+@task
+def remove_succesful_runs(config, 
+                          campaign_dir, **args):
+    """
+    This command clears the succesful runs from the SWEEP directory.
+    """
+
+    #config and sweep directory
+    path_to_config = find_config_file_path(config)
+    sweep_dir = path_to_config + "/SWEEP"
+
+    #list of all runs in the SWEEP directory
+    succesful_runs = os.listdir(sweep_dir)
+
+    #read missing output files to campaign_dir/missed_targets.dat
+    fp = open(os.path.join(campaign_dir, 'missed_targets.dat'), 'r')
+    missing_outputs = fp.readlines()
+    fp.close()
+
+    print('There are %d failed runs.' % len(missing_outputs))
+
+    for path in missing_outputs:
+        # find "run_i" with i being the index of the failed run
+        tmp = path.split('/')
+        run_i = tmp[tmp.index('RUNS') + 1]
+        # removes the failed run from the succesful list
+        succesful_runs.remove(run_i)
+
+    print('There are %d succesful runs' % len(succesful_runs))
+    
+    for run_i in succesful_runs:
+        print('Removing %s/%s' % (sweep_dir, run_i))
+        os.system('rm -r %s/%s' % (sweep_dir, run_i))
