@@ -12,7 +12,7 @@ import fabsim3_cmd_api as fab
 config = 'virsim_CT'
 script = 'virsim_CT'
 machine = 'eagle_vecma'
-workdir = '/ufs/federica/Desktop/VirsimCampaigns'#'/tmp'
+workdir = '/export/scratch1/federica/VirsimCampaigns'
 
 #home dir of this file    
 HOME = os.path.abspath(os.path.dirname(__file__))
@@ -23,7 +23,7 @@ campaign = uq.Campaign(name='virsim_CT', work_dir=workdir)
 # Define parameter space
 params = {
     "seed": {
-        "type": "float",
+        "type": "integer",
         "min": 0,
         "max": 2**31,
         "default": 12345},
@@ -80,7 +80,7 @@ params = {
     "duration_infectiousness": {
         "type": "float",
         "min": 0.0,
-        "max": 10.0,
+        "max": 20.0,
         "default": 5.0},
     "shape_exposed_time": {
         "type": "float",
@@ -104,33 +104,27 @@ encoder = uq.encoders.GenericEncoder(
     delimiter='$',
     target_filename='corona_in.json')
 decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
-                                output_columns=output_columns,
-                                header=0)
-# collater = uq.collate.AggregateSamples(average=False)
-collater = uq.collate.AggregateHDF5()
+                                output_columns=output_columns)
 
 # Add the SC app (automatically set as current app)
 campaign.add_app(name="sc",
                     params=params,
                     encoder=encoder,
-                    decoder=decoder,
-                    collater=collater) 
+                    decoder=decoder) 
 
 # Create the sampler
 vary = {
     "seed": cp.DiscreteUniform(2**14, 2**16),
-    "trace_prob_E": cp.Beta(alpha=2, beta=4),
-    "trace_rate_I": cp.Gamma(shape=2, scale=.4),
+    "trace_prob_E": cp.Beta(alpha=2, beta=6),
+    "trace_rate_I": cp.Gamma(shape=2, scale=.2),
     "trace_contact_reduction": cp.Beta(alpha=10, beta=2),
-    # "Rzero": cp.Gamma(shape=100,scale=.025),
-    # "duration_infectiousness": cp.Gamma(shape=25,scale=.2), 
-    # "shape_exposed_time": cp.Gamma(shape=17.5,scale=1),
-    # "intervention_effect_var_inv": cp.Gamma(shape=2,scale=.05)
+    "Rzero": cp.Gamma(shape=100,scale=.025),
+    "duration_infectiousness": cp.Gamma(shape=25,scale=.2), 
+    "shape_exposed_time": cp.Gamma(shape=17.5,scale=1),
+    "intervention_effect_var_inv": cp.Gamma(shape=2,scale=.05)
 }
 
-#sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=3, 
-#                                   quadrature_rule='G', sparse=False)
-sampler = uq.sampling.MCSampler(vary=vary, n_mc_samples=2)
+sampler = uq.sampling.RandomSampler(vary=vary, max_num=2000)
 
 # Associate the sampler with the campaign
 campaign.set_sampler(sampler)
@@ -140,7 +134,7 @@ campaign.draw_samples()
 campaign.populate_runs_dir()
 
 #Save the Campaign
-campaign.save_state("campaign_state_CT.json")
+campaign.save_state("campaign_state_CT_bio_cdf_2k.json")
 
 # run the UQ ensemble
 fab.run_uq_ensemble(config, campaign.campaign_dir, script=script,

@@ -40,6 +40,7 @@ def uq_ensemble(config="dummy_test", script="ERROR: PARAMETER script SHOULD BE D
     # required by qcg-pj to distribute threads correctly
     env.task_model = 'threads'
     env.script = script
+    with_config(config)
     run_ensemble(config, sweep_dir, **args)
 
 @task
