@@ -10,9 +10,9 @@
 import os
 import time
 import subprocess
-from base.fab import *
+from fabsim.base.fab import *
 
-add_local_paths("FabUQCampaign")
+add_local_paths("FabCovidsim")
 
 def fabsim(command, arguments, machine = 'localhost'):
     """
@@ -30,8 +30,12 @@ def fabsim(command, arguments, machine = 'localhost'):
     -------
     None
     """
-    print('Executing', "fab {} {}:{}".format(machine, command, arguments))
-    os.system("fabsim {} {}:{}".format(machine, command, arguments))
+    if arguments == "" or arguments == None:
+        print('Executing', "fabsim {} {}".format(machine, command))
+        os.system("fabsim {} {}".format(machine, command))
+    else:
+        print('Executing', "fabsim {} {}:{}".format(machine, command, arguments))
+        os.system("fabsim {} {}:{}".format(machine, command, arguments))
 
 def fetch_results(machine='localhost'):
     """
@@ -95,7 +99,7 @@ def wait(machine='localhost', sleep=1):
     while not finished:
         #get the output lines of fab <machine> stat
         try:
-            out = subprocess.run(['fab', machine, 'stat'], stdout=subprocess.PIPE)
+            out = subprocess.run(['fabsim', machine, 'stat'], stdout=subprocess.PIPE)
         except:
             print('wait subroutine failed')
             return finished
@@ -139,7 +143,7 @@ def verify_last_ensemble(config, campaign_dir, target_filename, machine):
     - config (string): the config ID, i.e. the name in <fab_fome>/config_files/<config>
     - campaign_dir (string): the EasyVVUQ work directory
     - target_filename (string): the name of the filename to check the existence of.
-      (stored in campaign._active_decoder.target_filename)
+      (strored in campaign._active_decoder.target_filename)
     - machine (string): the name of the remote machine as indicated in
       machines_user.yml
 
@@ -164,10 +168,9 @@ def verify_last_ensemble(config, campaign_dir, target_filename, machine):
 
     #Run FabSim3 verify_last_ensemble command
     arguments = "{},campaign_dir={},target_filename={},machine={}".format(config, 
-                                                                   campaign_dir, 
-                                                                   target_filename,
-                                                                   machine)
-
+                                                               campaign_dir, 
+                                                               target_filename,
+                                                               machine)
     fabsim("verify_last_ensemble", arguments, machine='localhost')
     #FabSim3 verify_last_ensemble command writes a flag to the check.dat file
     #in the EasuVVUQ work dir. Read to see if all files were present.
@@ -176,16 +179,11 @@ def verify_last_ensemble(config, campaign_dir, target_filename, machine):
     fp.close()
     return all_good
 
-def verify(config, campaign_dir, target_filename, machine, max_resubmit=2, 
-           max_wait=10, PilotJob=False):
+def verify(config, campaign_dir, target_filename, machine, max_wait=10, PJ=False):
     """
     This will execute the verify_last_ensemble subroutine to see if the output file 
     <target_filename> for each run in the SWEEP directory is present in 
-    the corresponding FabSim3 results directory. If this is not the case, the 
-    (entire) previous ensemble will be executed again. An "ensemble" is 
-    defined here as any run present in the SWEEP directory. In the case of 
-    the dimension-adaptive sampler, this will be only the runs of the previous 
-    iteration.
+    the corresponding FabSim3 results directory.
 
     Then, it checks for the presence of the output file once more. 
     This cycle repeats for a user-specified maximum number of times.
@@ -198,15 +196,12 @@ def verify(config, campaign_dir, target_filename, machine, max_resubmit=2,
       (strored in campaign._active_decoder.target_filename)
     - machine (string) : the name of the remote machine as indicated in
       machines_user.yml
-    - max_resubmit (int, default=2) : the maximum number of times an 
-      ensemble can be executed again if it failed. If this number is exceeded 
-      the sampling will terminate.
-    - PilotJob (boolean): Use the QCG PilotJob framework to execute the ensemble.
+    - PJ (boolean): Use the QCG PilotJob framework to execute the ensemble.
       Must be installed. If False, jobs are execute via the Slurm workload manager.
 
     Returns
     -------
-    None.
+    True or False
 
     """
 
@@ -228,22 +223,10 @@ def verify(config, campaign_dir, target_filename, machine, max_resubmit=2,
     all_good = verify_last_ensemble(config, campaign_dir, 
                                     target_filename, machine=machine)
 
-    n_retry = 0
-    while not all_good and n_retry < max_resubmit:
-        resubmit_previous_ensemble(config, machine=machine, PilotJob=PilotJob)
-        wait(machine=machine)
-        #check if the last ensemble returned all output files
-        all_good = verify_last_ensemble(config, campaign_dir, 
-                                        target_filename, machine=machine)
-        if all_good: break
-        n_retry += 1
+    return all_good
 
-    if not all_good:
-        print('Unsuccesfull ensemble after resubmitting %d times.' % max_resubmit)
-        import sys; sys.exit()   
-
-def resubmit_previous_ensemble(config, script, command='uq_ensemble',
-                               machine='localhost', PilotJob=False):
+def resubmit_previous_ensemble(config, script='CovidSim', command='CovidSim_ensemble',
+                               machine='localhost', PJ=False):
     """
     Resubmits all jobs in the SWEEP directory: <fab_home>/config_files/<config>/SWEEP
 
@@ -251,10 +234,10 @@ def resubmit_previous_ensemble(config, script, command='uq_ensemble',
     ----------
     - config (string): the config ID, i.e. the name in <fab_fome>/config_files/<config>
     - script (string): the FabSim3 script to execute
-    - command : The default is 'uq_ensemble'.
+    - command : The default is 'CovidSim_ensemble'.
     - machine (string): the name of the remote machine as indicated in
       machines_user.yml
-    - PilotJob (boolean): Use the QCG PilotJob framework to execute the ensemble.
+    - PJ (boolean): Use the QCG PilotJob framework to execute the ensemble.
       Must be installed. If False, jobs are execute via the Slurm workload manager.
 
     Returns
@@ -262,11 +245,34 @@ def resubmit_previous_ensemble(config, script, command='uq_ensemble',
     None.
 
     """
-    arguments = "{},script={},PilotJob={}".format(config, script, PilotJob)
+    arguments = "{},script={},PJ={}".format(config, script, PJ)
     fabsim(command, arguments, machine)
+    
+def remove_succesful_runs(config, campaign_dir):
+    """
+    This command clears the succesful runs from the SWEEP directory. Which runs are not 
+    succesful is determined by executing the verify(...) command of this API. After the succesful
+    runs are cleared, execute resubmit_previous_ensemble(...) of this API to submit the failed 
+    jobs again.
+
+    Parameters
+    ----------
+    config : string
+        The config ID, i.e. the name in <fab_fome>/config_files/<config>.
+    campaign_dir : string
+        The EasyVVUQ campaign directory.
+
+    Returns
+    -------
+    None.
+
+    """
+    #Run FabSim3 remove_succesful_runs command
+    arguments = "{},campaign_dir={}".format(config, campaign_dir)
+    fabsim("remove_succesful_runs", arguments, machine='localhost')
 
 def run_uq_ensemble(config, campaign_dir, script, machine='localhost', skip=0,
-                    PilotJob = False, **args):
+                    PJ = False, **args):
     """
     Launches a EasyVVUQ UQ ensemble
 
@@ -279,7 +285,7 @@ def run_uq_ensemble(config, campaign_dir, script, machine='localhost', skip=0,
       machines_user.yml
     - skip (int): if > 0, the first <skip> runs are not executed. Required in
       an adaptive setting to avoid recomputing already executed runs.
-    - PilotJob (boolean): Use the QCG PilotJob framework to execute the ensemble.
+    - PJ (boolean): Use the QCG PilotJob framework to execute the ensemble.
       Must be installed. If False, jobs are execute via the Slurm workload manager.
     
     Returns
@@ -288,24 +294,13 @@ def run_uq_ensemble(config, campaign_dir, script, machine='localhost', skip=0,
 
     """
     # sim_ID = campaign_dir.split('/')[-1]
-    arguments = "{},campaign_dir={},script={},skip={},PilotJob={}".format(config, campaign_dir, script, skip, PilotJob)
-    fabsim("run_uq_ensemble", arguments, machine=machine)
+    arguments = "{},campaign_dir={},script={},skip={},PJ={}".format(config, campaign_dir, script, skip, PJ)
+    fabsim("run_adaptive_easyvvuq", arguments, machine=machine)
     
-def get_uq_samples(config, campaign_dir, number_of_samples, skip=0, machine = 'localhost'):
+def get_uq_samples(config, campaign_dir, number_of_samples, skip=0, max_run=10**10, machine = 'localhost'):
     """
     Retrieves results from UQ ensemble
     """
     # sim_ID = campaign_dir.split('/')[-1]
-    arguments = "{},campaign_dir={},skip={},machine={}".format(config, campaign_dir, skip, machine)
-    fabsim("get_uq_samples", arguments, machine=machine)
-    
-    #If the same FabSim3 config name was used before, the statement above
-    #might have copied more runs than currently are used by EasyVVUQ.
-    #This removes all runs in the EasyVVUQ campaign dir (not the Fabsim results dir) 
-    #for which Run_X with X > number of current samples.
-    dirs = os.listdir(os.path.join(campaign_dir, 'runs'))
-    for dir_i in dirs:
-        run_ID = int(dir_i.split('_')[-1])
-        if run_ID > number_of_samples:
-            local('rm -r %s/runs/Run_%d' % (campaign_dir, run_ID))
-            print('Removing Run %d from %s/runs' % (run_ID, campaign_dir))
+    arguments = "{},campaign_dir={},number_of_samples={},skip={},max_run={}".format(config, campaign_dir, number_of_samples, skip, max_run)
+    fabsim("get_adaptive_easyvvuq", arguments, machine=machine)
