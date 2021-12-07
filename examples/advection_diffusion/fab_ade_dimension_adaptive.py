@@ -42,16 +42,16 @@ encoder = uq.encoders.GenericEncoder(
     delimiter='$',
     target_filename='ade_in.json')
 decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
-                                output_columns=output_columns,
-                                header=0)
-collater = uq.collate.AggregateSamples()
+                                output_columns=output_columns)#,
+                                # header=0)
+# collater = uq.collate.AggregateSamples()
 
 # Add the SC app (automatically set as current app)
 my_campaign.add_app(name="sc",
                     params=params,
                     encoder=encoder,
-                    decoder=decoder,
-                    collater=collater)
+                    decoder=decoder)#,
+                    # collater=collater)
 
 # Create the sampler
 vary = {
@@ -121,8 +121,8 @@ analysis.plot_grid()
 # Plot the moments and SC samples #
 ###################################
 
-mu = results['statistical_moments']['u']['mean']
-std = results['statistical_moments']['u']['std']
+mu = results.describe('u', 'mean')
+std = results.describe('u', 'std')
 
 x = np.linspace(0, 1, 301)
 
@@ -171,12 +171,11 @@ ax = fig.add_subplot(
     ylabel='Sobol indices',
     title='spatial dist. Sobol indices, Pe only important in viscous regions')
 
-lbl = ['Pe', 'f', 'Pe-f interaction']
+lbl = ['Pe', 'f']
 idx = 0
 
-for S_i in results['sobols']['u']:
-    ax.plot(x, results['sobols']['u'][S_i], label=lbl[idx])
-    idx += 1
+for i in range(len(lbl)):
+    ax.plot(x, results._get_sobols_first('u', lbl[i]), label=lbl[i])
 
 leg = plt.legend(loc=0)
 leg.set_draggable(True)
@@ -187,6 +186,6 @@ plt.tight_layout()
 # Uncertainty blowup number #
 #############################
 
-blowup = analysis.get_uncertainty_blowup(output_columns[0])
+blowup = analysis.get_uncertainty_amplification(output_columns[0])
     
 plt.show()

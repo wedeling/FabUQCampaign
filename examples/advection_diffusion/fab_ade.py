@@ -15,7 +15,7 @@ home = os.path.expanduser('~')
 HOME = os.path.abspath(os.path.dirname(__file__))
 
 # Set up a fresh campaign called "sc"
-my_campaign = uq.Campaign(name='sc', work_dir='/tmp')
+campaign = uq.Campaign(name='sc', work_dir='/tmp')
 
 # Define parameter space
 params = {
@@ -44,10 +44,10 @@ encoder = uq.encoders.GenericEncoder(
 decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
                                 output_columns=output_columns,
                                 header=0)
-collater = uq.collate.AggregateSamples()
+collater = uq.collate.AggregateHDF5()
 
 # Add the SC app (automatically set as current app)
-my_campaign.add_app(name="sc",
+campaign.add_app(name="sc",
                     params=params,
                     encoder=encoder,
                     decoder=decoder,
@@ -72,51 +72,51 @@ my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=2,
                                    sparse=True, growth=True)
 
 # Associate the sampler with the campaign
-my_campaign.set_sampler(my_sampler)
+campaign.set_sampler(my_sampler)
 
 # Will draw all (of the finite set of samples)
 count = my_sampler.count
-my_campaign.draw_samples()
-my_campaign.populate_runs_dir()
+campaign.draw_samples()
+campaign.populate_runs_dir()
 
 ##   Use this instead to run the samples using EasyVVUQ on the localhost
-#my_campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
+#campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
 #    "sc_model.py ade_in.json"))
 
 # run the UQ ensemble
-fab.run_uq_ensemble('ade', my_campaign.campaign_dir, script='ade')
+fab.run_uq_ensemble('ade', campaign.campaign_dir, script='ade')
 
 # #wait for job to complete
 # fab.wait(machine='localhost')
 
 # #wait for jobs to complete and check if all output files are retrieved 
 # #from the remote machine
-# fab.verify('ade', my_campaign.campaign_dir, 
-#            my_campaign._active_app_decoder.target_filename, 
+# fab.verify('ade', campaign.campaign_dir, 
+#            campaign._active_app_decoder.target_filename, 
 #            machine='localhost')
 
 #fetch the results from the (remote) machine
 fab.fetch_results()
 
 #copy the samples back to EasyVVUQ dir
-fab.get_uq_samples('ade', my_campaign.campaign_dir, my_sampler._number_of_samples,
+fab.get_uq_samples('ade', campaign.campaign_dir, my_sampler._number_of_samples,
                    machine='localhost')
 
-my_campaign.collate()
+campaign.collate()
 
 # Post-processing analysis
 analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
 
-my_campaign.apply_analysis(analysis)
+campaign.apply_analysis(analysis)
 
-results = my_campaign.get_last_analysis()
+results = campaign.get_last_analysis()
 
 ###################################
 # Plot the moments and SC samples #
 ###################################
 
-mu = results['statistical_moments']['u']['mean']
-std = results['statistical_moments']['u']['std']
+mu = results['statistical_moments'][output_columns[0]]['mean']
+std = results['statistical_moments'][output_columns[0]]['std']
 
 x = np.linspace(0, 1, 301)
 
@@ -145,8 +145,8 @@ for dist in my_sampler.vary.get_values():
 # evaluate the surrogate at these values
 print('Evaluating surrogate model', n_mc, 'times')
 for i in range(n_mc):
-    ax.plot(x, analysis.surrogate('u', xi_mc[i]), 'g')
-    ax.plot(x, analysis.surrogate('u', xi_mc[i], recursive=True), 'ro')
+    ax.plot(x, analysis.surrogate(output_columns[0], xi_mc[i]), 'g')
+    ax.plot(x, analysis.surrogate(output_columns[0], xi_mc[i], recursive=True), 'ro')
 print('done')
 
 plt.tight_layout()
@@ -165,11 +165,25 @@ ax = fig.add_subplot(
 lbl = ['Pe', 'f', 'Pe-f interaction']
 idx = 0
 
-for S_i in results['sobols_first']['u']:
-    ax.plot(x, results['sobols_first']['u'][S_i], label=lbl[idx])
+for S_i in results['sobols_first'][output_columns[0]]:
+    ax.plot(x, results['sobols_first'][output_columns[0]][S_i], label=lbl[idx])
     idx += 1
 
 leg = plt.legend(loc=0)
 leg.set_draggable(True)
+
+# overwrite output file name and qoi name
+campaign._active_app_decoder.target_filename = 'outout2.csv'
+campaign._active_app_decoder.output_columns = ['2u']
+# recollate data from output files
+campaign.recollate()
+df = campaign.get_collation_result()
+# overwrite the qoi name in the analysis object
+analysis.qoi_cols = ['2u']
+# the pce_coefs dictionary must be initialized again! Otherwise the old results will just get recomputed
+analysis.pce_coefs = {}
+# perform the analysis on the new data frame
+results = analysis.analyse(data_frame=df)
+
 
 plt.show()

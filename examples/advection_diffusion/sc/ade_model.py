@@ -98,7 +98,8 @@ def shape(x, XA1, XA2):
 # the json input file containing the values of the parameters, and the
 # output file
 json_input = sys.argv[1]
-
+import os
+print('-----' + os.getcwd())
 with open(json_input, "r") as f:
     inputs = json.load(f)
 
@@ -112,5 +113,10 @@ u = solve(Pe, f, nel=300)
 # output csv file
 header = 'u'
 np.savetxt(output_filename, u,
+           delimiter=",", comments='',
+           header=header)
+
+header = '2u'
+np.savetxt('output2.csv', 2*u,
            delimiter=",", comments='',
            header=header)

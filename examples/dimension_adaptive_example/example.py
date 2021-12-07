@@ -47,16 +47,16 @@ if init:
         delimiter='$',
         target_filename='model_in.json')
     decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
-                                    output_columns=output_columns,
-                                    header=0)
-    collater = uq.collate.AggregateSamples()
+                                    output_columns=output_columns)#,
+                                    # header=0)
+    # collater = uq.collate.AggregateSamples()
 
     # Add the SC app (automatically set as current app)
     campaign.add_app(name="sc",
                         params=params,
                         encoder=encoder,
-                        decoder=decoder,
-                        collater=collater)
+                        decoder=decoder)#,
+                        # collater=collater)
 
     #uncertain variables
     vary = {}
@@ -101,7 +101,7 @@ if init:
 
     #run the UQ ensemble
     fab.get_uq_samples(config, campaign.campaign_dir, 
-                       number_of_samples = sampler._number_of_samples,
+                       number_of_samples = sampler._n_samples,
                        skip=0,
                        machine='localhost')
 
@@ -128,10 +128,10 @@ else:
     analysis = uq.analysis.SCAnalysis(sampler=sampler, qoi_cols=output_columns)
     analysis.load_state("covid_analysis_state" + ID + ".pickle")
 
-max_samples = 1000
+max_samples = 40
 n_iter = 0
 
-while sampler._number_of_samples < max_samples:
+while sampler._n_samples < max_samples:
     #required parameter in the case of a Fabsim run
     skip = sampler.count
 
@@ -163,7 +163,7 @@ while sampler._number_of_samples < max_samples:
 
     #run the UQ ensemble
     fab.get_uq_samples(config, campaign.campaign_dir, 
-                       number_of_samples=sampler._number_of_samples,
+                       number_of_samples=sampler._n_samples,
                        skip=skip,
                        machine='localhost')
 
@@ -176,7 +176,7 @@ while sampler._number_of_samples < max_samples:
     #compute the error at all admissible points, select direction with
     #highest error and add that direction to the grid
     data_frame = campaign.get_collation_result()
-    analysis.adapt_dimension('f', data_frame, method='var')
+    analysis.adapt_dimension('f', data_frame, method='surplus')
 
     #save everything
     campaign.save_state("covid_easyvvuq_state" + ID + ".json")

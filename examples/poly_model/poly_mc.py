@@ -20,7 +20,7 @@ d = 5
 
 # Define parameter space
 params = {}
-for i in range(45):
+for i in range(d):
     params["x%d" % (i + 1)] = {"type": "float",
                                "min": 0.0,
                                "max": 1.0,
@@ -36,16 +36,16 @@ encoder = uq.encoders.GenericEncoder(
     delimiter='$',
     target_filename='poly_in.json')
 decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
-                                output_columns=output_columns,
-                                header=0)
-collater = uq.collate.AggregateSamples()
+                                output_columns=output_columns)#,
+                                # header=0)
+# collater = uq.collate.AggregateSamples()
 
 # Add the SC app (automatically set as current app)
 my_campaign.add_app(name="sc",
                     params=params,
                     encoder=encoder,
-                    decoder=decoder,
-                    collater=collater)
+                    decoder=decoder)#,
+                    # collater=collater)
 
 #uncertain variables
 vary = {}
@@ -88,8 +88,8 @@ print("======================================")
 print("Number of samples = %d" % my_sampler.n_samples())
 print("--------------------------------------")
 print("Analytic mean = %.4e" % ref_mean)
-print("Computed mean = %.4e" % results['statistical_moments']['f']['mean'])
+print("Computed mean = %.4e" % results.describe('f', 'mean'))
 print("--------------------------------------")
 print("Analytic standard deviation = %.4e" % ref_std)
-print("Computed standard deviation = %.4e" % results['statistical_moments']['f']['std'])
+print("Computed standard deviation = %.4e" % results.describe('f', 'std'))
 print("--------------------------------------")
