@@ -53,12 +53,11 @@ def run_uq_ensemble(config, campaign_dir, script, skip=0, **args):
     uq_ensemble(config, script, **args)
 
 @task
-def get_uq_samples(config, campaign_dir, skip=0, **args):
+def get_uq_samples(config, campaign_dir, number_of_samples, skip=0, **args):
     """
     Fetches sample output from host, and copies results to EasyVVUQ work directory
     """
-    
-    # fetch_results()
+
     #loop through all result dirs to find result dir of sim_ID
     found = False
     dirs = os.listdir(env.local_results)
@@ -66,20 +65,52 @@ def get_uq_samples(config, campaign_dir, skip=0, **args):
         #We are assuming here that the name of the directory with the runs dirs
         #STARTS with the config name. e.g. <config_name>_eagle_vecma_28 and
         #not PJ_header_<config_name>_eagle_vecma_28
-        config_i = dir_i.split('_' + args['machine'])[0]
-        print(config_i)
-        # if config == dir_i[0:len(config)]:
-        if config == config_i:
+        if config == dir_i[0:len(config)]:
             found = True
             break
 
     if found:
-        results_dir = os.path.join(env.local_results, dir_i)
-        print('Copying results from %s to %s' % (results_dir, campaign_dir))
-        ensemble2campaign(results_dir, campaign_dir, skip=skip, **args)
-
+        #This compies the entire result directory from the (remote) host back to the
+        #EasyVVUQ Campaign directory
+        print('Copying results from', env.local_results + '/' + dir_i + 'to' + campaign_dir)
+        ensemble2campaign(env.local_results + '/' + dir_i, campaign_dir, skip)
+        
+        #If the same FabSim3 config name was used before, the statement above
+        #might have copied more runs than currently are used by EasyVVUQ.
+        #This removes all runs in the EasyVVUQ campaign dir (not the Fabsim results dir) 
+        #for which Run_X with X > number of current samples.
+        dirs = os.listdir(path.join(campaign_dir, 'runs'))
+        for dir_i in dirs:
+            run_ID = int(dir_i.split('_')[-1])
+            if run_ID > int(number_of_samples):
+                local('rm -r %s/runs/Run_%d' % (campaign_dir, run_ID))
+                print('Removing Run %d from %s/runs' % (run_ID, campaign_dir))
+                
     else:
-        print('Config not found in FabSim3 results directory')
+        print('Campaign dir not found')
+    
+    # # fetch_results()
+    # #loop through all result dirs to find result dir of sim_ID
+    # found = False
+    # dirs = os.listdir(env.local_results)
+    # for dir_i in dirs:
+    #     #We are assuming here that the name of the directory with the runs dirs
+    #     #STARTS with the config name. e.g. <config_name>_eagle_vecma_28 and
+    #     #not PJ_header_<config_name>_eagle_vecma_28
+    #     config_i = dir_i.split('_' + args['machine'])[0]
+    #     print(config_i)
+    #     # if config == dir_i[0:len(config)]:
+    #     if config == config_i:
+    #         found = True
+    #         break
+
+    # if found:
+    #     results_dir = os.path.join(env.local_results, dir_i)
+    #     print('Copying results from %s to %s' % (results_dir, campaign_dir))
+    #     ensemble2campaign(results_dir, campaign_dir, skip=skip, **args)
+
+    # else:
+    #     print('Config not found in FabSim3 results directory')
 
 
 @task

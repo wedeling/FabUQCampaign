@@ -320,7 +320,7 @@ def get_uq_samples(config, campaign_dir, number_of_samples, skip=0, machine = 'l
     """
 
     # sim_ID = campaign_dir.split('/')[-1]
-    arguments = "{},campaign_dir={},skip={},machine={}".format(config, campaign_dir, skip, machine)
+    arguments = "{},campaign_dir={},number_of_samples={},skip={},machine={}".format(config, campaign_dir, number_of_samples, skip, machine)
     fabsim("get_uq_samples", arguments, machine=machine)
     
     #If the same FabSim3 config name was used before, the statement above

@@ -1,19 +1,49 @@
+"""
+Example on how to use FabSim3 inside a Python script to execute an EasyVVUQ campaign
+"""
+
+import os
 import chaospy as cp
 import numpy as np
 import easyvvuq as uq
-import os
-import fabsim3_cmd_api as fab
 import matplotlib.pyplot as plt
-from easyvvuq.actions import CreateRunDirectory, Encode, Decode, CleanUp, ExecuteLocal, Actions
+
+############################################
+# Import the FabSim3 commandline interface #
+############################################
+import fabsim3_cmd_api as fab
 
 plt.close('all')
 
 # author: Wouter Edeling
 __license__ = "LGPL"
 
-# home directory of user
-home = os.path.expanduser('~')
+#########
+# FLAGS #
+#########
+
+# home directory
 HOME = os.path.abspath(os.path.dirname(__file__))
+# Work directory, where the easyVVUQ directory will be placed
+WORK_DIR = '/tmp'
+# FabSim3 config name
+CONFIG = 'ade'
+# Simulation identifier
+ID = '_test'
+# EasyVVUQ campaign name
+CAMPAIGN_NAME = CONFIG + ID
+# name and relative location of the output file name
+TARGET_FILENAME = './output.csv'
+# location of the EasyVVUQ database
+DB_LOCATION = "sqlite:///" + WORK_DIR + "/campaign%s.db" % ID
+# Use QCG PiltJob or not
+PILOT_JOB = False
+# machine to run ensemble on
+MACHINE = "localhost"
+
+##################################
+# Define (total) parameter space #
+##################################
 
 # Define parameter space
 params = {
@@ -31,67 +61,108 @@ params = {
         "type": "string",
         "default": "output.csv"}}
 
-output_filename = params["out_file"]["default"]
-output_columns = ["u"]
+###########################
+# Set up a fresh campaign #
+###########################
 
-# Create an encoder, decoder and collation element
 encoder = uq.encoders.GenericEncoder(
-    template_fname=HOME + '/sc/ade.template',
+    template_fname= HOME + '/sc/ade.template',
     delimiter='$',
     target_filename='ade_in.json')
-decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
-                                output_columns=output_columns)
 
-actions = Actions(CreateRunDirectory('/tmp', flatten=True), Encode(encoder))
+actions = uq.actions.Actions(
+    uq.actions.CreateRunDirectory(root=WORK_DIR, flatten=True),
+    uq.actions.Encode(encoder),
+)
 
-# Set up a fresh campaign called "sc"
-my_campaign = uq.Campaign(name='sc', work_dir='/tmp', params=params, actions=actions)
+campaign = uq.Campaign(
+    name=CAMPAIGN_NAME,
+    db_location=DB_LOCATION,
+    work_dir=WORK_DIR
+)
 
-# Create the sampler
+campaign.add_app(
+    name=CAMPAIGN_NAME,
+    params=params,
+    actions=actions
+)
+
+#######################
+# Specify input space #
+#######################
+
 vary = {
     "Pe": cp.Uniform(100.0, 500.0),
     "f": cp.Uniform(0.9, 1.1)
 }
 
-"""
-SPARSE GRID PARAMETERS
-----------------------
-- sparse = True: use a Smolyak sparse grid
-- growth = True: use an exponential rule for the growth of the number
-  of 1D collocation points per level. Used to make e.g. clenshaw-curtis
-  quadrature nested.
-"""
-my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=4)
+##################
+# Select sampler #
+##################
 
-# Associate the sampler with the campaign
-my_campaign.set_sampler(my_sampler)
+sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=4)
 
-my_campaign.execute()
+# Associate the sampler with the campaign #
+campaign.set_sampler(sampler)
 
-# run the UQ ensemble
-fab.run_uq_ensemble('ade', my_campaign.campaign_dir, script='ade')
+###############################
+# execute the defined actions #
+###############################
 
-"""
-#wait for job to complete
-fab.wait(machine='localhost')
+campaign.execute().collate()
 
-#wait for jobs to complete and check if all output files are retrieved 
-#from the remote machine
-fab.verify('ade', my_campaign.campaign_dir, 
-            "output.csv", 
-            machine='localhost')
+###############################################
+# run the UQ ensemble using FabSim3 interface #
+###############################################
 
-#fetch the results from the (remote) machine
-fab.fetch_results()
+fab.run_uq_ensemble(CONFIG, campaign.campaign_dir, script='ade',
+                    machine=MACHINE, PJ=PILOT_JOB)
 
-#copy the samples back to EasyVVUQ dir
-fab.get_uq_samples('ade', my_campaign.campaign_dir, my_sampler.n_samples,
-                   machine='localhost')
+# wait for job to complete
+fab.wait(machine=MACHINE)
 
-# Post-processing analysis
-analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=["u"])
-analysis.analyse(data_frame=my_campaign.get_collation_result())
-results = my_campaign.get_last_analysis()
+# check if all output files are retrieved from the remote machine, returns a Boolean flag
+all_good = fab.verify(CONFIG, campaign.campaign_dir,
+                      TARGET_FILENAME,
+                      machine=MACHINE, PJ=PILOT_JOB)
+
+if all_good:
+    # copy the results from the FabSim results dir to the EasyVVUQ results dir
+    fab.get_uq_samples(CONFIG, campaign.campaign_dir, sampler.n_samples, machine=MACHINE)
+else:
+    print("Not all samples executed correctly")
+    import sys
+    sys.exit()
+
+#############################################
+# All output files are present, decode them #
+#############################################
+
+output_columns = ["u"]
+decoder = uq.decoders.SimpleCSV(
+    target_filename=TARGET_FILENAME,
+    output_columns=output_columns)
+
+actions = uq.actions.Actions(
+    uq.actions.Decode(decoder)
+)
+campaign.replace_actions(CAMPAIGN_NAME, actions)
+
+###########################
+# Execute decoding action #
+###########################
+
+campaign.execute().collate()
+
+# get EasyVVUQ data frame
+data_frame = campaign.get_collation_result()
+
+############################
+# Post-processing analysis #
+############################
+
+analysis = uq.analysis.SCAnalysis(sampler=sampler, qoi_cols=["u"])
+results = analysis.analyse(data_frame=data_frame)
 
 ###################################
 # Plot the moments and SC samples #
@@ -117,16 +188,15 @@ ax = fig.add_subplot(122, xlabel='location x', ylabel='velocity u',
                       title='Surrogate samples')
 
 #generate n_mc samples from the input distributions
-n_mc = 20
+N_MC = 20
 xi_mc = np.zeros([20,2])
-idx = 0
-for dist in my_sampler.vary.get_values():
-    xi_mc[:, idx] = dist.sample(n_mc)
+for idx, dist in enumerate(sampler.vary.get_values()):
+    xi_mc[:, idx] = dist.sample(N_MC)
     idx += 1
-    
+
 # evaluate the surrogate at these values
-print('Evaluating surrogate model', n_mc, 'times')
-for i in range(n_mc):
+print('Evaluating surrogate model %d times' % (N_MC,))
+for i in range(N_MC):
     ax.plot(x, analysis.surrogate(output_columns[0], xi_mc[i]), 'g')
 print('done')
 
@@ -143,16 +213,14 @@ ax = fig.add_subplot(
     ylabel='Sobol indices',
     title='spatial dist. Sobol indices, Pe only important in viscous regions')
 
-lbl = ['Pe', 'f', 'Pe-f interaction']
-idx = 0
+lbl = ['Pe', 'f']
 
 sobols = results.raw_data['sobols_first'][output_columns[0]]
 
-for S_i in sobols:
-    ax.plot(x, sobols[S_i])
-    idx += 1
+for idx, S_i in enumerate(sobols):
+    ax.plot(x, sobols[S_i], label=lbl[idx])
 
 leg = plt.legend(loc=0)
 leg.set_draggable(True)
-"""
+
 plt.show()
