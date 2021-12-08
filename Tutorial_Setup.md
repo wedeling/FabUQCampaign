@@ -54,7 +54,4 @@ The FabUQCampaign plugin will appear in `~/FabSim3/plugins/FabUQCampaign`.
  Once you have completed these tasks, you can do the advection-diffusion tutorial at:
  
  https://github.com/wedeling/FabUQCampaign/blob/master/README.md
- 
- or the 2D ocean model tutorial at:
- 
- https://github.com/wedeling/FabUQCampaign/blob/master/Tutorial_ocean.md
+
