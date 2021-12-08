@@ -1,9 +1,17 @@
-import chaospy as cp
-import numpy as np
-import easyvvuq as uq
+"""
+Example on how to use FabSim3 inside a Python script to execute a dimension-adaptive
+EasyVVUQ campaign
+"""
+
 import os
-import fabsim3_cmd_api as fab
+import chaospy as cp
+import easyvvuq as uq
 import matplotlib.pyplot as plt
+
+############################################
+# Import the FabSim3 commandline interface #
+############################################
+import fabsim3_cmd_api as fab
 
 plt.close('all')
 
@@ -13,187 +21,256 @@ __license__ = "LGPL"
 HOME = os.path.abspath(os.path.dirname(__file__))
 
 #number of uncertain parameters
-d = 15
+D = 15
 
-#name of the FabSim3 cofig directory which contains the code
-config='ohagan'  #the 15 dimensional test problem of O'Hagan
-#identifier used to store campaign, sampler and analysis objects
-ID = 'test_run'
-#work directory
-work_dir = '/tmp'
+#########
+# FLAGS #
+#########
+
+# home directory
+HOME = os.path.abspath(os.path.dirname(__file__))
+# Work directory, where the easyVVUQ directory will be placed
+WORK_DIR = '/tmp'
+# FabSim3 config name
+CONFIG = 'ohagan'
+# Simulation identifier
+ID = '_test'
+# EasyVVUQ campaign name
+CAMPAIGN_NAME = CONFIG + ID
+# name and relative location of the output file name
+TARGET_FILENAME = './output.csv'
+# location of the EasyVVUQ database
+DB_LOCATION = "sqlite:///" + WORK_DIR + "/campaign%s.db" % ID
+# Use QCG PiltJob or not
+PILOT_JOB = False
+# machine to run ensemble on
+MACHINE = "localhost"
 
 #choose a single QoI
 output_columns = ["f"]
 
 #start a new adaptive campaign or not
-init = True
+INIT = True
 
-if init:
-    
-    # Set up a fresh campaign called "sc"
-    campaign = uq.Campaign(name='adaptive_test', work_dir=work_dir)
+if INIT:
 
-    # Define parameter space
+    ##################################
+    # Define (total) parameter space #
+    ##################################
     params = {}
-    for i in range(15):
+    for i in range(D):
         params["x%d" % (i + 1)] = {"type": "float",
                                    "default": 0.0}
     params["out_file"] = {"type": "string", "default": "output.csv"}
-    output_filename = params["out_file"]["default"]
 
-    # Create an encoder, decoder and collation element
+    ###########################
+    # Set up a fresh campaign #
+    ###########################
+
     encoder = uq.encoders.GenericEncoder(
         template_fname=HOME + '/model/model2.template',
         delimiter='$',
         target_filename='model_in.json')
-    decoder = uq.decoders.SimpleCSV(target_filename=output_filename,
-                                    output_columns=output_columns)#,
-                                    # header=0)
-    # collater = uq.collate.AggregateSamples()
+    
+    # actions for creating the run directories and encoding the input files
+    actions = uq.actions.Actions(
+        uq.actions.CreateRunDirectory(root=WORK_DIR, flatten=True),
+        uq.actions.Encode(encoder),
+    )
 
-    # Add the SC app (automatically set as current app)
-    campaign.add_app(name="sc",
-                        params=params,
-                        encoder=encoder,
-                        decoder=decoder)#,
-                        # collater=collater)
+    # create an EasyVVUQ campaign
+    campaign = uq.Campaign(
+        name=CAMPAIGN_NAME,
+        db_location=DB_LOCATION,
+        work_dir=WORK_DIR
+    )
 
-    #uncertain variables
+    campaign.add_app(
+        name=CAMPAIGN_NAME,
+        params=params,
+        actions=actions
+    )
+
+    #######################
+    # Specify input space #
+    #######################
     vary = {}
-    for i in range(d):
+    for i in range(D):
         vary["x%d" % (i + 1)] = cp.Normal(0, 1)
 
-    #=================================
-    #create dimension-adaptive sampler
-    #=================================
+    #####################################
+    # create dimension-adaptive sampler #
+    #####################################
+
     #sparse = use a sparse grid (required)
     #growth = use a nested quadrature rule (not required)
     #dimension_adaptive = use a dimension adaptive sampler (required)
+
     sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=1,
                                     quadrature_rule="C",
                                     sparse=True, growth=True,
                                     dimension_adaptive=True)
-    
+
     # Associate the sampler with the campaign
     campaign.set_sampler(sampler)
 
-    # Will draw all (of the finite set of samples)
-    campaign.draw_samples()
-    campaign.populate_runs_dir()
+    ###############################
+    # execute the defined actions #
+    ###############################
 
-    ##   Use this instead to run the samples using EasyVVUQ on the localhost
-    # campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
-    #     "./model/model2.py model_in.json"))
+    campaign.execute().collate()
 
     ####################################
     # Ensemble execution using FabSim3 #
     ####################################
 
-    # run the UQ ensemble
-    fab.run_uq_ensemble(config, campaign.campaign_dir, script='ohagan',
-                        machine="localhost", skip=0, PilotJob = False)
+    fab.run_uq_ensemble(CONFIG, campaign.campaign_dir, script='ohagan',
+                        machine=MACHINE, PJ=PILOT_JOB)
 
-    #wait for jobs to complete and check if all output files are retrieved 
-    #from the remote machine
-    fab.verify(config, campaign.campaign_dir, 
-               campaign._active_app_decoder.target_filename, 
-               machine="localhost", PilotJob=False)
+    # wait for job to complete
+    fab.wait(machine=MACHINE)
 
-    #run the UQ ensemble
-    fab.get_uq_samples(config, campaign.campaign_dir, 
-                       number_of_samples = sampler._n_samples,
-                       skip=0,
-                       machine='localhost')
+    # check if all output files are retrieved from the remote machine, returns a Boolean flag
+    all_good = fab.verify(CONFIG, campaign.campaign_dir,
+                          TARGET_FILENAME,
+                          machine=MACHINE)
 
-    ########################################
-    # End ensemble execution using FabSim3 #
-    ########################################
+    if all_good:
+        # copy the results from the FabSim results dir to the EasyVVUQ results dir
+        fab.get_uq_samples(CONFIG, campaign.campaign_dir, sampler.n_samples, machine=MACHINE)
+    else:
+        print("Not all samples executed correctly")
+        import sys
+        sys.exit()
 
-    campaign.collate()
-    data_frame = campaign.get_collation_result()
+    #############################################
+    # All output files are present, decode them #
+    #############################################
+
+    decoder = uq.decoders.SimpleCSV(
+        target_filename=TARGET_FILENAME,
+        output_columns=output_columns)
+
+    actions_decode = uq.actions.Actions(
+        uq.actions.Decode(decoder)
+    )
+    campaign.replace_actions(CAMPAIGN_NAME, actions_decode)
+
+    ###########################
+    # Execute decoding action #
+    ###########################
+
+    campaign.execute().collate()
 
     # Post-processing analysis
     analysis = uq.analysis.SCAnalysis(sampler=sampler, qoi_cols=output_columns)
     campaign.apply_analysis(analysis)
+# reload a previous adaptive campaign to refine it further
 else:
     #reload Campaign, sampler, analysis
-    campaign = uq.Campaign(state_file="covid_easyvvuq_state" + ID + ".json", 
-                           work_dir=work_dir)
-    print('========================================================')
-    print('Reloaded campaign', campaign.campaign_dir.split('/')[-1])
-    print('========================================================')
+    campaign = uq.Campaign(name=CAMPAIGN_NAME, db_location=DB_LOCATION)
+    print("===========================================")
+    print("Reloaded campaign {}".format(CAMPAIGN_NAME))
+    print("===========================================")
     sampler = campaign.get_active_sampler()
     sampler.load_state("covid_sampler_state" + ID + ".pickle")
-    campaign.set_sampler(sampler)
+    campaign.set_sampler(sampler, update=True)
     analysis = uq.analysis.SCAnalysis(sampler=sampler, qoi_cols=output_columns)
     analysis.load_state("covid_analysis_state" + ID + ".pickle")
 
-max_samples = 40
-n_iter = 0
+    # also recreate the actions
+    encoder = uq.encoders.GenericEncoder(
+        template_fname=HOME + '/model/model2.template',
+        delimiter='$',
+        target_filename='model_in.json')
 
-while sampler._n_samples < max_samples:
-    #required parameter in the case of a Fabsim run
+    actions = uq.actions.Actions(
+        uq.actions.CreateRunDirectory(root=WORK_DIR, flatten=True),
+        uq.actions.Encode(encoder),
+    )
+
+    # decoding actions
+    decoder = uq.decoders.SimpleCSV(
+        target_filename=TARGET_FILENAME,
+        output_columns=output_columns)
+
+    actions_decode = uq.actions.Actions(
+        uq.actions.Decode(decoder)
+    )
+
+MAX_SAMPLES = 40
+N_ITER = 0
+
+while sampler.n_samples < MAX_SAMPLES:
+
+    # the number of runs to skip in the FabSim SWEEP directory. Equals the number of
+    # current runs. This prevents FabSim from submitting runs that already are computed.
     skip = sampler.count
 
-    print('Adaptation %d' % (n_iter+1))
-    #look-ahead step (compute the code at admissible forward points)
+    print('Adaptation %d' % (N_ITER + 1))
+
+    ##################################################################
+    # look-ahead step, evaluate the code at new candidate directions #
+    ##################################################################
+
     sampler.look_ahead(analysis.l_norm)
 
-    #proceed as usual
-    campaign.draw_samples()
-    campaign.populate_runs_dir()
+    campaign.replace_actions(CAMPAIGN_NAME, actions)
+    campaign.execute().collate()
 
-    #Use this to submit jobs using the ExecuteLocal subroutine of EasyVVUQ
-    # campaign.apply_for_each_run_dir(uq.actions.ExecuteLocal(
-        # "./model/model2.py model_in.json"))
-        
     ####################################
     # Ensemble execution using FabSim3 #
     ####################################
 
-    # run the UQ ensemble
-    fab.run_uq_ensemble(config, campaign.campaign_dir, script='ohagan',
-                        machine="localhost", skip=skip, PilotJob = False)
+    fab.run_uq_ensemble(CONFIG, campaign.campaign_dir, script='ohagan',
+                        machine=MACHINE, PJ=PILOT_JOB, skip=skip)
 
-    #wait for jobs to complete and check if all output files are retrieved 
-    #from the remote machine
-    fab.verify(config, campaign.campaign_dir, 
-               campaign._active_app_decoder.target_filename, 
-               machine="localhost", PilotJob=False)
+    # wait for job to complete
+    fab.wait(machine=MACHINE)
 
-    #run the UQ ensemble
-    fab.get_uq_samples(config, campaign.campaign_dir, 
-                       number_of_samples=sampler._n_samples,
-                       skip=skip,
-                       machine='localhost')
+    # check if all output files are retrieved from the remote machine, returns a Boolean flag
+    all_good = fab.verify(CONFIG, campaign.campaign_dir,
+                          TARGET_FILENAME,
+                          machine=MACHINE)
 
-    ########################################
-    # End ensemble execution using FabSim3 #
-    ########################################
+    if all_good:
+        # copy the results from the FabSim results dir to the EasyVVUQ results dir
+        fab.get_uq_samples(CONFIG, campaign.campaign_dir, sampler.n_samples, machine=MACHINE)
+    else:
+        print("Not all samples executed correctly")
+        import sys
+        sys.exit()
 
-    campaign.collate()
+    #############################################
+    # All output files are present, decode them #
+    #############################################
 
-    #compute the error at all admissible points, select direction with
-    #highest error and add that direction to the grid
+    campaign.replace_actions(CAMPAIGN_NAME, actions_decode)
+
+    ###########################
+    # Execute decoding action #
+    ###########################
+
+    campaign.execute().collate()
+
+    # get EasyVVUQ data frame
     data_frame = campaign.get_collation_result()
-    analysis.adapt_dimension('f', data_frame, method='surplus')
+
+    analysis.adapt_dimension('f', data_frame, method='var')
 
     #save everything
-    campaign.save_state("covid_easyvvuq_state" + ID + ".json")
+    # campaign.save_state("covid_easyvvuq_state" + ID + ".json")
     sampler.save_state("covid_sampler_state" + ID + ".pickle")
     analysis.save_state("covid_analysis_state" + ID + ".pickle")
 
-    n_iter += 1
+    N_ITER += 1
 
 #proceed as usual with analysis
 campaign.apply_analysis(analysis)
-results = campaign.get_last_analysis()
-
-#mean ohagan 10**6 samples: 8.982735509649913
-#std ohagan 10**6 samples:  7.757486464974213
+results = campaign.get_last_analysis().raw_data
 
 print("======================================")
-print("Number of samples = %d" % sampler._number_of_samples)
+print("Number of samples = %d" % sampler.n_samples)
 print("--------------------------------------")
 print("Computed mean = %.4e" % results['statistical_moments']['f']['mean'])
 print("--------------------------------------")
@@ -202,6 +279,12 @@ print("--------------------------------------")
 print("First-order Sobol indices =", results['sobols_first']['f'])
 print("--------------------------------------")
 
-plt.plot(analysis.get_adaptation_errors())
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(analysis.get_adaptation_errors())
+plt.xlabel('iteration')
+plt.ylabel('refinement error')
+plt.tight_layout()
+
 analysis.plot_stat_convergence()
 analysis.adaptation_table()

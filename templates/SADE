@@ -1,6 +1,0 @@
-cd $job_results
-$run_prefix
-
-/usr/bin/env > env.log
-
-python3 $sade_exec sade_in.csv

@@ -1,6 +1,0 @@
-cd $job_results
-$run_prefix
-
-/usr/bin/env > env.log
-
-python3 $poly_model_exec poly_in.json

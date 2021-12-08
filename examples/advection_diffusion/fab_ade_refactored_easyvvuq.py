@@ -124,7 +124,7 @@ fab.wait(machine=MACHINE)
 # check if all output files are retrieved from the remote machine, returns a Boolean flag
 all_good = fab.verify(CONFIG, campaign.campaign_dir,
                       TARGET_FILENAME,
-                      machine=MACHINE, PJ=PILOT_JOB)
+                      machine=MACHINE)
 
 if all_good:
     # copy the results from the FabSim results dir to the EasyVVUQ results dir
