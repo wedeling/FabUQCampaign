@@ -243,22 +243,43 @@ The `results` dict contains the statistical moments and Sobol sensitivity indice
 
 ### Executing an ensemble job on a remote host
 
-To run the example script on a remote host, the `machine` of the remote host must be passed to `fab.run_uq_ensemble`, e.g.:
-
-```python
- fab.run_uq_ensemble(my_campaign.campaign_dir, script_name='ade', machine='eagle_vecma')
-```
-
-Ensure the host is defined in `machines.yml`, and the user login information and `$ade_exec` in `deploy/machines_user.yml`. For the `eagle_vecma` machine, this will look similar to the following:
+To run the example script on a remote host, a number of changes must be made. Ensure the remote host is defined in `machines.yml` in your FabSim3 home directory, as well as the user login information and `$ade_exec` in `fabsim/deploy/machines_user.yml`. Assuming we'll run the ensemble on the Eagle super computer at the Poznan Supercomputing and Networking Center , the entry in `machines_user.yml` could look similar to the following:
 ```
 eagle_vecma:
- username: "plg<your_username>"
- budget: "vecma2019"
- ade_exec: "/home/plgrid/plg<your_username>/ade_model.py"
+  username: "<your_username>"
+  home_path_template: "/tmp/lustre/<your_username>"
+  budget: "plgvecma2021"
+  ade_exec: "/home/plgrid/<your_username>/ade_model.py"
+  cores: 1
+  # job wall time for each job, format Days-Hours:Minutes:Seconds
+  job_wall_time : "0-0:59:00" # job wall time for each single job without PJ
+  PJ_size : "1" # number of requested nodes for PJ
+  PJ_wall_time : "0-00:59:00" # job wall time for PJ
+  modules:
+    loaded: ["python/3.7.3"] 
+    unloaded: [] 
 ```
+ Here:
+ 
+ * `home_path_template`: the remote root directory for FabSim3, such that for instance the results on the remote machine will be stored in `home_path_template/FabSim3/Results`.
+ * `budget`: the name of the computational budget that you are allowed to use.
+ * `ade_exec`: the equivalent to `ade_exec` defined above, in this case just the advection-diffusion Python solver on the remote host.
+ * `cores`: the number of cores to use *per run*. Our simple advection diffusion solver justs need a single core, but applications which already have some built-in paralellism will require more cores.
+ * `job_wall_time`: a time limit *per run*, and *without* the use of the QCG PilotJob framework.
+ * `PJ_size`: the number of *nodes*, in the case *with* the use of the QCG PilotJob framework. 
+ * `PJ_wall_time`:  a *total* time limit, and *with* the use of the QCG PilotJob framework.
 
 To automatically setup the ssh keys, and prevent having to login manually for every random sample, run the following from the command line:
 
 ```
-fab eagle_vecma setup_ssh_keys
+fabsim eagle_vecma setup_ssh_keys
 ```
+Once the remote machine is properly setup, we can just set:
+
+```python
+# Use QCG PilotJob or not
+PILOT_JOB = False
+# machine to run ensemble on
+MACHINE = "eagle_vecma"
+```
+If you now re-run the example script, the ensemble will execute on the remote host, submitting each run as a separate job. By setting `PILOT_JOB=True`, all runs will be packaged in a single job.
