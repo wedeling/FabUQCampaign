@@ -36,7 +36,7 @@ CAMPAIGN_NAME = CONFIG + ID
 TARGET_FILENAME = './output.csv'
 # location of the EasyVVUQ database
 DB_LOCATION = "sqlite:///" + WORK_DIR + "/campaign%s.db" % ID
-# Use QCG PiltJob or not
+# Use QCG PilotJob or not
 PILOT_JOB = False
 # machine to run ensemble on
 MACHINE = "localhost"
@@ -66,7 +66,7 @@ params = {
 ###########################
 
 encoder = uq.encoders.GenericEncoder(
-    template_fname= HOME + '/sc/ade.template',
+    template_fname= HOME + '/../../config_files/ade/ade_config',
     delimiter='$',
     target_filename='ade_in.json')
 
@@ -102,7 +102,7 @@ vary = {
 
 sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=4)
 
-# Associate the sampler with the campaign #
+# Associate the sampler with the campaign
 campaign.set_sampler(sampler)
 
 ###############################

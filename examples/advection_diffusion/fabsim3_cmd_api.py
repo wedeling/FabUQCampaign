@@ -189,9 +189,6 @@ def verify(config, campaign_dir, target_filename, machine, max_wait=10):
     <target_filename> for each run in the SWEEP directory is present in
     the corresponding FabSim3 results directory.
 
-    Then, it checks for the presence of the output file once more.
-    This cycle repeats for a user-specified maximum number of times.
-
     Parameters
     ----------
     - config (string) : the config ID, i.e. the name in <fab_fome>/config_files/<config>
