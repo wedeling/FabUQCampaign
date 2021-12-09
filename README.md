@@ -138,7 +138,7 @@ To actually execute the `actions`, run
 campaign.execute().collate()
 ```
 
-### FabSim3-Python interface
+#### FabSim3-Python interface
 
 We will use FabSim3 to execute the ensemble. FabSim3 is a commandline tool, but also has a Python interface that is simply a shell over the commandline tools. To import it use
 
@@ -178,26 +178,52 @@ else:
 ```
 Briely:
 
-* `fab.run_uq_ensemble`: this command submits the ensemble to the (remote) host for execution. Under the hood it uses the FabSim3 `campaign2ensemble` subroutine to copy the run directories from `WORK_DIR` to the FabSim3 `SWEEP` directory, located in 
+* `fab.run_uq_ensemble`: this command submits the ensemble to the (remote) host for execution. Under the hood it uses the FabSim3 `campaign2ensemble` subroutine to copy the run directories from `WORK_DIR` to the FabSim3 `SWEEP` directory, located in `config_files/ade/SWEEP`. From there the ensemble will be sent to the (remote) host.
+* `fab.wait`: this will check every minute on the status of the jobs on the remote host, and sleep otherwise, halting further execution of the script. On the localhost this command doesn't do anything.
+* `fab.verify`: this will execute the `verify_last_ensemble` subroutine to see if the output file `target_filename` for each run in the `SWEEP` directory is present in the corresponding FabSim3 results directory. Returns a boolean flag. `fab.verify` will also call the FabSim `fetch_results` method, which actually retreives the results from the (remote) host. So, if you want to just get the results without verifying the presence of output files, call `fab.fetch_results(machine=MACHINE)` instead. However, if something went wrong on the (remote) host, this will cause an error later on since not all required output files will be transfered on the EasyVVUQ `WORK_DIR`.
+* `fab.get_uq_samples`: copies the samples from the (local) FabSim results directory to the (local) EasyVVUQ campaign directory. It will not delete the results from the FabSim results directory. If you want to save space, you can delete the results on the FabSim side (see `results` directory in your FabSim home directory). You can also call `fab.clear_results(machine, name_results_dir)` to remove a specific FabSim results directory on a given machine.
 
-Here `script` refers to the `templates/ade` file. Futhermore, `fab` is a simple FabSim API located in the same directory as the example script. It allows us to run FabSim commands from within a Python environment. Besides submitting the ensemble, `fab` is also used to retrieve the results when the job execution has completed:
+#### Error handling
+
+If `all_good == False` something went wrong on the (remote) host, and `sys.exit()` is called, giving you the opportunity of investigating what went wrong. It can happen that a (small) number of jobs did not get executed on the remote host for some reason, whereas (most) jobs did execute succesfully. In this case simply resubmitting the failed jobs could be an option:
 
 ```python
-#fetch the results from the (remote) machine
-fab.fetch_results()
-
-#copy the samples back to EasyVVUQ dir
-fab.get_uq_samples('ade', my_campaign.campaign_dir, my_sampler._number_of_samples,
-                   machine='localhost')
+fab.remove_succesful_runs(CONFIG, campaign.campaign_dir)
+fab.resubmit_previous_ensemble(CONFIG, 'ade')
 ```
 
-Afterwards, post-processing tasks in EasyVVUQ continues in the normal fashion via:
+The first command removes all succesful run directories from the `SWEEP` dir for which the output file `TARGET_FILENAME` has been found. For this to work, `fab.verify` must have been called. Then, `fab.resubmit_previous_ensemble` simply resubmits the runs that are present in the `SWEEP` directory, which by now only contains the failed runs. After the jobs have finished, call `fab.verify` again to see if now `TARGET_FILENAME` is present in the results directory, for every run in the `SWEEP` dir.
+
+#### Decoding
+
+Once we are sure we have all required output files, the role of FabSim is over, and we proceed with decoding the output file using EasyVVUQ. In this case the output file is just a simple CSV file that contains the 1D `u` velocity profile:
+
 ```python
-    sc_analysis = uq.analysis.SCAnalysis(sampler=my_sampler, qoi_cols=output_columns)
-    my_campaign.apply_analysis(sc_analysis)
-    results = my_campaign.get_last_analysis()
+#############################################
+# All output files are present, decode them #
+#############################################
+
+output_columns = ["u"]
+decoder = uq.decoders.SimpleCSV(
+    target_filename=TARGET_FILENAME,
+    output_columns=output_columns)
+
+actions = uq.actions.Actions(
+    uq.actions.Decode(decoder)
+)
+campaign.replace_actions(CAMPAIGN_NAME, actions)
+
+###########################
+# Execute decoding action #
+###########################
+
+campaign.execute().collate()
+
+# get EasyVVUQ data frame
+data_frame = campaign.get_collation_result()
 ```
-7. (continued) The `results` dict contains the first 2 statistical moments and Sobol indices for every quantity of interest defined in `output_columns`. If the PCE sampler was used, `SCAnalysis` should be replaced with `PCEAnalysis`.
+
+The end result is a `data_frame` which we can use for post processing.
 
 ### Executing an ensemble job on a remote host
 
