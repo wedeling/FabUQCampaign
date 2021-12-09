@@ -1,5 +1,5 @@
 # FabUQCampaign
-This tutorial runs Advection Diffusion Equation (ADE) samples from a (local) [EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) campaign using [FabSim3](https://github.com/djgroen/FabSim3) via the `campaign2ensemble` subroutine. Jobs can be executed locally or be sent to an HPC resource:
+This tutorial runs Advection Diffusion Equation (ADE) samples from a (local) [EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) campaign using [FabSim3](https://github.com/djgroen/FabSim3). Jobs can be executed locally or be sent to an HPC resource:
 
 ![](FabUQMap.png)
 
@@ -224,6 +224,19 @@ data_frame = campaign.get_collation_result()
 ```
 
 The end result is a `data_frame` which we can use for post processing.
+
+#### Post processing
+
+```python
+############################
+# Post-processing analysis #
+############################
+
+analysis = uq.analysis.SCAnalysis(sampler=sampler, qoi_cols=["u"])
+results = analysis.analyse(data_frame=data_frame)
+```
+
+The `results` dict contains the statistical moments and Sobol sensitivity indices. You can also use the SC expansion as a cheap surrogate model for the original code. Some results are shown below, and we refer to the script in `examples/advection_diffusion/` to see how these can be obtained.
 
 ### Executing an ensemble job on a remote host
 
