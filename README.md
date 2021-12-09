@@ -1,5 +1,5 @@
 # FabUQCampaign
-This tutorial runs Advection Diffusion Equation (ADE) samples from a (local) ![EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) campaign using ![FabSim3](https://github.com/djgroen/FabSim3) via the `campaign2ensemble` subroutine. Jobs can be executed locally or be sent to an HPC resource:
+This tutorial runs Advection Diffusion Equation (ADE) samples from a (local) [EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) campaign using [FabSim3](https://github.com/djgroen/FabSim3) via the `campaign2ensemble` subroutine. Jobs can be executed locally or be sent to an HPC resource:
 
 ![](FabUQMap.png)
 
@@ -62,69 +62,82 @@ Most of these are self explanatory. Here, `CONFIG` is the name of the script tha
 Next we define the parameter space of the advection diffusion equation, which consists of the uncertain parameters Pe and f, plus the name of the output file of `ade_model.py`:
  
 ```python
-    params = {
-        "Pe": {
-            "type": "real",
-            "min": "1.0",
-            "max": "2000.0",
-            "default": "100.0"},
-        "f": {
-            "type": "real",
-            "min": "0.0",
-            "max": "10.0",
-            "default": "1.0"},
-        "out_file": {
-            "type": "str",
-            "default": "output.csv"}}
+params = {
+    "Pe": {
+        "type": "real",
+        "min": "1.0",
+        "max": "2000.0",
+        "default": "100.0"},
+    "f": {
+        "type": "real",
+        "min": "0.0",
+        "max": "10.0",
+        "default": "1.0"},
+    "out_file": {
+        "type": "str",
+        "default": "output.csv"}}
 ```
 The `params` dict corresponds to the EasyVVUQ input template file `examples/advection_diffusion/sc/ade.template`, which defines the input of a single model run. The content of this file is as follows:
 ```
 {"outfile": "$out_file", "Pe": "$Pe", "f": "$f"}
 ```
-More complex models will have more elaborate input files, but the concept remains the same. Replace the hardcoded value with a flag $param, and EasyVVUQ will replace the flag with a values drawn from the input distribution. To select which paramaters of `params` are assigned a Chaospy input distribution, and add these paramaters to the `vary` dict, e.g.:
+More complex models will have more elaborate input files, but the concept remains the same. Replace the hardcoded value with a flag `$param`, and EasyVVUQ will replace the flag with a values drawn from the input distribution. To select which parameters of `params` are assigned a [Chaospy](https://chaospy.readthedocs.io/en/master/) input distribution, add these parameters to the `vary` dict, e.g.:
 
 ```python
-    vary = {
-        "Pe": cp.Uniform(100.0, 200.0),
-        "f": cp.Normal(1.0, 0.1)
-    }
+vary = {
+    "Pe": cp.Uniform(100.0, 200.0),
+    "f": cp.Normal(1.0, 0.1)
+}
 ```
-Here we assigned a distribtuion to both inputs. If we had assign an input to only `Pe` for example, the `$f` flag in the input file would have to given the `default` value defined in the `params` dict.
+Here we assigned a distribtuion to both inputs. If we had assigned a distribution to only `Pe` for example, the `$f` flag in the input file will be replaced by the `default` value defined in the `params` dict.
 
-Create an encoder and decoder element. The encoder links the input template file `examples/advection_diffusion/sc/ade.template` to the EasyVVUQ encoder, and defines the name of the input file (`ade_in.json`). The ade model `examples/advection_diffusion/sc/ade_model.py` writes the velocity output (`u`) to a simple `.csv` file, hence we select the `SimpleCSV` decoder:
+We now create an `actions` object that will create the run directories for each individual sample, and which will populate the input files with values using the `GenericEncoder`. An EasyVVUQ Campaign is then created, which is the overarching object that will link the database, sampler and analysis objects, see the EasyVVUQ tutorials for [more information](https://github.com/UCL-CCS/EasyVVUQ).
+
 ```python
-    encoder = uq.encoders.GenericEncoder(
-        template_fname=HOME + '/model/model2.template',
-        delimiter='$',
-        target_filename='model_in.json')
-    
-    # actions for creating the run directories and encoding the input files
-    actions = uq.actions.Actions(
-        uq.actions.CreateRunDirectory(root=WORK_DIR, flatten=True),
-        uq.actions.Encode(encoder),
-    )
 
-    # create an EasyVVUQ campaign
-    campaign = uq.Campaign(
-        name=CAMPAIGN_NAME,
-        db_location=DB_LOCATION,
-        work_dir=WORK_DIR
-    )
+encoder = uq.encoders.GenericEncoder(
+    template_fname=HOME + '/model/model2.template',
+    delimiter='$',
+    target_filename='model_in.json')
 
-    campaign.add_app(
-        name=CAMPAIGN_NAME,
-        params=params,
-        actions=actions
-    )
+# actions for creating the run directories and encoding the input files
+actions = uq.actions.Actions(
+    uq.actions.CreateRunDirectory(root=WORK_DIR, flatten=True),
+    uq.actions.Encode(encoder),
+)
+
+# create an EasyVVUQ campaign
+campaign = uq.Campaign(
+    name=CAMPAIGN_NAME,
+    db_location=DB_LOCATION,
+    work_dir=WORK_DIR
+)
+
+campaign.add_app(
+    name=CAMPAIGN_NAME,
+    params=params,
+    actions=actions
+)
 ```
  
- Now we have to select a sampler, in this case we use the SC sampler:
+ Now we have to select a sampler, in this case we use the Stochastic Collocation (SC) sampler:
+ 
  ```python
-     my_sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=3)
-     my_campaign.set_sampler(my_sampler)
+sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=4)
+
+# Associate the sampler with the campaign
+campaign.set_sampler(sampler)
  ```
- 
+
 If left unspecified, the polynomial order of the SC expansion will be set to 4. If instead we wish te use a Polynomial Chaos Expansion (PCE) sampler, simply replace `SCSampler` with `PCESampler`.
+
+To actually execute the `actions`, run
+
+```python 
+campaign.execute().collate()
+```
+
+### FabSim3 Python interface
  
  The following commands ensure that we draw all samples, and create the ensemble run directories which will be used in FabSim's `campaign2ensemble` subroutine:
  ```python 
