@@ -236,7 +236,10 @@ analysis = uq.analysis.SCAnalysis(sampler=sampler, qoi_cols=["u"])
 results = analysis.analyse(data_frame=data_frame)
 ```
 
-The `results` dict contains the statistical moments and Sobol sensitivity indices. You can also use the SC expansion as a cheap surrogate model for the original code. Some results are shown below, and we refer to the script in `examples/advection_diffusion/` to see how these can be obtained.
+The `results` dict contains the statistical moments and Sobol sensitivity indices. You can also use the SC expansion as a cheap surrogate model for the original code. Some results are shown below, and we refer to the script in `examples/advection_diffusion/` to see how these can be obtained. Note that the Sobol sensitivity indices have a spatial component as well, and that the Pectlet number `Pe` is only important in the boundary layer near `x=1`.
+
+![alt text](./examples/advection_diffusion/mom.png "statistical moments and surrogate samples")
+![alt text](./examples/advection_diffusion/sobol.png "Sobol sensitivity indices")
 
 ### Executing an ensemble job on a remote host
 
