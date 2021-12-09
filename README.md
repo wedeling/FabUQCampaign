@@ -1,5 +1,5 @@
 # FabUQCampaign
-This tutorial runs Advection Diffusion Equation (ADE) samples from a (local) [EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) campaign using [FabSim3](https://github.com/djgroen/FabSim3). Jobs can be executed locally or be sent to an HPC resource:
+This tutorial execute Advection Diffusion Equation (ADE) samples from a [EasyVVUQ](https://github.com/UCL-CCS/EasyVVUQ) campaign using [FabSim3](https://github.com/djgroen/FabSim3). Jobs can be executed locally or be sent to an HPC resource:
 
 ![](FabUQMap.png)
 
@@ -12,7 +12,7 @@ To install all dependencies, first follow the instructions in https://github.com
 
 + `FabUQCampaign/examples/advection_diffusion/*`: an example script, applying EasyVVUQ to a 1D advection diffusion equation. See the Detailed Example section below.
 
-+ `FabUQCampaign/templates/ade`: contains the command-line instruction to draw a single EasyVVUQ sample of the advection diffusion equation.
++ `FabUQCampaign/templates/ade`: contains the command-line instruction to run the advection diffusion equation Python script.
 
 + `FabUQCampaign/config_files/ade`: in this example this directory only contains the input configuration file for the ADE solver (`ade_config`, described below). In more complex models, this directory contains any (configuration) file that you need to run your model. The contents of this directory will get copied to each ensemble run directory. FabSim will automatically create the `SWEEP` directory here as well, which is the directory containing these various run directories.
 
@@ -34,7 +34,9 @@ The advection-diffusion equation is given by:
 
 where the Peclet Number (Pe) and constant external forcing term (f) are the uncertain Stochastic Collocation (SC) parameters, and u is the velocity subject to Dirichlet boundary conditions u(0)=u(1)=0. The script executes the ensemble using FabSim, computes the first two moments of the output, generates some random sample of the SC surrogate and computes the Sobol indices of Pe and f.
 
-The file `examples/advection_diffusion/sc/ade_model.py` contains the finite-element solver which receives the values of Pe and f.  Most steps are exactly the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs. Here we'll outline the main step. Again, the full script can be found in the `FabUQCampaign/examples/advection_diffusion` directory.
+**Note**: Instead of a standard SC campaign, a dimension-adaptive SC example is also available, see `FabUQCampaign/examples/dimension_adaptive_example`. This samples a simple analytic function with 15 input parameters. As the main point here is to demonstate the use of FabSim3 inside an EasyVVUQ Python script, we'll continue with our 2D advection diffusion model.
+
+The file `examples/advection_diffusion/sc/ade_model.py` contains the finite-element solver which receives the values of Pe and f.  Most steps are exactly the same as for an EasyVVUQ campaign that does not use FabSim to execute the runs. Here we'll outline the main steps. Again, the full script can be found in the `FabUQCampaign/examples/advection_diffusion` directory.
 
 We first define a couple of (constant) flags:
 
@@ -83,7 +85,7 @@ The `params` dict corresponds to the EasyVVUQ input config file `config_files/ad
 ```
 {"outfile": "$out_file", "Pe": "$Pe", "f": "$f"}
 ```
-More complex models will have more elaborate input files, but the concept remains the same. Replace the hardcoded value with a flag `$param`, and EasyVVUQ will replace the flag with a values drawn from the input distribution. To select which parameters of `params` are assigned a [Chaospy](https://chaospy.readthedocs.io/en/master/) input distribution, add these parameters to the `vary` dict, e.g.:
+More complex models will have more elaborate input files, but the concept remains the same. Replace the hardcoded value with a flag `$param`, and EasyVVUQ will replace the flag with a value drawn from the input distribution. To select which parameters of `params` are assigned a [Chaospy](https://chaospy.readthedocs.io/en/master/) input distribution, add these parameters to the `vary` dict, e.g.:
 
 ```python
 vary = {
@@ -185,7 +187,7 @@ Briely:
 
 #### Error handling
 
-If `all_good == False` something went wrong on the (remote) host, and `sys.exit()` is called, giving you the opportunity of investigating what went wrong. It can happen that a (small) number of jobs did not get executed on the remote host for some reason, whereas (most) jobs did execute succesfully. In this case simply resubmitting the failed jobs could be an option:
+If `all_good == False` something went wrong on the (remote) host, and `sys.exit()` is called in our example, giving you the opportunity of investigating what went wrong. It can happen that a (small) number of jobs did not get executed on the remote host for some reason, whereas (most) jobs did execute succesfully. In this case simply resubmitting the failed jobs could be an option:
 
 ```python
 fab.remove_succesful_runs(CONFIG, campaign.campaign_dir)
@@ -196,7 +198,7 @@ The first command removes all succesful run directories from the `SWEEP` dir for
 
 #### Decoding
 
-Once we are sure we have all required output files, the role of FabSim is over, and we proceed with decoding the output file using EasyVVUQ. In this case the output file is just a simple CSV file that contains the 1D `u` velocity profile:
+Once we are sure we have all required output files, the role of FabSim is over, and we proceed with decoding the output files using EasyVVUQ. In this case the output file is just a simple CSV file that contains the 1D `u` velocity profile:
 
 ```python
 #############################################
@@ -261,7 +263,7 @@ eagle_vecma:
 ```
  Here:
  
- * `home_path_template`: the remote root directory for FabSim3, such that for instance the results on the remote machine will be stored in `home_path_template/FabSim3/Results`.
+ * `home_path_template`: the remote root directory for FabSim3, such that for instance the results on the remote machine will be stored in `home_path_template/FabSim3/results`.
  * `budget`: the name of the computational budget that you are allowed to use.
  * `ade_exec`: the equivalent to `ade_exec` defined above, in this case just the advection-diffusion Python solver on the remote host.
  * `cores`: the number of cores to use *per run*. Our simple advection diffusion solver justs need a single core, but applications which already have some built-in paralellism will require more cores.
