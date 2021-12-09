@@ -14,7 +14,7 @@ To install all dependencies, first follow the instructions in https://github.com
 
 + `FabUQCampaign/templates/ade`: contains the command-line instruction to draw a single EasyVVUQ sample of the advection diffusion equation.
 
-+ `FabUQCampaign/config_files/ade`: in this example this directory only contains the input configuration file for the ADE solver (described below). In more complex models, this directory contains any (configuration) file that you need to run your model. The contents of this directory will get copied to each ensemble run.
++ `FabUQCampaign/config_files/ade`: in this example this directory only contains the input configuration file for the ADE solver (`ade_config`, described below). In more complex models, this directory contains any (configuration) file that you need to run your model. The contents of this directory will get copied to each ensemble run directory. FabSim will automatically create the `SWEEP` directory here as well, which is the directory containing these various run directories.
 
 ## Detailed Example
 
@@ -79,7 +79,7 @@ params = {
         "type": "str",
         "default": "output.csv"}}
 ```
-The `params` dict corresponds to the EasyVVUQ input template file `config_files/ade/ade.template`, which defines the input of a single model run. The content of this file is as follows:
+The `params` dict corresponds to the EasyVVUQ input config file `config_files/ade/ade_config`, which defines the input of a single model run. The content of this file is as follows:
 ```
 {"outfile": "$out_file", "Pe": "$Pe", "f": "$f"}
 ```
@@ -99,7 +99,7 @@ We now create an `actions` object that will create the run directories for each 
 
 encoder = uq.encoders.GenericEncoder(
     #the input file template is located in the FaubUQCampaign config_files folder
-    template_fname= HOME + '/../../config_files/ade/ade.template',
+    template_fname= HOME + '/../../config_files/ade/ade_config',
     delimiter='$',
     target_filename='ade_in.json')
 
