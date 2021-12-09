@@ -14,6 +14,8 @@ To install all dependencies, first follow the instructions in https://github.com
 
 + `FabUQCampaign/templates/ade`: contains the command-line instruction to draw a single EasyVVUQ sample of the advection diffusion equation.
 
++ `FabUQCampaign/config_files/ade`: in this example this directory only contains the input configuration file for the ADE solver (described below). In more complex models, this directory contains any (configuration) file that you need to run your model. The contents of this directory will get copied to each ensemble run.
+
 ## Detailed Example
 
 ### Inputs
@@ -77,7 +79,7 @@ params = {
         "type": "str",
         "default": "output.csv"}}
 ```
-The `params` dict corresponds to the EasyVVUQ input template file `examples/advection_diffusion/sc/ade.template`, which defines the input of a single model run. The content of this file is as follows:
+The `params` dict corresponds to the EasyVVUQ input template file `config_files/ade/ade.template`, which defines the input of a single model run. The content of this file is as follows:
 ```
 {"outfile": "$out_file", "Pe": "$Pe", "f": "$f"}
 ```
@@ -96,17 +98,16 @@ We now create an `actions` object that will create the run directories for each 
 ```python
 
 encoder = uq.encoders.GenericEncoder(
-    template_fname=HOME + '/model/model2.template',
+    #the input file template is located in the FaubUQCampaign config_files folder
+    template_fname= HOME + '/../../config_files/ade/ade.template',
     delimiter='$',
-    target_filename='model_in.json')
+    target_filename='ade_in.json')
 
-# actions for creating the run directories and encoding the input files
 actions = uq.actions.Actions(
     uq.actions.CreateRunDirectory(root=WORK_DIR, flatten=True),
     uq.actions.Encode(encoder),
 )
 
-# create an EasyVVUQ campaign
 campaign = uq.Campaign(
     name=CAMPAIGN_NAME,
     db_location=DB_LOCATION,
@@ -137,19 +138,48 @@ To actually execute the `actions`, run
 campaign.execute().collate()
 ```
 
-### FabSim3 Python interface
- 
- The following commands ensure that we draw all samples, and create the ensemble run directories which will be used in FabSim's `campaign2ensemble` subroutine:
- ```python 
-     my_campaign.draw_samples()
-     my_campaign.populate_runs_dir()
- ```
+### FabSim3-Python interface
 
-The only part of the code that changes compared to a EasyVVUQ campaign without FabSim is the job execution, and the retrieval of the results. We use FabSim to run the ensemble via:
+We will use FabSim3 to execute the ensemble. FabSim3 is a commandline tool, but also has a Python interface that is simply a shell over the commandline tools. To import it use
+
+```python
+############################################
+# Import the FabSim3 commandline interface #
+############################################
+import fabsim3_cmd_api as fab
+```
+
+To run the ensemble use
  
  ```python
- fab.run_uq_ensemble('ade', my_campaign.campaign_dir, script='ade')
- ```
+###############################################
+# run the UQ ensemble using FabSim3 interface #
+###############################################
+
+fab.run_uq_ensemble(CONFIG, campaign.campaign_dir, script='ade',
+                    machine=MACHINE, PJ=PILOT_JOB)
+
+# wait for job to complete
+fab.wait(machine=MACHINE)
+
+# check if all output files are retrieved from the remote machine, returns a Boolean flag
+all_good = fab.verify(CONFIG, campaign.campaign_dir,
+                      TARGET_FILENAME,
+                      machine=MACHINE)
+
+if all_good:
+    # copy the results from the FabSim results dir to the EasyVVUQ results dir
+    fab.get_uq_samples(CONFIG, campaign.campaign_dir, sampler.n_samples, machine=MACHINE)
+else:
+    print("Not all samples executed correctly")
+    import sys
+    sys.exit()
+
+```
+Briely:
+
+* `fab.run_uq_ensemble`: this command submits the ensemble to the (remote) host for execution. Under the hood it uses the FabSim3 `campaign2ensemble` subroutine to copy the run directories from `WORK_DIR` to the FabSim3 `SWEEP` directory, located in 
+
 Here `script` refers to the `templates/ade` file. Futhermore, `fab` is a simple FabSim API located in the same directory as the example script. It allows us to run FabSim commands from within a Python environment. Besides submitting the ensemble, `fab` is also used to retrieve the results when the job execution has completed:
 
 ```python
