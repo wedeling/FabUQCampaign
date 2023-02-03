@@ -39,8 +39,6 @@ ID = '_test'
 CAMPAIGN_NAME = CONFIG + ID
 # name and relative location of the output file name
 TARGET_FILENAME = './output.csv'
-# location of the EasyVVUQ database
-DB_LOCATION = "sqlite:///" + WORK_DIR + "/campaign%s.db" % ID
 # Use QCG PiltJob or not
 PILOT_JOB = False
 # machine to run ensemble on
@@ -81,7 +79,6 @@ if INIT:
     # create an EasyVVUQ campaign
     campaign = uq.Campaign(
         name=CAMPAIGN_NAME,
-        db_location=DB_LOCATION,
         work_dir=WORK_DIR
     )
 
@@ -168,15 +165,16 @@ if INIT:
 # reload a previous adaptive campaign to refine it further
 else:
     #reload Campaign, sampler, analysis
+    DB_LOCATION = "sqlite:////tmp/ohagan_test2blvg2im/campaign.db" # change this to correct database file
     campaign = uq.Campaign(name=CAMPAIGN_NAME, db_location=DB_LOCATION)
     print("===========================================")
     print("Reloaded campaign {}".format(CAMPAIGN_NAME))
     print("===========================================")
     sampler = campaign.get_active_sampler()
-    sampler.load_state("covid_sampler_state" + ID + ".pickle")
+    sampler.load_state("sampler_state" + ID + ".pickle")
     campaign.set_sampler(sampler, update=True)
     analysis = uq.analysis.SCAnalysis(sampler=sampler, qoi_cols=output_columns)
-    analysis.load_state("covid_analysis_state" + ID + ".pickle")
+    analysis.load_state("analysis_state" + ID + ".pickle")
 
     # also recreate the actions
     encoder = uq.encoders.GenericEncoder(
@@ -259,9 +257,8 @@ while sampler.n_samples < MAX_SAMPLES:
     analysis.adapt_dimension('f', data_frame, method='var')
 
     #save everything
-    # campaign.save_state("covid_easyvvuq_state" + ID + ".json")
-    sampler.save_state("covid_sampler_state" + ID + ".pickle")
-    analysis.save_state("covid_analysis_state" + ID + ".pickle")
+    sampler.save_state("sampler_state" + ID + ".pickle")
+    analysis.save_state("analysis_state" + ID + ".pickle")
 
     N_ITER += 1
 

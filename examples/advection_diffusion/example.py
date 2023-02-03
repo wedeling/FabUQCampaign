@@ -37,9 +37,9 @@ TARGET_FILENAME = './output.csv'
 # location of the EasyVVUQ database
 DB_LOCATION = "sqlite:///" + WORK_DIR + "/campaign%s.db" % ID
 # Use QCG PilotJob or not
-PILOT_JOB = True
+PILOT_JOB = False
 # machine to run ensemble on
-MACHINE = "eagle_vecma"
+MACHINE = "localhost"
 
 ##################################
 # Define (total) parameter space #
@@ -77,8 +77,7 @@ actions = uq.actions.Actions(
 
 campaign = uq.Campaign(
     name=CAMPAIGN_NAME,
-    db_location=DB_LOCATION,
-    work_dir=WORK_DIR
+    work_dir=WORK_DIR,
 )
 
 campaign.add_app(
@@ -100,7 +99,7 @@ vary = {
 # Select sampler #
 ##################
 
-sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=4)
+sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=2)
 
 # Associate the sampler with the campaign
 campaign.set_sampler(sampler)
@@ -144,7 +143,7 @@ decoder = uq.decoders.SimpleCSV(
     output_columns=output_columns)
 
 actions = uq.actions.Actions(
-    uq.actions.Decode(decoder)
+    uq.actions.Decode(decoder),
 )
 campaign.replace_actions(CAMPAIGN_NAME, actions)
 

@@ -117,6 +117,6 @@ np.savetxt(output_filename, u,
            header=header)
 
 header = '2u'
-np.savetxt('output2.csv', 2*u,
+np.savetxt('output2.csv', 2*u[0:10],
            delimiter=",", comments='',
            header=header)

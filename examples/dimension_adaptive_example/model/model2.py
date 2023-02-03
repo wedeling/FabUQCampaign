@@ -47,7 +47,7 @@ for i in range(d):
     theta.append(float(inputs['x' + str(i + 1)]))
 theta = np.array(theta).reshape([d, 1])
 
-# print(theta.T)
+print(theta.T)
 
 result = ohagan(theta)[0]
 

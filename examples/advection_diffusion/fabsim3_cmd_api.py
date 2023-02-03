@@ -33,6 +33,7 @@ def fabsim(command, arguments, machine = 'localhost'):
     -------
     None
     """
+    print("================================")
     if arguments == "" or arguments is None:
         print('Executing', "fabsim {} {}".format(machine, command))
         os.system("fabsim {} {}".format(machine, command))
