@@ -34,11 +34,17 @@ def fabsim(command, arguments, machine = 'localhost'):
     None
     """
     if arguments == "" or arguments is None:
-        print('Executing', "fabsim {} {}".format(machine, command))
-        os.system("fabsim {} {}".format(machine, command))
+        cmd = "fabsim {} {}".format(machine, command)
+        print('Executing', cmd)
+        # os.system("fabsim {} {}".format(machine, command))
+        # os.popen also works in Jupyter notebooks, os.system hangs
+        os.popen(cmd).read()
     else:
-        print('Executing', "fabsim {} {}:{}".format(machine, command, arguments))
-        os.system("fabsim {} {}:{}".format(machine, command, arguments))
+        cmd = "fabsim {} {}:{}".format(machine, command, arguments)
+        print('Executing', cmd)
+        # os.system("fabsim {} {}:{}".format(machine, command, arguments))
+
+        os.popen(cmd).read()
 
 def fetch_results(machine='localhost'):
     """
@@ -95,6 +101,9 @@ def wait(machine='localhost', sleep=1):
     finished (boolean) : if False, something went wrong
 
     """
+    if machine == 'localhost': return True
+
+    #TODO: this must be modified with the new FabSim3 output   
     #number of header lines in fab <machine> stat
     header = 2
     finished = False

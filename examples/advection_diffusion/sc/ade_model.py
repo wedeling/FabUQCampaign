@@ -4,6 +4,7 @@ import json
 import sys
 import numpy as np
 import math
+import h5py 
 
 #Author: Wouter Edeling
 
@@ -116,7 +117,9 @@ np.savetxt(output_filename, u,
            delimiter=",", comments='',
            header=header)
 
-header = '2u'
-np.savetxt('output2.csv', 2*u[0:10],
-           delimiter=",", comments='',
-           header=header)
+# output hdf5 file
+header = 'u'
+with open('output.hdf5', 'wb') as file:
+    h5f = h5py.File(file, 'w')
+    h5f.create_dataset(header, data=u)
+    h5f.close()

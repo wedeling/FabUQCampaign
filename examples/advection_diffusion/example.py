@@ -33,7 +33,7 @@ ID = '_test'
 # EasyVVUQ campaign name
 CAMPAIGN_NAME = CONFIG + ID
 # name and relative location of the output file name
-TARGET_FILENAME = './output.csv'
+TARGET_FILENAME = './output.hdf5'
 # location of the EasyVVUQ database
 DB_LOCATION = "sqlite:///" + WORK_DIR + "/campaign%s.db" % ID
 # Use QCG PilotJob or not
@@ -138,7 +138,11 @@ else:
 #############################################
 
 output_columns = ["u"]
-decoder = uq.decoders.SimpleCSV(
+# decoder = uq.decoders.SimpleCSV(
+#     target_filename=TARGET_FILENAME,
+#     output_columns=output_columns)
+
+decoder = uq.decoders.HDF5(
     target_filename=TARGET_FILENAME,
     output_columns=output_columns)
 
