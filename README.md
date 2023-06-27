@@ -10,7 +10,7 @@ To install all dependencies, first follow the instructions in https://github.com
 
 + The `FabUQCampaign` directory contains all files listed below. This directory is located at `<fab_home>/plugins/FabUQCampaign`, where `<fab_home>` is your FabSim3 home directory.
 
-+ `FabUQCampaign/examples/advection_diffusion/*`: an example script, applying EasyVVUQ to a 1D advection diffusion equation. See the Detailed Example section below.
++ `FabUQCampaign/examples/advection_diffusion/*`: an example script, applying EasyVVUQ to a 1D advection diffusion equation. See the Detailed Example section below. The `example.py` file contains the full script, i.e. job executing and post processing combined. Alternatively, separate job executing and post processing script are available (`example_job_exec_only.py` and `example_post_proc_only.py`).
 
 + `FabUQCampaign/templates/ade`: contains the command-line instruction to run the advection diffusion equation Python script.
 
