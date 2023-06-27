@@ -40,11 +40,13 @@ TARGET_FILENAME = './output.hdf5'
 # Use QCG PilotJob or not
 PILOT_JOB = False
 # machine to run ensemble on
-MACHINE = "archer2"
+MACHINE = "localhost"
 
+# =============================================================================
 # IMPORTANT: SPECIFY THE FULL NAME OF THE EASYVVUQ CAMPAIGN DIRECTORY,
 # YOU WILL NEED TO CHANGE THE VALUE BELOW
-CAMPAIGN_DIRNAME = 'ade_testcf_q_kn6'
+CAMPAIGN_DIRNAME = 'ade_testaglupw82'
+# =============================================================================
 
 # location of the EasyVVUQ database
 DB_LOCATION = "sqlite:///%s/%s/campaign.db" % (WORK_DIR, CAMPAIGN_DIRNAME)

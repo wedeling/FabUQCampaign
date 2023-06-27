@@ -42,7 +42,7 @@ DB_LOCATION = "sqlite:///" + WORK_DIR + "/campaign%s.db" % ID
 # Use QCG PilotJob or not
 PILOT_JOB = False
 # machine to run ensemble on
-MACHINE = "archer2"
+MACHINE = "localhost"
 
 ##################################
 # Define (total) parameter space #
