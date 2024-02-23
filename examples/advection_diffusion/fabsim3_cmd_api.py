@@ -192,7 +192,7 @@ def verify_last_ensemble(config, campaign_dir, target_filename, machine):
         all_good = bool(int(file.read()))
     return all_good
 
-def verify(config, campaign_dir, target_filename, machine, wait=True, max_wait=10):
+def verify(config, campaign_dir, target_filename, machine, max_wait=10):
     """
     This will execute the verify_last_ensemble subroutine to see if the output file
     <target_filename> for each run in the SWEEP directory is present in
@@ -206,9 +206,6 @@ def verify(config, campaign_dir, target_filename, machine, wait=True, max_wait=1
       (strored in campaign._active_decoder.target_filename)
     - machine (string) : the name of the remote machine as indicated in
       machines_user.yml
-    - wait (boolean) : wait for jobs to complete
-    - max_wait (int) : sometimes the wait subroutine fails, e.g. due to some
-      ssh connection issue, retry max_wait times at most
 
     Returns
     -------
@@ -216,12 +213,8 @@ def verify(config, campaign_dir, target_filename, machine, wait=True, max_wait=1
 
     """
 
-    if wait: 
-        # wait for all jobs to finish
-        finished = wait(machine=machine)
-    else:
-        # assume jobs are finished
-        finished = True
+    #wait for all jobs to finish
+    finished = wait(machine=machine)
 
     #sometimes the wait subroutine fails, e.g. due to some ssh connection issue,
     #retry max_wait times at most
