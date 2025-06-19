@@ -1,0 +1,94 @@
+#LAMMPS code written by LA van Goor 05-09-2024 for graphene sheet between copper blocks to obtain TBC following the NEMD method as described by Zhu et al. (2022), Materials 2022, 15, 7588. https://doi.org/10.3390/ma15217588
+
+# Initialize 
+units metal
+dimension 3
+boundary p p f
+atom_style atomic
+
+# Create Simulation Box
+region box block 0 46.9 0 46.9 0 114.4 # Define simulation box size
+create_box 2 box  # Create box with 2 atom types
+
+# Define Regions Coopper/Graphene
+region left_block block 0 46.9 0 46.9 0 54.2  # Left Copper Block 
+region empty block 0 46.9 0 46.9 54.2 55.7    # Empty
+region graphene block 0 46.9 0 46.9 55.7 56.0   # Graphene (between the copper blocks)
+region empty2 block 0 46.9 0 46.9 56.0 60.2    # Empty
+region right_block block 0 46.9 0 46.9 60.2 114.4  # Right Copper Block 
+
+# Define Regions for Temperature Control
+region left_stuck block 0 46.9 0 46.9 0 3.0 
+region left_edge block 0 46.9 0 46.9  3.0 6.0  
+region right_edge block 0 46.9 0 46.9 107.4 111.4   
+region right_stuck block 0 46.9 0 46.9 111.4 114.4 
+
+# Define Masses
+mass 1 63.546  # Mass of Copper (atom type 1)
+mass 2 12.011  # Mass of Carbon (atom type 2)
+
+# Create Copper Atoms
+lattice fcc 3.6  # Lattice constant for Cu
+create_atoms 1 region left_block  # Create Cu atoms in left block
+create_atoms 1 region right_block  # Create Cu atoms in right block
+
+
+# Create Carbon Atoms in Honeycomb structure
+lattice custom 2.46 &
+    a1 1.0 0.0 0.0 &
+    a2 -0.5 0.87 0.0 &
+    a3 0.0 0.0 0.1 &  
+    basis 0.0 0.0 0.0 &
+    basis 0.33333 0.66667 0.0
+create_atoms 2 region graphene
+
+# Define Groups
+group graphene_group region graphene
+group left_group region left_edge
+group right_group region right_edge
+group stuckleft region left_stuck
+group stuckright region right_stuck 
+
+# Define potentials
+pair_style hybrid eam/alloy airebo 3.0 lj/cut 10.0
+pair_coeff * * eam/alloy Cu.eam.alloy Cu NULL # EAM potential file for Copper
+pair_coeff * * airebo CH.airebo NULL C  # AIREBO potential file for Carbon
+pair_coeff 1 2 lj/cut 0.02578 3.0825  # LJ parameters between Cu and C
+
+
+# Define Temperature Control for Left and Right blocks
+fix left_cold left_group langevin 400.0 400.0 0.1 12345 tally yes
+fix right_hot right_group langevin 200.0 200.0 0.1 67890 tally yes
+fix 3 all nve
+
+# Freeze left and right atoms
+fix freeze stuckleft setforce 0.0 0.0 0.0
+fix freeze2 stuckright setforce 0.0 0.0 0.0
+velocity stuckleft set 0.0 0.0 0.0
+velocity stuckright set 0.0 0.0 0.0
+
+# Initialize 
+minimize 1.0e-4 1.0e-6 1000 10000
+thermo 10000
+thermo_style custom step
+# timestep
+timestep $dt
+run $n_init_steps
+
+# Output 
+compute bins_left all chunk/atom bin/1d z 0.0 0.025 units reduced region left_block
+compute bins_right all chunk/atom bin/1d z 0.0 0.025 units reduced region right_block
+compute temp_bins_left all temp/chunk bins_left
+compute temp_bins_right all temp/chunk bins_right
+fix output_temp_left all ave/chunk 500 20 10000 bins_left temp file tmp_left.out
+fix output_temp_right all ave/chunk 500 20 10000 bins_right temp file tmp_right.out
+log log.lammps
+thermo 10000
+thermo_style custom step temp pe ke etotal press f_left_cold f_right_hot
+
+# Run
+run $n_run_steps
+
+# Output Data for Restart
+#write_restart equilibration.restart  # Save the restart file
+write_data equilibration.data  # Save the current state of the system in a data file
