@@ -1,0 +1,4 @@
+cd $job_results
+$run_prefix
+
+python3 $ade_exec_school

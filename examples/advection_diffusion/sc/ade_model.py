@@ -1,5 +1,3 @@
-#!/home/wouter/anaconda3/bin/python
-
 import json
 import sys
 import numpy as np

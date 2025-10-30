@@ -115,10 +115,11 @@ def get_uq_samples(config, campaign_dir, number_of_samples, skip=0):
         #for which Run_X with X > number of current samples.
         dirs = os.listdir(path.join(campaign_dir, 'runs'))
         for dir_i in dirs:
-            run_id = int(dir_i.split('_')[-1])
-            if run_id > int(number_of_samples):
-                local('rm -r %s/runs/run_%d' % (campaign_dir, run_id))
-                print('Removing Run %d from %s/runs' % (run_id, campaign_dir))
+            if dir_i[0:4] == 'run_':
+                run_id = int(dir_i.split('_')[-1])
+                if run_id > int(number_of_samples):
+                    local('rm -r %s/runs/run_%d' % (campaign_dir, run_id))
+                    print('Removing Run %d from %s/runs' % (run_id, campaign_dir))
     else:
         print('Campaign dir not found')
 

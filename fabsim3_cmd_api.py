@@ -342,12 +342,14 @@ def get_uq_samples(config, campaign_dir, number_of_samples, skip=0, machine = 'l
     #for which Run_X with X > number of current samples.
     dirs = os.listdir(os.path.join(campaign_dir, 'runs'))
     for dir_i in dirs:
-        run_id = int(dir_i.split('_')[-1])
-        if run_id > number_of_samples:
-            # local('rm -r %s/runs/Run_%d' % (campaign_dir, run_id))
-            cmd = 'rm -r %s/runs/Run_%d' % (campaign_dir, run_id)
-            os.popen(cmd).read()
-            print('Removing Run %d from %s/runs' % (run_id, campaign_dir))
+        # only consider run directories run_1, run_2 etc
+        if dir_i[0:4] == 'run_':
+            run_id = int(dir_i.split('_')[-1])
+            if run_id > number_of_samples:
+                # local('rm -r %s/runs/Run_%d' % (campaign_dir, run_id))
+                cmd = 'rm -r %s/runs/Run_%d' % (campaign_dir, run_id)
+                os.popen(cmd).read()
+                print('Removing Run %d from %s/runs' % (run_id, campaign_dir))
 
 def clear_results(machine, name_results_dir):
     """
