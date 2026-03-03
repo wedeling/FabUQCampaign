@@ -1,6 +1,15 @@
 """
 Example on how to use FabSim3 inside a Python script to execute a dimension-adaptive
 EasyVVUQ campaign
+
+Polynomial test function: 
+    https://www.sfu.ca/~ssurjano/loepetal13.html
+
+Make sure to set ohagan_exec to the ./model/loeppky.py file in
+your machines_user.yml file
+
+Jupyter notebook version without FabSim3: 
+    https://github.com/wedeling/sparse_grid_tutorial
 """
 
 import os
@@ -21,7 +30,7 @@ __license__ = "LGPL"
 HOME = os.path.abspath(os.path.dirname(__file__))
 
 #number of uncertain parameters
-D = 15
+D = 10
 
 #########
 # FLAGS #
@@ -32,7 +41,7 @@ HOME = os.path.abspath(os.path.dirname(__file__))
 # Work directory, where the easyVVUQ directory will be placed
 WORK_DIR = '/tmp'
 # FabSim3 config name
-CONFIG = 'ohagan'
+CONFIG = 'loeppky'
 # Simulation identifier
 ID = '_test'
 # EasyVVUQ campaign name
@@ -66,9 +75,9 @@ if INIT:
     ###########################
 
     encoder = uq.encoders.GenericEncoder(
-        template_fname=HOME + '/model/model2.template',
+        template_fname=HOME + '/model/loeppky.template',
         delimiter='$',
-        target_filename='model_in.json')
+        target_filename='input.csv')
     
     # actions for creating the run directories and encoding the input files
     actions = uq.actions.Actions(
@@ -121,7 +130,7 @@ if INIT:
     # Ensemble execution using FabSim3 #
     ####################################
 
-    fab.run_uq_ensemble(CONFIG, campaign.campaign_dir, script='ohagan',
+    fab.run_uq_ensemble(CONFIG, campaign.campaign_dir, script='loeppky',
                         machine=MACHINE, PJ=PILOT_JOB)
 
     # wait for job to complete
@@ -165,7 +174,7 @@ if INIT:
 # reload a previous adaptive campaign to refine it further
 else:
     #reload Campaign, sampler, analysis
-    DB_LOCATION = "sqlite:////tmp/ohagan_test2blvg2im/campaign.db" # change this to correct database file
+    DB_LOCATION = "sqlite:////tmp/test60ielr4e/campaign.db" # change this to correct database file
     campaign = uq.Campaign(name=CAMPAIGN_NAME, db_location=DB_LOCATION)
     print("===========================================")
     print("Reloaded campaign {}".format(CAMPAIGN_NAME))
@@ -178,9 +187,9 @@ else:
 
     # also recreate the actions
     encoder = uq.encoders.GenericEncoder(
-        template_fname=HOME + '/model/model2.template',
+        template_fname=HOME + '/model/loeppky.template',
         delimiter='$',
-        target_filename='model_in.json')
+        target_filename='input.csv')
 
     actions = uq.actions.Actions(
         uq.actions.CreateRunDirectory(root=WORK_DIR, flatten=True),
@@ -196,7 +205,7 @@ else:
         uq.actions.Decode(decoder)
     )
 
-MAX_SAMPLES = 40
+MAX_SAMPLES = 120
 N_ITER = 0
 
 while sampler.n_samples < MAX_SAMPLES:
@@ -211,7 +220,7 @@ while sampler.n_samples < MAX_SAMPLES:
     # look-ahead step, evaluate the code at new candidate directions #
     ##################################################################
 
-    sampler.look_ahead(analysis.l_norm)
+    sampler.look_ahead(analysis.multi_index)
 
     campaign.replace_actions(CAMPAIGN_NAME, actions)
     campaign.execute().collate()
@@ -220,7 +229,7 @@ while sampler.n_samples < MAX_SAMPLES:
     # Ensemble execution using FabSim3 #
     ####################################
 
-    fab.run_uq_ensemble(CONFIG, campaign.campaign_dir, script='ohagan',
+    fab.run_uq_ensemble(CONFIG, campaign.campaign_dir, script='loeppky',
                         machine=MACHINE, PJ=PILOT_JOB, skip=skip)
 
     # wait for job to complete
@@ -283,5 +292,5 @@ plt.xlabel('iteration')
 plt.ylabel('refinement error')
 plt.tight_layout()
 
-analysis.plot_stat_convergence()
+# analysis.plot_stat_convergence()
 analysis.adaptation_table()

@@ -102,7 +102,7 @@ vary = {
 # Select sampler #
 ##################
 
-sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=2)
+sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=1)
 
 # Associate the sampler with the campaign
 campaign.set_sampler(sampler)

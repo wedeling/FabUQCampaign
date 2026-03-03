@@ -1,13 +1,10 @@
 """
-Example on how to use FabSim3 inside a Python script to execute an EasyVVUQ campaign
-
-Runs both the execution and the postprocessing from the same script
+Example on how to use FabSim3 inside a Python script to execute an 
+EasyVVUQ campaign using the BasicSweep sampler.
 
 """
 
 import os
-import chaospy as cp
-import numpy as np
 import easyvvuq as uq
 import matplotlib.pyplot as plt
 
@@ -89,20 +86,11 @@ campaign.add_app(
     actions=actions
 )
 
-#######################
-# Specify input space #
-#######################
-
-vary = {
-    "Pe": cp.Uniform(100.0, 500.0),
-    "f": cp.Uniform(0.9, 1.1)
-}
-
 ##################
 # Select sampler #
 ##################
 
-sampler = uq.sampling.SCSampler(vary=vary, polynomial_order=1)
+sampler = uq.sampling.BasicSweep(sweep = {'Pe': [100,120], 'f':[1]})
 
 # Associate the sampler with the campaign
 campaign.set_sampler(sampler)
@@ -130,7 +118,7 @@ all_good = fab.verify(CONFIG, campaign.campaign_dir,
 
 if all_good:
     # copy the results from the FabSim results dir to the EasyVVUQ results dir
-    fab.get_uq_samples(CONFIG, campaign.campaign_dir, sampler.n_samples, machine=MACHINE)
+    fab.get_uq_samples(CONFIG, campaign.campaign_dir, sampler.n_samples(), machine=MACHINE)
 else:
     print("Not all samples executed correctly")
     import sys
@@ -162,71 +150,5 @@ campaign.execute().collate()
 
 # get EasyVVUQ data frame
 data_frame = campaign.get_collation_result()
+print(data_frame)
 
-############################
-# Post-processing analysis #
-############################
-
-analysis = uq.analysis.SCAnalysis(sampler=sampler, qoi_cols=["u"])
-results = analysis.analyse(data_frame=data_frame)
-
-###################################
-# Plot the moments and SC samples #
-###################################
-
-mu = results.describe(output_columns[0], 'mean')
-std = results.describe(output_columns[0], 'std')
-
-x = np.linspace(0, 1, 301)
-
-fig = plt.figure(figsize=[10, 5])
-ax = fig.add_subplot(121, xlabel='location x', ylabel='velocity u',
-                     title=r'code mean +/- standard deviation')
-ax.plot(x, mu, 'b', label='mean')
-ax.plot(x, mu + std, '--r', label='std-dev')
-ax.plot(x, mu - std, '--r')
-
-#####################################
-# Plot the random surrogate samples #
-#####################################
-
-ax = fig.add_subplot(122, xlabel='location x', ylabel='velocity u',
-                      title='Surrogate samples')
-
-#generate n_mc samples from the input distributions
-N_MC = 20
-xi_mc = np.zeros([20,2])
-for idx, dist in enumerate(sampler.vary.get_values()):
-    xi_mc[:, idx] = dist.sample(N_MC)
-    idx += 1
-
-# evaluate the surrogate at these values
-print('Evaluating surrogate model %d times' % (N_MC,))
-for i in range(N_MC):
-    ax.plot(x, analysis.surrogate(output_columns[0], xi_mc[i]), 'g')
-print('done')
-
-plt.tight_layout()
-
-#######################
-# Plot Sobol indices #
-#######################
-
-fig = plt.figure()
-ax = fig.add_subplot(
-    111,
-    xlabel='location x',
-    ylabel='Sobol indices',
-    title='spatial dist. Sobol indices, Pe only important in viscous regions')
-
-lbl = ['Pe', 'f']
-
-sobols = results.raw_data['sobols_first'][output_columns[0]]
-
-for idx, S_i in enumerate(sobols):
-    ax.plot(x, sobols[S_i], label=lbl[idx])
-
-leg = plt.legend(loc=0)
-leg.set_draggable(True)
-
-plt.show()
