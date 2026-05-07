@@ -220,7 +220,7 @@ while sampler.n_samples < MAX_SAMPLES:
     # look-ahead step, evaluate the code at new candidate directions #
     ##################################################################
 
-    sampler.look_ahead(analysis.multi_index)
+    sampler.look_ahead(analysis.l_norm)
 
     campaign.replace_actions(CAMPAIGN_NAME, actions)
     campaign.execute().collate()
